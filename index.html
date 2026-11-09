@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uncle Dad's Song of the Day</title>
 
-    <!-- Mobile App Configuration & PWA Icons -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Uncle Dad's">
@@ -34,7 +33,7 @@
             background: var(--bg-gradient);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 1.5rem 1rem;
+            padding: 1rem;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -46,33 +45,35 @@
             backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: 1.5rem;
-            padding: 1.75rem;
+            padding: 1.25rem;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
         }
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
+            gap: 0.5rem;
         }
-        header h1 { font-size: 1.35rem; color: var(--accent); }
-        .admin-toggle {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--glass-border);
-            color: var(--text-muted);
-            padding: 0.35rem 0.75rem;
+        header h1 { font-size: 1.25rem; color: var(--accent); }
+        .install-btn {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid var(--success);
+            color: #86efac;
+            padding: 0.35rem 0.65rem;
             border-radius: 0.5rem;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
+            white-space: nowrap;
         }
-        .admin-toggle:hover { color: var(--text-main); border-color: var(--accent); }
-        
+        .install-btn:hover { background: rgba(34, 197, 94, 0.35); }
+
         .player-card {
             background: var(--card-bg);
             border: 1px solid var(--glass-border);
             border-radius: 1rem;
-            padding: 1rem;
-            margin-bottom: 1.25rem;
+            padding: 0.85rem;
+            margin-bottom: 1rem;
         }
         .video-wrapper {
             position: relative;
@@ -82,16 +83,16 @@
             border-radius: 0.75rem;
             overflow: hidden;
             background: #000;
-            margin-bottom: 0.85rem;
+            margin-bottom: 0.75rem;
         }
         .video-wrapper iframe {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%; border: 0;
         }
-        .track-meta h2 { font-size: 1.15rem; margin-bottom: 0.35rem; }
-        .track-meta p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; }
+        .track-meta h2 { font-size: 1.1rem; margin-bottom: 0.3rem; }
+        .track-meta p { color: var(--text-muted); font-size: 0.82rem; line-height: 1.35; }
         
-        .share-row { display: flex; gap: 0.5rem; margin-top: 0.85rem; }
+        .share-row { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
         .share-btn {
             flex: 1;
             background: rgba(255, 255, 255, 0.05);
@@ -107,19 +108,19 @@
         .nav-tabs {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
+            gap: 0.4rem;
             margin-bottom: 1rem;
         }
         .tab-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--glass-border);
             color: var(--text-main);
-            padding: 0.65rem 0.5rem;
+            padding: 0.6rem 0.4rem;
             border-radius: 0.75rem;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            text-align: center;
         }
         .tab-btn.active, .tab-btn:hover {
             background: var(--accent);
@@ -132,11 +133,11 @@
             background: var(--card-bg);
             border: 1px solid var(--glass-border);
             border-radius: 1rem;
-            padding: 1.25rem;
+            padding: 1rem;
         }
         .section-panel.active { display: block; }
-        .section-panel h3 { font-size: 1rem; margin-bottom: 0.35rem; color: var(--accent); }
-        .section-panel p.subtext { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.85rem; }
+        .section-panel h3 { font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--accent); }
+        .section-panel p.subtext { color: var(--text-muted); font-size: 0.78rem; margin-bottom: 0.75rem; }
 
         .trivia-btn {
             display: block;
@@ -145,10 +146,10 @@
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--glass-border);
             color: var(--text-main);
-            padding: 0.55rem 0.75rem;
+            padding: 0.55rem 0.7rem;
             margin-bottom: 0.4rem;
             border-radius: 0.5rem;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             cursor: pointer;
         }
         .trivia-btn:hover { border-color: var(--accent); }
@@ -159,10 +160,10 @@
             align-items: center;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
-            padding: 0.55rem 0.75rem;
+            padding: 0.5rem 0.7rem;
             border-radius: 0.5rem;
-            margin-bottom: 0.45rem;
-            font-size: 0.82rem;
+            margin-bottom: 0.4rem;
+            font-size: 0.8rem;
             cursor: pointer;
         }
         .time-machine-item:hover { border-color: var(--accent); }
@@ -170,15 +171,26 @@
         .vote-item {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
-            padding: 0.65rem 0.75rem;
+            padding: 0.6rem 0.7rem;
             border-radius: 0.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.5rem;
-            font-size: 0.85rem;
+            margin-bottom: 0.45rem;
+            font-size: 0.82rem;
         }
-        .pitch-inputs { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+        .vote-btn-local {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 0.35rem 0.65rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        .vote-btn-local:hover { color: var(--text-main); border-color: var(--accent); }
+
+        .pitch-inputs { display: flex; gap: 0.4rem; margin-top: 0.75rem; }
         .pitch-inputs input {
             flex: 1;
             background: rgba(15, 23, 42, 0.9);
@@ -186,47 +198,457 @@
             color: var(--text-main);
             padding: 0.5rem;
             border-radius: 0.5rem;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
         }
 
-        .admin-form input, .admin-form textarea {
-            width: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            padding: 0.55rem;
-            border-radius: 0.5rem;
-            margin-bottom: 0.65rem;
-            font-size: 0.85rem;
-        }
         .primary-btn {
-            width: 100%;
             background: var(--accent);
             color: #0f172a;
             border: 0;
             padding: 0.65rem;
             border-radius: 0.5rem;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             cursor: pointer;
         }
         .primary-btn:hover { background: var(--accent-hover); }
+
+        /* Compact Admin Portal at Bottom */
+        footer.app-footer {
+            margin-top: 1.5rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+        }
+        .admin-subtle-toggle {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .admin-subtle-toggle:hover { opacity: 1; color: var(--accent); }
+
+        .admin-compact-panel {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--glass-border);
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            margin-top: 0.75rem;
+            text-align: left;
+        }
+        .admin-compact-panel h4 {
+            font-size: 0.82rem;
+            color: var(--accent);
+            margin-bottom: 0.45rem;
+        }
+        .admin-compact-panel input, .admin-compact-panel textarea {
+            width: 100%;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.4rem 0.5rem;
+            border-radius: 0.4rem;
+            margin-bottom: 0.4rem;
+            font-size: 0.75rem;
+            font-family: inherit;
+        }
+        .admin-btn-row { display: flex; gap: 0.4rem; margin-top: 0.2rem; }
+        .admin-action-btn {
+            flex: 1;
+            padding: 0.45rem;
+            font-size: 0.75rem;
+            border-radius: 0.4rem;
+        }
         .reset-btn {
             background: transparent;
             border: 1px solid var(--danger);
             color: var(--danger);
-            margin-top: 0.5rem;
         }
         .reset-btn:hover { background: rgba(239, 68, 68, 0.15); }
+
+        /* Modal */
+        #install-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+        }
+        #install-modal.active { display: flex; }
+        .modal-card {
+            background: #1e293b;
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            max-width: 420px;
+            width: 100%;
+        }
+        .modal-card h3 { color: var(--accent); margin-bottom: 0.75rem; font-size: 1.1rem; }
+        .modal-card ol { margin-left: 1.2rem; color: var(--text-main); font-size: 0.85rem; line-height: 1.6; }
+        .modal-card li { margin-bottom: 0.5rem; }
     </style>
 </head>
 <body>
     <div class="app-container">
         <header>
-            <h1>🎵 Uncle Dad's Song of the Day</h1>
-            <button class="admin-toggle" onclick="toggleAdmin()">Bob's Admin</button>
+            <h1>🎵 Uncle Dad's Song</h1>
+            <button class="install-btn" onclick="showInstallHelp()">📲 Install</button>
         </header>
 
-        <button id="pwa-install-btn" class="primary-btn" style="margin-bottom: 1rem; background: #22c55e;" onclick="installPWA()">
-            📲 Add Shortcut to Home Screen
-        </
+        <div class="player-card">
+            <div class="video-wrapper">
+                <iframe id="yt-frame" src="https://www.youtube-nocookie.com/embed/TUVcZfQe-Kw?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+            <div class="track-meta">
+                <h2 id="display-title">Loading today's drop...</h2>
+                <p id="display-shoutout">Calibrating rotation queue...</p>
+            </div>
+            <div class="share-row">
+                <button class="share-btn" onclick="shareApp('whatsapp')">💬 WhatsApp</button>
+                <button class="share-btn" onclick="shareApp('telegram')">✈️ Telegram</button>
+                <button class="share-btn" onclick="shareApp('copy')">📋 Copy Link</button>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" id="tab-trivia-btn" onclick="switchTab('trivia')">❓ Trivia</button>
+            <button class="tab-btn" id="tab-machine-btn" onclick="switchTab('machine')">⏱️ Archive</button>
+            <button class="tab-btn" id="tab-voting-btn" onclick="switchTab('voting')">🗳️ Voting</button>
+        </div>
+
+        <div id="panel-trivia" class="section-panel active">
+            <h3>Daily Music Trivia</h3>
+            <p class="subtext" id="trivia-q">Loading daily question...</p>
+            <div id="trivia-options"></div>
+            <p id="trivia-result" style="margin-top: 0.75rem; font-weight: bold; font-size: 0.85rem;"></p>
+        </div>
+
+        <div id="panel-machine" class="section-panel">
+            <h3>Time Machine Archive</h3>
+            <p class="subtext">Browse past days in this month's rotation. Click any track to play it!</p>
+            <div id="archive-list"></div>
+        </div>
+
+        <div id="panel-voting" class="section-panel">
+            <h3>Suggestion & Voting Board</h3>
+            <p class="subtext">Vote for upcoming tracks. Reaching 5 votes promotes instantly!</p>
+            <div id="vote-list"></div>
+            <div class="pitch-inputs">
+                <input type="text" id="pitch-title" placeholder="Pitch song (Title & Artist)..." />
+                <input type="text" id="pitch-url" placeholder="YouTube URL or ID..." />
+                <button class="primary-btn" style="width: auto; padding: 0.5rem 0.85rem;" onclick="addPitch()">Pitch</button>
+            </div>
+        </div>
+
+        <!-- Discreet, Smaller Admin Portal at Bottom -->
+        <footer class="app-footer">
+            <button class="admin-subtle-toggle" onclick="toggleAdmin()">⚙️ Bob's Admin Portal</button>
+
+            <div id="panel-admin" class="admin-compact-panel" style="display: none;">
+                <h4>Bob's Admin Portal</h4>
+                <input type="text" id="admin-url" placeholder="YouTube URL or ID..." />
+                <input type="text" id="admin-title" placeholder="Song Title & Artist..." />
+                <textarea id="admin-comment" rows="2" placeholder="Custom shout-out or commentary..."></textarea>
+                <div class="admin-btn-row">
+                    <button class="primary-btn admin-action-btn" onclick="saveAdminSong()">Update Today's Song</button>
+                    <button class="primary-btn reset-btn admin-action-btn" onclick="resetToSchedule()">Reset Schedule</button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- PWA Install Modal -->
+    <div id="install-modal" onclick="closeInstallModal(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <h3>📲 Add Uncle Dad's to Phone</h3>
+            <ol>
+                <li><strong>Android (in Google Messages / Chrome):</strong> Tap the <strong>three dots (⋮)</strong> in the top-right corner ➔ tap <strong>"Add to Home screen"</strong> or <strong>"Open in Chrome"</strong>.</li>
+                <li><strong>iPhone (Safari):</strong> Tap the <strong>Share</strong> button (box with upward arrow) ➔ tap <strong>"Add to Home Screen"</strong>.</li>
+            </ol>
+            <button class="primary-btn" style="width:100%; margin-top: 1rem;" onclick="document.getElementById('install-modal').classList.remove('active')">Got It</button>
+        </div>
+    </div>
+
+    <script>
+        const VOTE_THRESHOLD = 5;
+
+        const TRACK_ROSTER = [
+            { day: 1, theme: "Modern Pop Monday", title: "Dua Lipa - Levitating", videoId: "TUVcZfQe-Kw", shoutout: "Day 1: Modern Pop Monday kicks off with Dua Lipa's infectious nu-disco groove!", q: "What subgenre revival drove the sound of Dua Lipa's Future Nostalgia album?", opts: ["Nu-Disco", "Grunge", "Country Pop", "Ska"], ans: 0 },
+            { day: 2, theme: "Alt / Indie Tuesday", title: "Glass Animals - Heat Waves", videoId: "mRD0-GxqHVo", shoutout: "Day 2: Alt Tuesday brings the hypnotic sleeper hit that conquered global charts.", q: "How many weeks did 'Heat Waves' take to climb to #1 on the Billboard Hot 100?", opts: ["12 weeks", "28 weeks", "42 weeks", "59 weeks"], ans: 3 },
+            { day: 3, theme: "Viral Wednesday", title: "Post Malone & Swae Lee - Sunflower", videoId: "ApXoWvfEYVU", shoutout: "Day 3: Viral Wednesday features the highest certified single in US recording history.", q: "Which animated superhero blockbuster featured 'Sunflower' as its lead single?", opts: ["Into the Spider-Verse", "The Incredibles 2", "Big Hero 6", "Lego Batman"], ans: 0 },
+            { day: 4, theme: "Throwback Thursday", title: "Gorillaz - Feel Good Inc.", videoId: "HyHNuVaZJ-k", shoutout: "Day 4: Throwback Thursday with Damon Albarn's virtual cartoon band and De La Soul.", q: "Which legendary hip-hop trio features on the rap verses of 'Feel Good Inc.'?", opts: ["A Tribe Called Quest", "De La Soul", "The Fugees", "Run-D.M.C."], ans: 1 },
+            { day: 5, theme: "Upbeat Funk Friday", title: "Mark Ronson ft. Bruno Mars - Uptown Funk", videoId: "OPf0YbXqDm0", shoutout: "Day 5: Funk Friday brings peak brass energy and dancefloor groove.", q: "Which iconic musical city's 1980s sound primarily inspired 'Uptown Funk'?", opts: ["Minneapolis", "Detroit", "Nashville", "Seattle"], ans: 0 },
+            { day: 6, theme: "Electronic Saturday", title: "Avicii - Wake Me Up", videoId: "IcrbM1l_BoI", shoutout: "Day 6: Saturday Dance night with the fusion of acoustic folk and stadium EDM.", q: "Which American soul singer provided the lead vocals on 'Wake Me Up'?", opts: ["Aloe Blacc", "Leon Bridges", "John Legend", "CeeLo Green"], ans: 0 },
+            { day: 7, theme: "Chill Sunday", title: "Leon Bridges & Khruangbin - Texas Sun", videoId: "mdt0KjzpafM", shoutout: "Day 7: Sunday Chill brings smooth, sun-drenched Texas soul guitar.", q: "Khruangbin is famous for blending soul with what global guitar style?", opts: ["Flamenco", "Thai funk & psych rock", "Celtic folk", "Delta blues"], ans: 1 },
+            { day: 8, theme: "Modern Pop Monday", title: "The Weeknd - Blinding Lights", videoId: "4NRXx6U8ABQ", shoutout: "Day 8: Pop Monday delivers the longest-charting hit in modern pop history.", q: "What signature 1980s drum machine snare tone powers 'Blinding Lights'?", opts: ["Synthwave 80s gated reverb", "Acoustic jazz brush", "Heavy metal double bass", "Trap 808 roll"], ans: 0 },
+            { day: 9, theme: "Alt / Indie Tuesday", title: "Hozier - Too Sweet", videoId: "aezstBMZZp8", shoutout: "Day 9: Alt Tuesday with Hozier's driving bassline and signature gravelly vocals.", q: "Hozier became the first artist from which country to top the US charts since 1990?", opts: ["Scotland", "Ireland", "Wales", "New Zealand"], ans: 1 },
+            { day: 10, theme: "Viral Wednesday", title: "Olivia Rodrigo - good 4 u", videoId: "gNi_6U5Pm_o", shoutout: "Day 10: Viral Wednesday brings early-2000s energetic pop-punk back to radio.", q: "Which rock band received an interpolation songwriting credit on 'good 4 u'?", opts: ["Paramore", "Green Day", "Blink-182", "Avril Lavigne"], ans: 0 },
+            { day: 11, theme: "Throwback Thursday", title: "The Killers - Mr. Brightside", videoId: "gGdGFtwCNBE", shoutout: "Day 11: Modern Throwback with the indie rock anthem that refuses to leave the charts.", q: "The song 'Mr. Brightside' was the debut single from which Killers album?", opts: ["Hot Fuss", "Sam's Town", "Day & Age", "Battle Born"], ans: 0 },
+            { day: 12, theme: "Upbeat Funk Friday", title: "Lizzo - About Damn Time", videoId: "IXXxciRUMzE", shoutout: "Day 12: Funk Friday brings modern disco optimism and flute breaks.", q: "What classical wind instrument does Lizzo famously perform during her songs?", opts: ["Clarinet", "Flute", "Saxophone", "Trumpet"], ans: 1 },
+            { day: 13, theme: "Electronic Saturday", title: "Daft Punk ft. Pharrell - Get Lucky", videoId: "5NV6Rdv1a3w", shoutout: "Day 13: Saturday groove with the French electronic robots and Nile Rodgers' guitar.", q: "Which Chic guitar pioneer played rhythm guitar on 'Get Lucky'?", opts: ["Nile Rodgers", "Carlos Santana", "The Edge", "Johnny Marr"], ans: 0 },
+            { day: 14, theme: "Chill Sunday", title: "Vance Joy - Riptide", videoId: "uJ_1HMAGb4k", shoutout: "Day 14: Sunday Chill acoustic vibes driven by a four-string ukulele.", q: "What instrument carries the primary rhythmic strum throughout 'Riptide'?", opts: ["Ukulele", "Mandolin", "Banjo", "12-String Guitar"], ans: 0 },
+            { day: 15, theme: "Modern Pop Monday", title: "Harry Styles - As It Was", videoId: "H5v3kku4y6Q", shoutout: "Day 15: Pop Monday with sparkling indie synth riffs and introspective lyrics.", q: "Whose voice memo is heard speaking in the intro of 'As It Was'?", opts: ["His mother", "His goddaughter Ruby", "His sister Gemma", "A radio host"], ans: 1 },
+            { day: 16, theme: "Alt / Indie Tuesday", title: "Arctic Monkeys - Do I Wanna Know?", videoId: "bpOSxM0rNPM", shoutout: "Day 16: Alt Tuesday brings desert rock guitar riffs and thumping floor-toms.", q: "What distinct type of guitar did Alex Turner use to write this riff?", opts: ["12-string Vox guitar", "Fender Stratocaster", "Acoustic nylon", "Bass guitar only"], ans: 0 },
+            { day: 17, theme: "Viral Wednesday", title: "Childish Gambino - Redbone", videoId: "Kp7eSUU9oy8", shoutout: "Day 17: Viral Wednesday delivers Donald Glover's psychedelic soul tribute.", q: "Donald Glover stated the musical style of 'Redbone' was an homage to which artist?", opts: ["Funkadelic / George Clinton", "Michael Jackson", "Bob Dylan", "Stevie Wonder"], ans: 0 },
+            { day: 18, theme: "Throwback Thursday", title: "Outkast - Roses", videoId: "gWju37TZfo0", shoutout: "Day 18: Throwback Thursday with an upbeat piano hook hiding witty lyrics.", q: "Which Outkast double-album contains 'Roses'?", opts: ["Speakerboxxx/The Love Below", "Aquemini", "Stankonia", "ATLiens"], ans: 0 },
+            { day: 19, theme: "Upbeat Funk Friday", title: "Silk Sonic - Leave The Door Open", videoId: "adLGH4FaZE8", shoutout: "Day 19: Funk Friday brings classic Philadelphia soul chords and modern vocal harmonies.", q: "Silk Sonic is a joint project between Bruno Mars and which drummer/vocalist?", opts: ["Anderson .Paak", "Questlove", "Kamasi Washington", "Thundercat"], ans: 0 },
+            { day: 20, theme: "Electronic Saturday", title: "Calvin Harris ft. Frank Ocean - Slide", videoId: "WFQtS8P65GQ", shoutout: "Day 20: Dance Saturday with bouncy analog piano and summer vocals.", q: "Which hip-hop group features on verses alongside Frank Ocean on 'Slide'?", opts: ["Migos", "Rae Sremmurd", "Brockhampton", "A$AP Mob"], ans: 0 },
+            { day: 21, theme: "Chill Sunday", title: "Frank Ocean - Lost", videoId: "p5n1wGq4eHQ", shoutout: "Day 21: Sunday Chill delivers warm indie-R&B keys and nostalgic storytelling.", q: "What acclaimed 2012 album is 'Lost' featured on?", opts: ["Channel Orange", "Blonde", "Nostalgia, Ultra", "Endless"], ans: 0 },
+            { day: 22, theme: "Modern Pop Monday", title: "Billie Eilish - bad guy", videoId: "DyDfgMOUjCI", shoutout: "Day 22: Pop Monday brings whispery vocals, snapping finger clicks, and 808 bass.", q: "Who produced 'bad guy' in a home bedroom studio alongside Billie?", opts: ["Her brother Finneas", "Max Martin", "Jack Antonoff", "Rick Rubin"], ans: 0 },
+            { day: 23, theme: "Alt / Indie Tuesday", title: "The Black Keys - Lonely Boy", videoId: "a_426RiwST8", shoutout: "Day 23: Alt Tuesday brings garage-rock fuzz guitar and blues energy.", q: "Who is the solo dancer featured in the famous one-shot music video?", opts: ["Derrick Tuggle", "Patrick Carney", "Dan Auerbach", "Jack White"], ans: 0 },
+            { day: 24, theme: "Viral Wednesday", title: "Lil Nas X - Old Town Road", videoId: "r7qovpjOHQ4", shoutout: "Day 24: Viral Wednesday with the record-setting country-trap phenomenon.", q: "Which rock band's instrumental banjo track was sampled for 'Old Town Road'?", opts: ["Nine Inch Nails", "Radiohead", "Nirvana", "U2"], ans: 0 },
+            { day: 25, theme: "Throwback Thursday", title: "Foster the People - Pumped Up Kicks", videoId: "SDTZ7iX4vTQ", shoutout: "Day 25: Throwback Thursday with the infectious whistling hook of early 2010s indie pop.", q: "Mark Foster wrote 'Pumped Up Kicks' while working as a commercial writer for what?", opts: ["Advertising jingles", "TV news intros", "Video games", "Film scores"], ans: 0 },
+            { day: 26, theme: "Upbeat Funk Friday", title: "Anderson .Paak - Come Down", videoId: "-_4FwS1I6Xg", shoutout: "Day 26: Funk Friday with driving bass, syncopated snare cracks, and live energy.", q: "Anderson .Paak is known for singing lead vocals while playing which instrument live?", opts: ["Drums", "Electric Bass", "Trumpet", "Keyboards"], ans: 0 },
+            { day: 27, theme: "Electronic Saturday", title: "Rufus Du Sol - On My Knees", videoId: "w4c1xM4x2wM", shoutout: "Day 27: Saturday Dance with pulsing dark electronic synthesizers and atmospheric vocals.", q: "From which country does the electronic trio Rüfüs Du Sol hail?", opts: ["Australia", "Germany", "United Kingdom", "Sweden"], ans: 0 },
+            { day: 28, theme: "Chill Sunday", title: "Adele - Easy On Me", videoId: "U3ASj1L6_sY", shoutout: "Day 28: Sunday Chill with a stripped-back piano arrangement and powerhouse vocals.", q: "What was the title of Adele's 2021 comeback album featuring this single?", opts: ["30", "25", "21", "19"], ans: 0 },
+            { day: 29, theme: "Modern Anthem", title: "Kendrick Lamar & SZA - All The Stars", videoId: "GfCqMv--ncA", shoutout: "Day 29: Modern Anthem with cinematic strings, punchy drums, and soaring hooks.", q: "Which Marvel film soundtrack was curated and produced by Kendrick Lamar?", opts: ["Black Panther", "Shang-Chi", "Avengers: Endgame", "Thor: Ragnarok"], ans: 0 },
+            { day: 30, theme: "Grand Finale", title: "Coldplay - Viva La Vida", videoId: "dvgZkm1xWPE", shoutout: "Day 30: Grand Finale of the monthly rotation! Orchestral strings, bells, and chanting crowds.", q: "Which instrument is conspicuously absent from 'Viva La Vida' unlike most Coldplay hits?", opts: ["Lead Guitar Solo", "String Quartet", "Tympani Drums", "Church Bells"], ans: 0 }
+        ];
+
+        const defaultSuggestions = [
+            { id: "1", title: "Sabrina Carpenter - Espresso", videoId: "eVli-tstM5E", votes: 3 },
+            { id: "2", title: "Chappell Roan - Good Luck, Babe!", videoId: "1RKqOmSkGgM", votes: 4 }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDailyTrack();
+            renderVotingList();
+        });
+
+        function getTodayIndex() {
+            const day = new Date().getDate();
+            return (day - 1) % TRACK_ROSTER.length;
+        }
+
+        function loadDailyTrack() {
+            const override = localStorage.getItem('udd_current_song');
+            const currentIndex = getTodayIndex();
+            const scheduledTrack = TRACK_ROSTER[currentIndex];
+
+            if (override) {
+                try {
+                    const data = JSON.parse(override);
+                    setSongDisplay(data.id, data.title, data.comment);
+                } catch(e) {
+                    setSongDisplay(scheduledTrack.videoId, scheduledTrack.title, scheduledTrack.shoutout);
+                }
+            } else {
+                setSongDisplay(scheduledTrack.videoId, scheduledTrack.title, scheduledTrack.shoutout);
+            }
+
+            renderTrivia(scheduledTrack);
+            renderTimeMachine(currentIndex);
+        }
+
+        function setSongDisplay(id, title, comment) {
+            document.getElementById('yt-frame').src = 'https://www.youtube-nocookie.com/embed/' + id + '?enablejsapi=1';
+            document.getElementById('display-title').textContent = title;
+            document.getElementById('display-shoutout').textContent = comment;
+        }
+
+        function renderTrivia(track) {
+            document.getElementById('trivia-q').textContent = track.q;
+            const container = document.getElementById('trivia-options');
+            container.innerHTML = '';
+            document.getElementById('trivia-result').textContent = '';
+
+            track.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'trivia-btn';
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    const res = document.getElementById('trivia-result');
+                    if (idx === track.ans) {
+                        res.style.color = 'var(--success)';
+                        res.textContent = "Correct! Great ear for music history.";
+                    } else {
+                        res.style.color = 'var(--danger)';
+                        res.textContent = "Not quite! Try another answer.";
+                    }
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderTimeMachine(currentIndex) {
+            const list = document.getElementById('archive-list');
+            list.innerHTML = '';
+
+            TRACK_ROSTER.forEach((item, idx) => {
+                const isToday = (idx === currentIndex);
+                const div = document.createElement('div');
+                div.className = 'time-machine-item';
+                div.style.borderLeft = isToday ? '3px solid var(--accent)' : '1px solid var(--glass-border)';
+                div.innerHTML = `
+                    <span>
+                        <strong>Day ${item.day}</strong> <span style="color:var(--text-muted);font-size:0.75rem;">(${item.theme})</span>: 
+                        ${escapeHtml(item.title)}
+                        ${isToday ? '<span style="color:var(--accent); font-weight:bold; margin-left:4px;">[TODAY]</span>' : ''}
+                    </span>
+                    <span style="color: var(--accent); font-size: 0.75rem; white-space:nowrap; margin-left:8px;">▶ Play</span>
+                `;
+                div.onclick = () => {
+                    setSongDisplay(item.videoId, item.title, `[Time Machine - Day ${item.day}] ${item.shoutout}`);
+                    renderTrivia(item);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                list.appendChild(div);
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.section-panel').forEach(p => {
+                p.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + tabName).classList.add('active');
+            document.getElementById('tab-' + tabName + '-btn').classList.add('active');
+        }
+
+        function toggleAdmin() {
+            const ap = document.getElementById('panel-admin');
+            const isHidden = ap.style.display === 'none' || ap.style.display === '';
+            ap.style.display = isHidden ? 'block' : 'none';
+            if (isHidden) {
+                ap.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function renderVotingList() {
+            const container = document.getElementById('vote-list');
+            const saved = localStorage.getItem('udd_suggestions');
+            const suggestions = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultSuggestions));
+            const userVotes = JSON.parse(localStorage.getItem('udd_my_votes') || '[]');
+            
+            container.innerHTML = '';
+            suggestions.forEach((item, index) => {
+                const hasVoted = userVotes.includes(item.id);
+                const div = document.createElement('div');
+                div.className = 'vote-item';
+                div.innerHTML = `
+                    <span><strong>${escapeHtml(item.title)}</strong> (${item.votes} / ${VOTE_THRESHOLD} Votes)</span>
+                    <button class="vote-btn-local" style="${hasVoted ? 'opacity:0.5; cursor:not-allowed;' : ''}" 
+                            onclick="castLocalVote(${index})" ${hasVoted ? 'disabled' : ''}>
+                        ${hasVoted ? '✓ Voted' : '👍 Vote'}
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function castLocalVote(index) {
+            const saved = localStorage.getItem('udd_suggestions');
+            let suggestions = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultSuggestions));
+            let userVotes = JSON.parse(localStorage.getItem('udd_my_votes') || '[]');
+            const track = suggestions[index];
+
+            if (userVotes.includes(track.id)) {
+                return;
+            }
+
+            track.votes += 1;
+            userVotes.push(track.id);
+            localStorage.setItem('udd_my_votes', JSON.stringify(userVotes));
+
+            if (track.votes >= VOTE_THRESHOLD) {
+                setSongDisplay(track.videoId, track.title, "Promoted unanimously by family consensus!");
+                localStorage.setItem('udd_current_song', JSON.stringify({
+                    id: track.videoId,
+                    title: track.title,
+                    comment: "Promoted unanimously by family consensus!"
+                }));
+                suggestions.splice(index, 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            localStorage.setItem('udd_suggestions', JSON.stringify(suggestions));
+            renderVotingList();
+        }
+
+        function addPitch() {
+            const title = document.getElementById('pitch-title').value.trim();
+            const rawUrl = document.getElementById('pitch-url').value.trim();
+            if (!title) return;
+            const videoId = parseYouTubeId(rawUrl);
+            const saved = localStorage.getItem('udd_suggestions');
+            let suggestions = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultSuggestions));
+            suggestions.push({ id: Date.now().toString(), title: title, videoId: videoId, votes: 1 });
+            localStorage.setItem('udd_suggestions', JSON.stringify(suggestions));
+            document.getElementById('pitch-title').value = '';
+            document.getElementById('pitch-url').value = '';
+            renderVotingList();
+        }
+
+        function parseYouTubeId(input) {
+            if (!input) return 'TUVcZfQe-Kw';
+            input = input.trim();
+            if (input.length === 11) return input;
+            const match = input.match(/(?:youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]*)/);
+            return (match && match[1].length === 11) ? match[1] : 'TUVcZfQe-Kw';
+        }
+
+        function saveAdminSong() {
+            const url = document.getElementById('admin-url').value;
+            const title = document.getElementById('admin-title').value || 'Featured Track';
+            const comment = document.getElementById('admin-comment').value || 'Curated rotation queue active.';
+            const videoId = parseYouTubeId(url);
+            const songData = { id: videoId, title: title, comment: comment };
+            localStorage.setItem('udd_current_song', JSON.stringify(songData));
+            setSongDisplay(videoId, title, comment);
+            toggleAdmin();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetToSchedule() {
+            localStorage.removeItem('udd_current_song');
+            loadDailyTrack();
+            toggleAdmin();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function shareApp(platform) {
+            const url = window.location.href;
+            const text = "Check out Uncle Dad's Song of the Day!";
+            if (platform === 'whatsapp') {
+                window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text + ' ' + url));
+            } else if (platform === 'telegram') {
+                window.open('https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text));
+            } else {
+                navigator.clipboard.writeText(url);
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
+
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        function showInstallHelp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    deferredPrompt = null;
+                });
+            } else {
+                document.getElementById('install-modal').classList.add('active');
+            }
+        }
+
+        function closeInstallModal(e) {
+            document.getElementById('install-modal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
