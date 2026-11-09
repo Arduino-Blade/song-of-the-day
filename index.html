@@ -44,7 +44,7 @@
             align-items: center;
             margin-bottom: 1.25rem;
         }
-        header h1 { font-size: 1.4rem; color: var(--accent); }
+        header h1 { font-size: 1.35rem; color: var(--accent); }
         .admin-toggle {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--glass-border);
@@ -56,7 +56,6 @@
         }
         .admin-toggle:hover { color: var(--text-main); border-color: var(--accent); }
         
-        /* Video Player Card */
         .player-card {
             background: var(--card-bg);
             border: 1px solid var(--glass-border);
@@ -94,7 +93,6 @@
         }
         .share-btn:hover { background: rgba(56, 189, 248, 0.15); border-color: var(--accent); }
 
-        /* Navigation Tabs */
         .nav-tabs {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -118,7 +116,6 @@
             border-color: var(--accent);
         }
 
-        /* Panels */
         .section-panel {
             display: none;
             background: var(--card-bg);
@@ -127,10 +124,9 @@
             padding: 1.25rem;
         }
         .section-panel.active { display: block; }
-        .section-panel h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent); }
+        .section-panel h3 { font-size: 1rem; margin-bottom: 0.35rem; color: var(--accent); }
         .section-panel p.subtext { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.85rem; }
 
-        /* Trivia Styles */
         .trivia-btn {
             display: block;
             width: 100%;
@@ -146,7 +142,20 @@
         }
         .trivia-btn:hover { border-color: var(--accent); }
 
-        /* Voting Styles */
+        .time-machine-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 0.55rem 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.45rem;
+            font-size: 0.82rem;
+            cursor: pointer;
+        }
+        .time-machine-item:hover { border-color: var(--accent); }
+
         .vote-item {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
@@ -169,7 +178,6 @@
             font-size: 0.8rem;
         }
 
-        /* Admin Styles */
         .admin-form input, .admin-form textarea {
             width: 100%;
             background: rgba(15, 23, 42, 0.9);
@@ -192,6 +200,13 @@
             cursor: pointer;
         }
         .primary-btn:hover { background: var(--accent-hover); }
+        .reset-btn {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            margin-top: 0.5rem;
+        }
+        .reset-btn:hover { background: rgba(239, 68, 68, 0.15); }
     </style>
 </head>
 <body>
@@ -201,14 +216,13 @@
             <button class="admin-toggle" onclick="toggleAdmin()">Bob's Admin</button>
         </header>
 
-        <!-- Player Card -->
         <div class="player-card">
             <div class="video-wrapper">
-                <iframe id="yt-frame" src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                <iframe id="yt-frame" src="https://www.youtube.com/embed/s7D_ZOiI4vI?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
             <div class="track-meta">
-                <h2 id="display-title">Rick Astley - Never Gonna Give You Up</h2>
-                <p id="display-shoutout">Curated track rotation queue active. Welcome to Uncle Dad's daily drop!</p>
+                <h2 id="display-title">Loading today's drop...</h2>
+                <p id="display-shoutout">Calibrating rotation queue...</p>
             </div>
             <div class="share-row">
                 <button class="share-btn" onclick="shareApp('whatsapp')">💬 WhatsApp</button>
@@ -217,38 +231,25 @@
             </div>
         </div>
 
-        <!-- Navigation Tabs -->
         <div class="nav-tabs">
             <button class="tab-btn active" id="tab-trivia-btn" onclick="switchTab('trivia')">❓ Trivia</button>
             <button class="tab-btn" id="tab-machine-btn" onclick="switchTab('machine')">⏱️ Archive</button>
             <button class="tab-btn" id="tab-voting-btn" onclick="switchTab('voting')">🗳️ Voting</button>
         </div>
 
-        <!-- Trivia Panel -->
         <div id="panel-trivia" class="section-panel active">
             <h3>Daily Music Trivia</h3>
-            <p class="subtext" id="trivia-q">What year was this featured track released?</p>
-            <div id="trivia-options">
-                <button class="trivia-btn" onclick="checkTrivia(1987, this)">1987</button>
-                <button class="trivia-btn" onclick="checkTrivia(1991, this)">1991</button>
-                <button class="trivia-btn" onclick="checkTrivia(1984, this)">1984</button>
-            </div>
+            <p class="subtext" id="trivia-q">Loading daily question...</p>
+            <div id="trivia-options"></div>
             <p id="trivia-result" style="margin-top: 0.75rem; font-weight: bold; font-size: 0.85rem;"></p>
         </div>
 
-        <!-- Time Machine Archive -->
         <div id="panel-machine" class="section-panel">
             <h3>Time Machine Archive</h3>
-            <p class="subtext">Browse past 30-day rotation entries.</p>
-            <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.8;">
-                <li>Day 29: Classic Rock Anthem - Led Zeppelin</li>
-                <li>Day 28: 90s Alternative Jam - Nirvana</li>
-                <li>Day 27: Motown Groove - Stevie Wonder</li>
-                <li>Day 26: 80s Synth Pop - Tears for Fears</li>
-            </ul>
+            <p class="subtext">Browse past days in this month's rotation. Click any track to play it!</p>
+            <div id="archive-list"></div>
         </div>
 
-        <!-- Suggestion & Voting Board -->
         <div id="panel-voting" class="section-panel">
             <h3>Suggestion & Voting Board</h3>
             <p class="subtext">Vote for upcoming tracks. Reaching 5 votes promotes instantly!</p>
@@ -260,7 +261,6 @@
             </div>
         </div>
 
-        <!-- Bob's Admin Panel -->
         <div id="panel-admin" class="section-panel" style="margin-top: 1rem; border-color: var(--accent); display: none;">
             <h3>Bob's Admin Mode</h3>
             <div class="admin-form">
@@ -268,30 +268,126 @@
                 <input type="text" id="admin-title" placeholder="Song Title & Artist..." />
                 <textarea id="admin-comment" placeholder="Custom shout-out or commentary..."></textarea>
                 <button class="primary-btn" onclick="saveAdminSong()">Update Song of the Day</button>
+                <button class="primary-btn reset-btn" onclick="resetToSchedule()">Reset to 30-Day Automated Schedule</button>
             </div>
         </div>
     </div>
 
     <script>
         const VOTE_THRESHOLD = 5;
+
+        const TRACK_ROSTER = [
+            { day: 1, theme: "Motown Monday", title: "Stevie Wonder - Sir Duke", videoId: "s7D_ZOiI4vI", shoutout: "Day 1: Motown Monday kicks off with Stevie Wonder's tribute to Duke Ellington and the legends of jazz!", q: "Who is the primary jazz pioneer honored in the lyrics of 'Sir Duke'?", opts: ["Duke Ellington", "Count Basie", "Miles Davis", "Louis Armstrong"], ans: 0 },
+            { day: 2, theme: "Timeless Tuesday", title: "Fleetwood Mac - The Chain", videoId: "JDG2GHq_fO4", shoutout: "Day 2: Timeless Tuesday drops the legendary bass breakdown that united all five members of Fleetwood Mac.", q: "What is unique about the songwriting credit for 'The Chain'?", opts: ["Written solo by Stevie Nicks", "All five band members share credit", "Written by Lindsey Buckingham in 10 minutes", "Adapted from a blues standard"], ans: 1 },
+            { day: 3, theme: "One-Hit Wednesday", title: "A-ha - Take On Me", videoId: "djV11Xbc914", shoutout: "Day 3: One-Hit Wednesday features Morten Harket's 2.5-octave vocal range and revolutionary rotoscope animation.", q: "What animation technique was used for the iconic pencil-sketch music video?", opts: ["Claymation", "Rotoscoping", "CGI rendering", "Stop-motion collage"], ans: 1 },
+            { day: 4, theme: "Throwback Thursday", title: "Weezer - Buddy Holly", videoId: "kemivUKb4f4", shoutout: "Day 4: Throwback Thursday takes us to 1994, Spike Jonze, and the set of Arnold's Diner.", q: "Which 1970s television sitcom was recreated in the 'Buddy Holly' music video?", opts: ["Happy Days", "Laverne & Shirley", "The Brady Bunch", "M*A*S*H"], ans: 0 },
+            { day: 5, theme: "Funk Friday", title: "Earth, Wind & Fire - September", videoId: "Gs069dndIYk", shoutout: "Day 5: Funk Friday brings pure weekend energy with the most infectious horn line in music history.", q: "What did co-writer Allee Willis say the phrase 'ba-de-ya' means in the chorus?", opts: ["It is Swahili for celebration", "Absolutely nothing, it just feels great", "It was Maurice White's nickname", "It was a tribute to Bahia, Brazil"], ans: 1 },
+            { day: 6, theme: "80s Synth Saturday", title: "Rick Astley - Never Gonna Give You Up", videoId: "dQw4w9WgXcQ", shoutout: "Day 6: Uncle Dad's signature staple. Big synths, timeless dance moves, and pure 1987 joy.", q: "Which British songwriting and production trio wrote and produced this smash?", opts: ["Stock Aitken Waterman", "The Dust Brothers", "Jam & Lewis", "Chic Organization"], ans: 0 },
+            { day: 7, theme: "Sunday Chill", title: "Bill Withers - Lovely Day", videoId: "bEeaS6fuUoA", shoutout: "Day 7: Sunday Chill brings the smoothest morning acoustic groove and a legendary vocal display.", q: "How long does Bill Withers hold the high vocal note near the end of 'Lovely Day'?", opts: ["10 seconds", "14 seconds", "18 seconds", "22 seconds"], ans: 2 },
+            { day: 8, theme: "Motown Monday", title: "The Temptations - Ain't Too Proud to Beg", videoId: "3s3SNHIH0i0", shoutout: "Day 8: Motown Monday with Norman Whitfield pushing David Ruffin above his natural register for raw grit.", q: "Why did producer Norman Whitfield pitch the track above David Ruffin's vocal comfort zone?", opts: ["To force him into a raw, pleading grit", "The sheet music had an error", "Ruffin requested a higher key", "They ran out of studio time to transpose"], ans: 0 },
+            { day: 9, theme: "Timeless Tuesday", title: "Led Zeppelin - Ramble On", videoId: "a3HemKGDavw", shoutout: "Day 9: Timeless Tuesday features John Paul Jones' melodic bass and Robert Plant's Tolkien lore.", q: "Which fictional Tolkien realm and character are directly referenced in the lyrics?", opts: ["Mordor and Gollum", "The Shire and Frodo", "Rohan and Legolas", "Rivendell and Gandalf"], ans: 0 },
+            { day: 10, theme: "One-Hit Wednesday", title: "Dexys Midnight Runners - Come On Eileen", videoId: "rVmtbO8Awh4", shoutout: "Day 10: One-Hit Wednesday delivers the Celtic folk runaway train of dungarees, fiddles, and tempo shifts.", q: "Which prominent traditional folk instrument drives the intro and hooks of 'Come On Eileen'?", opts: ["Accordion", "Bagpipes", "Fiddle", "Tin whistle"], ans: 2 },
+            { day: 11, theme: "Throwback Thursday", title: "Outkast - Hey Ya!", videoId: "PWgvGjAhvIw", shoutout: "Day 11: Throwback Thursday with André 3000's unstoppable pop anthem that took over 2003.", q: "What famous consumer item did Polaroid issue a public statement about following this song?", opts: ["Sunglasses", "Polaroid film (warning not to shake it)", "Color printer paper", "Disposable cameras"], ans: 1 },
+            { day: 12, theme: "Funk Friday", title: "Kool & The Gang - Get Down On It", videoId: "qchPLaiKocI", shoutout: "Day 12: Funk Friday brings the ultimate crowd-moving baseline to launch the second weekend.", q: "In what year did Kool & The Gang release 'Get Down On It' on their album 'Something Special'?", opts: ["1977", "1981", "1985", "1989"], ans: 1 },
+            { day: 13, theme: "80s Synth Saturday", title: "Tears for Fears - Everybody Wants to Rule the World", videoId: "aGCdLKXNF3w", shoutout: "Day 13: 80s Synth Saturday with driving 12/8 shuffle drums and sparkling Roland synthesizers.", q: "What shuffle time signature gives this 1985 hit its driving, locomotive rhythm?", opts: ["4/4 straight", "3/4 waltz", "12/8 shuffle", "6/8 ballad"], ans: 2 },
+            { day: 14, theme: "Sunday Chill", title: "Paul Simon - You Can Call Me Al", videoId: "uq-gYOrU8bA", shoutout: "Day 14: Sunday Chill from Graceland, spotlighting Bakithi Kumalo's iconic reverse bass solo.", q: "Who co-starred alongside Paul Simon in the famous deadpan music video?", opts: ["Steve Martin", "Chevy Chase", "Bill Murray", "Dan Aykroyd"], ans: 1 },
+            { day: 15, theme: "Motown Monday", title: "Marvin Gaye - What's Going On", videoId: "H-kA3UtBj4M", shoutout: "Day 15: Motown Monday brings Marvin Gaye's masterpiece that redefined socially conscious soul.", q: "Which Motown head famously called this recording 'the worst record I ever heard' before it hit #1?", opts: ["Berry Gordy", "Smokey Robinson", "Quincy Jones", "Clarence Avant"], ans: 0 },
+            { day: 16, theme: "Timeless Tuesday", title: "Queen - Don't Stop Me Now", videoId: "HgzGwKwLmgM", shoutout: "Day 16: Timeless Tuesday delivers Freddie Mercury's buoyant piano tour de force.", q: "A 2015 cognitive neuroscience study rated this track as what?", opts: ["The most relaxing song", "The world's happiest song", "The most mathematically complex pop track", "The most covered UK single"], ans: 1 },
+            { day: 17, theme: "One-Hit Wednesday", title: "Soft Cell - Tainted Love", videoId: "XZVpR3Pk-r8", shoutout: "Day 17: One-Hit Wednesday synth-pop minimalism that conquered global radio in 1981.", q: "Who recorded the original 1964 Northern Soul version of 'Tainted Love'?", opts: ["Gloria Jones", "Dusty Springfield", "Martha Reeves", "Candi Staton"], ans: 0 },
+            { day: 18, theme: "Throwback Thursday", title: "Nirvana - In Bloom", videoId: "PbgKEjNBHqM", shoutout: "Day 18: Throwback Thursday with Kurt Cobain's satire of fake fans dressed in 1960s TV suits.", q: "Who hosted the mock 1960s variety show in the 'In Bloom' video?", opts: ["Ed Sullivan", "Doug Llewelyn", "Kurt Loder", "Rick Rubin"], ans: 1 },
+            { day: 19, theme: "Funk Friday", title: "The Commodores - Brick House", videoId: "rrBx6mAW3Zg", shoutout: "Day 19: Funk Friday brings heavy bass and horns while Lionel Richie took a breather.", q: "Which member of The Commodores sang lead vocals on 'Brick House' instead of Lionel Richie?", opts: ["Walter Orange", "Milan Williams", "Ronald LaPread", "William King"], ans: 0 },
+            { day: 20, theme: "80s Synth Saturday", title: "Michael Jackson - Billie Jean", videoId: "Zi_XLOBDo_Y", shoutout: "Day 20: 80s Synth Saturday with the baseline that stopped the world in its tracks.", q: "During which 1983 televised television special did Michael debut the moonwalk to this song?", opts: ["Grammy Awards 1983", "Motown 25: Yesterday, Today, Forever", "Live Aid", "American Music Awards"], ans: 1 },
+            { day: 21, theme: "Sunday Chill", title: "Otis Redding - (Sittin' On) The Dock of the Bay", videoId: "rTVjnBo96Ug", shoutout: "Day 21: Sunday Chill on the Monterey Bay with Steve Cropper's guitar and whistling waves.", q: "What historic Billboard record did this song achieve in 1968?", opts: ["First #1 single to feature whistling", "First posthumous #1 single in US chart history", "Most weeks at #1 for a soul record", "First track recorded in one take"], ans: 1 },
+            { day: 22, theme: "Motown Monday", title: "Aretha Franklin - Respect", videoId: "6FOUqQt3Kg0", shoutout: "Day 22: Motown Monday with the Queen of Soul claiming ownership of Otis Redding's tune.", q: "Who originally wrote and recorded 'Respect' before Aretha turned it into an anthem?", opts: ["Sam Cooke", "Otis Redding", "Ray Charles", "Wilson Pickett"], ans: 1 },
+            { day: 23, theme: "Timeless Tuesday", title: "Tom Petty - Free Fallin'", videoId: "1lWJXDG2i0A", shoutout: "Day 23: Timeless Tuesday acoustic gold written in two days alongside Jeff Lynne.", q: "Which member of Electric Light Orchestra co-wrote and produced 'Free Fallin' with Petty?", opts: ["Jeff Lynne", "Roy Wood", "Richard Tandy", "Bev Bevan"], ans: 0 },
+            { day: 24, theme: "One-Hit Wednesday", title: "Chumbawamba - Tubthumping", videoId: "2H5uWRjFsGc", shoutout: "Day 24: One-Hit Wednesday with the anarchist collective that created the ultimate 90s party cheer.", q: "In what northern English city was the collective Chumbawamba originally formed in 1982?", opts: ["Burnley", "Manchester", "Liverpool", "Sheffield"], ans: 0 },
+            { day: 25, theme: "Throwback Thursday", title: "Red Hot Chili Peppers - Under the Bridge", videoId: "GLvohMXgcBo", shoutout: "Day 25: Throwback Thursday with John Frusciante's delicate Hendrix-style chord voicings.", q: "Producer Rick Rubin found the lyrics to 'Under the Bridge' where?", opts: ["Scrawled in Anthony Kiedis' personal notebook", "On a napkin at a recording studio", "In an old poetry magazine", "Written on the wall of Frusciante's room"], ans: 0 },
+            { day: 26, theme: "Funk Friday", title: "Chic - Good Times", videoId: "eKl6EZShaaw", shoutout: "Day 26: Funk Friday with Bernard Edwards' bass line that birthed hip-hop and inspired Queen.", q: "Which foundational hip-hop group sampled this bassline for 'Rapper's Delight'?", opts: ["Sugarhill Gang", "Grandmaster Flash", "Run-D.M.C.", "Afrika Bambaataa"], ans: 0 },
+            { day: 27, theme: "80s Synth Saturday", title: "Prince - 1999", videoId: "rblt256ZwkE", shoutout: "Day 27: 80s Synth Saturday with Prince and the Linn LM-1 drum machine preparing for the future.", q: "Which pioneering vintage drum machine powers the rhythm of '1999'?", opts: ["Roland TR-808", "Linn LM-1", "E-mu SP-1200", "Oberheim DMX"], ans: 1 },
+            { day: 28, theme: "Sunday Chill", title: "Bob Marley - Three Little Birds", videoId: "lan-P-_s1eA", shoutout: "Day 28: Sunday Chill acoustic roots reggae with a message that everything will be all right.", q: "What real-life creatures sitting by Marley's window inspired the title of the song?", opts: ["Canaries", "Pelicans", "Three little birds (partridges/pelicans)", "Parrots"], ans: 2 },
+            { day: 29, theme: "Wildcard Power Jam", title: "The Clash - Rock the Casbah", videoId: "bJ9r8LMU9bQ", shoutout: "Day 29: Wildcard Power Jam with punk titans embracing dance grooves, piano, and street energy.", q: "Which Clash member composed the signature piano, drum, and bass tracks for this song alone?", opts: ["Joe Strummer", "Mick Jones", "Topper Headon", "Paul Simonon"], ans: 2 },
+            { day: 30, theme: "Grand Finale", title: "Queen - Bohemian Rhapsody", videoId: "fJ9rUzIMcZQ", shoutout: "Day 30: Grand Finale of the monthly rotation! Operatic rock perfection that never gets old.", q: "Roughly how many vocal overdubs were recorded to create the operatic choir section?", opts: ["25", "75", "180", "500"], ans: 2 }
+        ];
+
         let defaultSuggestions = [
-            { id: "1", title: "Queen - Bohemian Rhapsody", videoId: "fJ9rUzIMcZQ", votes: 3 },
-            { id: "2", title: "Earth, Wind & Fire - September", videoId: "Gs069dndIYk", votes: 4 }
+            { id: "1", title: "Creedence Clearwater Revival - Fortunate Son", videoId: "ec0XKhAHR5I", votes: 3 },
+            { id: "2", title: "Toto - Africa", videoId: "FTQbiNvZqaY", votes: 4 }
         ];
 
         window.addEventListener('DOMContentLoaded', () => {
-            const savedSong = localStorage.getItem('udd_current_song');
-            if (savedSong) {
-                const data = JSON.parse(savedSong);
-                setSongDisplay(data.id, data.title, data.comment);
-            }
+            loadDailyTrack();
             renderVotingList();
         });
+
+        function getTodayIndex() {
+            const day = new Date().getDate();
+            return (day - 1) % TRACK_ROSTER.length;
+        }
+
+        function loadDailyTrack() {
+            const override = localStorage.getItem('udd_current_song');
+            const currentIndex = getTodayIndex();
+            const scheduledTrack = TRACK_ROSTER[currentIndex];
+
+            if (override) {
+                const data = JSON.parse(override);
+                setSongDisplay(data.id, data.title, data.comment);
+            } else {
+                setSongDisplay(scheduledTrack.videoId, scheduledTrack.title, scheduledTrack.shoutout);
+            }
+
+            renderTrivia(scheduledTrack);
+            renderTimeMachine(currentIndex);
+        }
 
         function setSongDisplay(id, title, comment) {
             document.getElementById('yt-frame').src = 'https://www.youtube.com/embed/' + id + '?enablejsapi=1';
             document.getElementById('display-title').textContent = title;
             document.getElementById('display-shoutout').textContent = comment;
+        }
+
+        function renderTrivia(track) {
+            document.getElementById('trivia-q').textContent = track.q;
+            const container = document.getElementById('trivia-options');
+            container.innerHTML = '';
+            document.getElementById('trivia-result').textContent = '';
+
+            track.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'trivia-btn';
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    const res = document.getElementById('trivia-result');
+                    if (idx === track.ans) {
+                        res.style.color = 'var(--success)';
+                        res.textContent = "Correct! Great ear for music history.";
+                    } else {
+                        res.style.color = 'var(--danger)';
+                        res.textContent = "Not quite! Try another answer.";
+                    }
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderTimeMachine(currentIndex) {
+            const list = document.getElementById('archive-list');
+            list.innerHTML = '';
+
+            for (let i = 0; i <= currentIndex; i++) {
+                const item = TRACK_ROSTER[i];
+                const div = document.createElement('div');
+                div.className = 'time-machine-item';
+                div.innerHTML = `
+                    <span><strong>Day ${item.day}:</strong> ${escapeHtml(item.title)}</span>
+                    <span style="color: var(--accent); font-size: 0.75rem;">▶ Play</span>
+                `;
+                div.onclick = () => {
+                    setSongDisplay(item.videoId, item.title, `[Time Machine - Day ${item.day}] ${item.shoutout}`);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                list.prepend(div);
+            }
         }
 
         function switchTab(tabName) {
@@ -306,17 +402,6 @@
         function toggleAdmin() {
             const ap = document.getElementById('panel-admin');
             ap.style.display = ap.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function checkTrivia(year, btn) {
-            const res = document.getElementById('trivia-result');
-            if (year === 1987) {
-                res.style.color = 'var(--success)';
-                res.textContent = "Correct! 1987 smash hit.";
-            } else {
-                res.style.color = 'var(--danger)';
-                res.textContent = "Not quite! Try another answer.";
-            }
         }
 
         function renderVotingList() {
@@ -339,11 +424,11 @@
             suggestions[index].votes += 1;
             if (suggestions[index].votes >= VOTE_THRESHOLD) {
                 const winner = suggestions[index];
-                setSongDisplay(winner.videoId, winner.title, "Promoted unanimously by fan voting!");
+                setSongDisplay(winner.videoId, winner.title, "Promoted unanimously by family consensus!");
                 localStorage.setItem('udd_current_song', JSON.stringify({
                     id: winner.videoId,
                     title: winner.title,
-                    comment: "Promoted unanimously by fan voting!"
+                    comment: "Promoted unanimously by family consensus!"
                 }));
                 suggestions.splice(index, 1);
                 alert("Consensus reached! Track promoted to Song of the Day.");
@@ -382,6 +467,13 @@
             localStorage.setItem('udd_current_song', JSON.stringify(songData));
             setSongDisplay(videoId, title, comment);
             alert("Song updated successfully via Bob's Admin Mode!");
+            toggleAdmin();
+        }
+
+        function resetToSchedule() {
+            localStorage.removeItem('udd_current_song');
+            loadDailyTrack();
+            alert("Reset to today's automated rotation track!");
             toggleAdmin();
         }
 
