@@ -8,7 +8,7 @@
     <!-- Open Graph / Messaging Rich Link Previews -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Uncle Dad's Song of the Day">
-    <meta property="og:description" content="Your daily curated modern music drop, trivia challenge, and archive.">
+    <meta property="og:description" content="Your daily curated modern music drop, trivia challenge, and live voting.">
     <meta property="og:image" content="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f3b5.png">
     <meta property="og:url" content="https://arduino-blade.github.io/song-of-the-day/">
 
@@ -21,6 +21,10 @@
 
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f3b5.png">
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f3b5.png">
+
+    <!-- Firebase SDKs (Compat for static GitHub Pages) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
     <style>
         :root {
@@ -147,7 +151,6 @@
         .section-panel h3 { font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--accent); }
         .section-panel p.subtext { color: var(--text-muted); font-size: 0.78rem; margin-bottom: 0.75rem; }
 
-        /* Trivia button styling with active/lock states */
         .trivia-btn {
             display: block;
             width: 100%;
@@ -166,7 +169,6 @@
         .trivia-btn.correct { background: rgba(34, 197, 94, 0.25); border-color: var(--success); color: #86efac; }
         .trivia-btn.incorrect { background: rgba(239, 68, 68, 0.25); border-color: var(--danger); color: #fca5a5; }
 
-        /* Time Machine search input */
         .archive-search-input {
             width: 100%;
             background: rgba(15, 23, 42, 0.9);
@@ -237,7 +239,6 @@
         }
         .primary-btn:hover { background: var(--accent-hover); }
 
-        /* Compact Footer with Admin & Beta Feedback */
         footer.app-footer {
             margin-top: 1.5rem;
             padding-top: 0.75rem;
@@ -303,7 +304,6 @@
         }
         .reset-btn:hover { background: rgba(239, 68, 68, 0.15); }
 
-        /* Modal */
         #install-modal {
             display: none;
             position: fixed;
@@ -373,7 +373,7 @@
 
         <div id="panel-voting" class="section-panel">
             <h3>Suggestion & Voting Board</h3>
-            <p class="subtext">Vote for upcoming tracks. Reaching 5 votes promotes instantly!</p>
+            <p class="subtext">Vote for upcoming tracks. Reaching 3 votes promotes live across all phones!</p>
             <div id="vote-list"></div>
             <div class="pitch-inputs">
                 <input type="text" id="pitch-title" placeholder="Pitch song (Title & Artist)..." />
@@ -382,7 +382,6 @@
             </div>
         </div>
 
-        <!-- Discreet, Smaller Admin Portal & Feedback in Footer -->
         <footer class="app-footer">
             <div class="footer-links">
                 <a href="mailto:your-email@example.com?subject=Uncle%20Dad's%20Beta%20Feedback" class="admin-subtle-toggle">💬 Send Beta Feedback</a>
@@ -403,7 +402,6 @@
         </footer>
     </div>
 
-    <!-- PWA Install Modal -->
     <div id="install-modal" onclick="closeInstallModal(event)">
         <div class="modal-card" onclick="event.stopPropagation()">
             <h3>📲 Add Uncle Dad's to Phone</h3>
@@ -416,8 +414,27 @@
     </div>
 
     <script>
-        const VOTE_THRESHOLD = 5;
+        // --- 1. CONSENSUS THRESHOLD (Lowered to 3 for Beta) ---
+        const VOTE_THRESHOLD = 3;
 
+        // --- 2. FIREBASE REALTIME INITIALIZATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzcgw5rzUbWERIhLinXv_cNZe9IkG9deM",
+            authDomain: "uncle-dads-song-of-the-day.firebaseapp.com",
+            databaseURL: "https://uncle-dads-song-of-the-day-default-rtdb.firebaseio.com",
+            projectId: "uncle-dads-song-of-the-day",
+            storageBucket: "uncle-dads-song-of-the-day.firebasestorage.app",
+            messagingSenderId: "19283963075",
+            appId: "1:19283963075:web:ba669cedd74ff153568676",
+            measurementId: "G-YRDD0TQ8ST"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const currentSongRef = db.ref('currentSong');
+        const suggestionsRef = db.ref('suggestions');
+
+        // --- 3. 30-DAY MODERN TRACK ROSTER ---
         const TRACK_ROSTER = [
             { day: 1, theme: "Modern Pop Monday", title: "Dua Lipa - Levitating", videoId: "TUVcZfQe-Kw", shoutout: "Day 1: Modern Pop Monday kicks off with Dua Lipa's infectious nu-disco groove!", q: "What subgenre revival drove the sound of Dua Lipa's Future Nostalgia album?", opts: ["Nu-Disco", "Grunge", "Country Pop", "Ska"], ans: 0 },
             { day: 2, theme: "Alt / Indie Tuesday", title: "Glass Animals - Heat Waves", videoId: "mRD0-GxqHVo", shoutout: "Day 2: Alt Tuesday brings the hypnotic sleeper hit that conquered global charts.", q: "How many weeks did 'Heat Waves' take to climb to #1 on the Billboard Hot 100?", opts: ["12 weeks", "28 weeks", "42 weeks", "59 weeks"], ans: 3 },
@@ -451,16 +468,14 @@
             { day: 30, theme: "Grand Finale", title: "Coldplay - Viva La Vida", videoId: "dvgZkm1xWPE", shoutout: "Day 30: Grand Finale of the monthly rotation! Orchestral strings, bells, and chanting crowds.", q: "Which instrument is conspicuously absent from 'Viva La Vida' unlike most Coldplay hits?", opts: ["Lead Guitar Solo", "String Quartet", "Tympani Drums", "Church Bells"], ans: 0 }
         ];
 
-        const defaultSuggestions = [
-            { id: "1", title: "Sabrina Carpenter - Espresso", videoId: "eVli-tstM5E", votes: 3 },
-            { id: "2", title: "Chappell Roan - Good Luck, Babe!", videoId: "1RKqOmSkGgM", votes: 4 }
-        ];
-
-        let currentActiveDayIndex = 0;
+        // --- 4. PRE-SEEDED DEMOS (Chappell Roan @ 2 votes -> 1 vote promotes live) ---
+        const PRESEEDED_DEMOS = {
+            "demo1": { title: "Sabrina Carpenter - Espresso", videoId: "eVli-tstM5E", votes: 1 },
+            "demo2": { title: "Chappell Roan - Good Luck, Babe!", videoId: "1RKqOmSkGgM", votes: 2 }
+        };
 
         window.addEventListener('DOMContentLoaded', () => {
-            loadDailyTrack();
-            renderVotingList();
+            initLiveSync();
         });
 
         function getTodayIndex() {
@@ -468,25 +483,31 @@
             return (day - 1) % TRACK_ROSTER.length;
         }
 
-        function loadDailyTrack() {
-            const override = localStorage.getItem('udd_current_song');
+        function initLiveSync() {
             const currentIndex = getTodayIndex();
-            currentActiveDayIndex = currentIndex;
             const scheduledTrack = TRACK_ROSTER[currentIndex];
 
-            if (override) {
-                try {
-                    const data = JSON.parse(override);
+            // 1. Live listener for active song (Bob override or consensus promotion)
+            currentSongRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.id) {
                     setSongDisplay(data.id, data.title, data.comment);
-                } catch(e) {
+                } else {
                     setSongDisplay(scheduledTrack.videoId, scheduledTrack.title, scheduledTrack.shoutout);
                 }
-            } else {
-                setSongDisplay(scheduledTrack.videoId, scheduledTrack.title, scheduledTrack.shoutout);
-            }
+                renderTrivia(scheduledTrack);
+                renderTimeMachine(currentIndex);
+            });
 
-            renderTrivia(scheduledTrack);
-            renderTimeMachine(currentIndex);
+            // 2. Live listener for suggestion board & voting
+            suggestionsRef.on('value', (snapshot) => {
+                let suggestions = snapshot.val();
+                if (!suggestions) {
+                    suggestionsRef.set(PRESEEDED_DEMOS);
+                    suggestions = PRESEEDED_DEMOS;
+                }
+                renderVotingList(suggestions);
+            });
         }
 
         function setSongDisplay(id, title, comment) {
@@ -495,6 +516,98 @@
             document.getElementById('display-shoutout').textContent = comment;
         }
 
+        // --- 5. REAL-TIME VOTING & LIVE PROMOTION ---
+        function renderVotingList(suggestions) {
+            const container = document.getElementById('vote-list');
+            const userVotes = JSON.parse(localStorage.getItem('udd_my_votes') || '[]');
+            container.innerHTML = '';
+
+            Object.keys(suggestions || {}).forEach((key) => {
+                const item = suggestions[key];
+                const hasVoted = userVotes.includes(key);
+                const div = document.createElement('div');
+                div.className = 'vote-item';
+                div.innerHTML = `
+                    <span><strong>${escapeHtml(item.title)}</strong> (${item.votes || 0} / ${VOTE_THRESHOLD} Votes)</span>
+                    <button class="vote-btn-local" style="${hasVoted ? 'opacity:0.5; cursor:not-allowed;' : ''}" 
+                            onclick="castVote('${key}')" ${hasVoted ? 'disabled' : ''}>
+                        ${hasVoted ? '✓ Voted' : '👍 Vote'}
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function castVote(suggestionKey) {
+            const userVotes = JSON.parse(localStorage.getItem('udd_my_votes') || '[]');
+            if (userVotes.includes(suggestionKey)) return;
+
+            userVotes.push(suggestionKey);
+            localStorage.setItem('udd_my_votes', JSON.stringify(userVotes));
+
+            const itemRef = db.ref('suggestions/' + suggestionKey);
+            itemRef.transaction((item) => {
+                if (item) {
+                    item.votes = (item.votes || 0) + 1;
+                    if (item.votes >= VOTE_THRESHOLD) {
+                        currentSongRef.set({
+                            id: item.videoId,
+                            title: item.title,
+                            comment: "Promoted live by family consensus!"
+                        });
+                        return null; // Removes winning track from board
+                    }
+                }
+                return item;
+            }, (error, committed) => {
+                if (committed) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+        }
+
+        function addPitch() {
+            const title = document.getElementById('pitch-title').value.trim();
+            const rawUrl = document.getElementById('pitch-url').value.trim();
+            if (!title) return;
+            const videoId = parseYouTubeId(rawUrl);
+
+            const newRef = suggestionsRef.push({
+                title: title,
+                videoId: videoId,
+                votes: 1
+            });
+            const userVotes = JSON.parse(localStorage.getItem('udd_my_votes') || '[]');
+            userVotes.push(newRef.key);
+            localStorage.setItem('udd_my_votes', JSON.stringify(userVotes));
+
+            document.getElementById('pitch-title').value = '';
+            document.getElementById('pitch-url').value = '';
+        }
+
+        // --- 6. BOB'S ADMIN MODE WITH REAL-TIME DATABASE BROADCAST ---
+        function saveAdminSong() {
+            const url = document.getElementById('admin-url').value;
+            const title = document.getElementById('admin-title').value || 'Featured Track';
+            const comment = document.getElementById('admin-comment').value || 'Curated rotation queue active.';
+            const videoId = parseYouTubeId(url);
+
+            currentSongRef.set({
+                id: videoId,
+                title: title,
+                comment: comment
+            });
+            toggleAdmin();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetToSchedule() {
+            currentSongRef.remove();
+            toggleAdmin();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- 7. TRIVIA & ARCHIVE ---
         function renderTrivia(track) {
             document.getElementById('trivia-q').textContent = track.q;
             const container = document.getElementById('trivia-options');
@@ -586,9 +699,7 @@
         }
 
         function switchTab(tabName) {
-            document.querySelectorAll('.section-panel').forEach(p => {
-                p.classList.remove('active');
-            });
+            document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('panel-' + tabName).classList.add('active');
             document.getElementById('tab-' + tabName + '-btn').classList.add('active');
@@ -598,74 +709,7 @@
             const ap = document.getElementById('panel-admin');
             const isHidden = ap.style.display === 'none' || ap.style.display === '';
             ap.style.display = isHidden ? 'block' : 'none';
-            if (isHidden) {
-                ap.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
-        function renderVotingList() {
-            const container = document.getElementById('vote-list');
-            const saved = localStorage.getItem('udd_suggestions');
-            const suggestions = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultSuggestions));
-            const userVotes = JSON.parse(localStorage.getItem('udd_my_votes') || '[]');
-            
-            container.innerHTML = '';
-            suggestions.forEach((item, index) => {
-                const hasVoted = userVotes.includes(item.id);
-                const div = document.createElement('div');
-                div.className = 'vote-item';
-                div.innerHTML = `
-                    <span><strong>${escapeHtml(item.title)}</strong> (${item.votes} / ${VOTE_THRESHOLD} Votes)</span>
-                    <button class="vote-btn-local" style="${hasVoted ? 'opacity:0.5; cursor:not-allowed;' : ''}" 
-                            onclick="castLocalVote(${index})" ${hasVoted ? 'disabled' : ''}>
-                        ${hasVoted ? '✓ Voted' : '👍 Vote'}
-                    </button>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function castLocalVote(index) {
-            const saved = localStorage.getItem('udd_suggestions');
-            let suggestions = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultSuggestions));
-            let userVotes = JSON.parse(localStorage.getItem('udd_my_votes') || '[]');
-            const track = suggestions[index];
-
-            if (userVotes.includes(track.id)) {
-                return;
-            }
-
-            track.votes += 1;
-            userVotes.push(track.id);
-            localStorage.setItem('udd_my_votes', JSON.stringify(userVotes));
-
-            if (track.votes >= VOTE_THRESHOLD) {
-                setSongDisplay(track.videoId, track.title, "Promoted unanimously by family consensus!");
-                localStorage.setItem('udd_current_song', JSON.stringify({
-                    id: track.videoId,
-                    title: track.title,
-                    comment: "Promoted unanimously by family consensus!"
-                }));
-                suggestions.splice(index, 1);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-
-            localStorage.setItem('udd_suggestions', JSON.stringify(suggestions));
-            renderVotingList();
-        }
-
-        function addPitch() {
-            const title = document.getElementById('pitch-title').value.trim();
-            const rawUrl = document.getElementById('pitch-url').value.trim();
-            if (!title) return;
-            const videoId = parseYouTubeId(rawUrl);
-            const saved = localStorage.getItem('udd_suggestions');
-            let suggestions = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultSuggestions));
-            suggestions.push({ id: Date.now().toString(), title: title, videoId: videoId, votes: 1 });
-            localStorage.setItem('udd_suggestions', JSON.stringify(suggestions));
-            document.getElementById('pitch-title').value = '';
-            document.getElementById('pitch-url').value = '';
-            renderVotingList();
+            if (isHidden) ap.scrollIntoView({ behavior: 'smooth' });
         }
 
         function parseYouTubeId(input) {
@@ -674,25 +718,6 @@
             if (input.length === 11) return input;
             const match = input.match(/(?:youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]*)/);
             return (match && match[1].length === 11) ? match[1] : 'TUVcZfQe-Kw';
-        }
-
-        function saveAdminSong() {
-            const url = document.getElementById('admin-url').value;
-            const title = document.getElementById('admin-title').value || 'Featured Track';
-            const comment = document.getElementById('admin-comment').value || 'Curated rotation queue active.';
-            const videoId = parseYouTubeId(url);
-            const songData = { id: videoId, title: title, comment: comment };
-            localStorage.setItem('udd_current_song', JSON.stringify(songData));
-            setSongDisplay(videoId, title, comment);
-            toggleAdmin();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function resetToSchedule() {
-            localStorage.removeItem('udd_current_song');
-            loadDailyTrack();
-            toggleAdmin();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         async function shareApp(platform) {
@@ -707,11 +732,8 @@
                     try {
                         await navigator.share(shareData);
                         return;
-                    } catch (e) {
-                        // User dismissed native sheet or unsupported
-                    }
+                    } catch (e) {}
                 }
-                // Fallback if browser doesn't support navigator.share
                 navigator.clipboard.writeText(shareData.url);
                 alert('App link copied to clipboard!');
                 return;
@@ -738,9 +760,7 @@
         function showInstallHelp() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => {
-                    deferredPrompt = null;
-                });
+                deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
             } else {
                 document.getElementById('install-modal').classList.add('active');
             }
