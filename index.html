@@ -7,65 +7,400 @@
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            --glass-bg: rgba(30, 41, 59, 0.75);
+            --glass-bg: rgba(30, 41, 59, 0.85);
             --glass-border: rgba(255, 255, 255, 0.12);
             --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --success: #22c55e;
+            --danger: #ef4444;
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: system-ui, -apple-system, sans-serif;
             background: var(--bg-gradient);
             color: var(--text-main);
             min-height: 100vh;
+            padding: 1.5rem 1rem;
             display: flex;
             justify-content: center;
-            align-items: center;
-            margin: 0;
-            padding: 1.5rem;
+            align-items: flex-start;
         }
         .app-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 620px;
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-radius: 1.75rem;
-            padding: 2.5rem;
+            border-radius: 1.5rem;
+            padding: 1.75rem;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-            text-align: center;
         }
-        h1 { font-size: 1.85rem; margin-bottom: 0.5rem; color: var(--accent); }
-        p { color: var(--text-muted); margin-bottom: 1.5rem; }
-        .module-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: left; margin-top: 1.5rem; }
-        .module-card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); padding: 1rem; border-radius: 1rem; }
-        .module-card h3 { font-size: 1rem; margin: 0 0 0.5rem 0; color: var(--accent); }
-        .module-card p { font-size: 0.8rem; margin: 0; color: var(--text-muted); }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+        header h1 { font-size: 1.4rem; color: var(--accent); }
+        .admin-toggle {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .admin-toggle:hover { color: var(--text-main); border-color: var(--accent); }
+        
+        /* Video Player Card */
+        .player-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background: #000;
+            margin-bottom: 0.85rem;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%; border: 0;
+        }
+        .track-meta h2 { font-size: 1.15rem; margin-bottom: 0.35rem; }
+        .track-meta p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; }
+        
+        .share-row { display: flex; gap: 0.5rem; margin-top: 0.85rem; }
+        .share-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.45rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        .share-btn:hover { background: rgba(56, 189, 248, 0.15); border-color: var(--accent); }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.65rem 0.5rem;
+            border-radius: 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--accent);
+            color: #0f172a;
+            border-color: var(--accent);
+        }
+
+        /* Panels */
+        .section-panel {
+            display: none;
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.25rem;
+        }
+        .section-panel.active { display: block; }
+        .section-panel h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent); }
+        .section-panel p.subtext { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.85rem; }
+
+        /* Trivia Styles */
+        .trivia-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.55rem 0.75rem;
+            margin-bottom: 0.4rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .trivia-btn:hover { border-color: var(--accent); }
+
+        /* Voting Styles */
+        .vote-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 0.65rem 0.75rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+        .pitch-inputs { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+        .pitch-inputs input {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        /* Admin Styles */
+        .admin-form input, .admin-form textarea {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.55rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.65rem;
+            font-size: 0.85rem;
+        }
+        .primary-btn {
+            width: 100%;
+            background: var(--accent);
+            color: #0f172a;
+            border: 0;
+            padding: 0.65rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .primary-btn:hover { background: var(--accent-hover); }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <h1>Uncle Dad's Song of the Day</h1>
-        <p>Curated track rotation queue, YouTube streaming, trivia & family voting hub[cite: 1]</p>
-        
-        <div class="module-grid">
-            <div class="module-card">
-                <h3>🎵 YouTube Player</h3>
-                <p>Live embedded player & parser[cite: 1]</p>
+        <header>
+            <h1>🎵 Uncle Dad's Song of the Day</h1>
+            <button class="admin-toggle" onclick="toggleAdmin()">Bob's Admin</button>
+        </header>
+
+        <!-- Player Card -->
+        <div class="player-card">
+            <div class="video-wrapper">
+                <iframe id="yt-frame" src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
-            <div class="module-card">
-                <h3>⏱️ Time Machine</h3>
-                <p>Archive drawer for past tracks[cite: 1]</p>
+            <div class="track-meta">
+                <h2 id="display-title">Rick Astley - Never Gonna Give You Up</h2>
+                <p id="display-shoutout">Curated track rotation queue active. Welcome to Uncle Dad's daily drop!</p>
             </div>
-            <div class="module-card">
-                <h3>❓ Daily Trivia</h3>
-                <p>3-question music trivia engine[cite: 1]</p>
+            <div class="share-row">
+                <button class="share-btn" onclick="shareApp('whatsapp')">💬 WhatsApp</button>
+                <button class="share-btn" onclick="shareApp('telegram')">✈️ Telegram</button>
+                <button class="share-btn" onclick="shareApp('copy')">📋 Copy Link</button>
             </div>
-            <div class="module-card">
-                <h3>🗳️ Voting Board</h3>
-                <p>Fan suggestions & consensus promotion[cite: 1]</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" id="tab-trivia-btn" onclick="switchTab('trivia')">❓ Trivia</button>
+            <button class="tab-btn" id="tab-machine-btn" onclick="switchTab('machine')">⏱️ Archive</button>
+            <button class="tab-btn" id="tab-voting-btn" onclick="switchTab('voting')">🗳️ Voting</button>
+        </div>
+
+        <!-- Trivia Panel -->
+        <div id="panel-trivia" class="section-panel active">
+            <h3>Daily Music Trivia</h3>
+            <p class="subtext" id="trivia-q">What year was this featured track released?</p>
+            <div id="trivia-options">
+                <button class="trivia-btn" onclick="checkTrivia(1987, this)">1987</button>
+                <button class="trivia-btn" onclick="checkTrivia(1991, this)">1991</button>
+                <button class="trivia-btn" onclick="checkTrivia(1984, this)">1984</button>
+            </div>
+            <p id="trivia-result" style="margin-top: 0.75rem; font-weight: bold; font-size: 0.85rem;"></p>
+        </div>
+
+        <!-- Time Machine Archive -->
+        <div id="panel-machine" class="section-panel">
+            <h3>Time Machine Archive</h3>
+            <p class="subtext">Browse past 30-day rotation entries.</p>
+            <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.8;">
+                <li>Day 29: Classic Rock Anthem - Led Zeppelin</li>
+                <li>Day 28: 90s Alternative Jam - Nirvana</li>
+                <li>Day 27: Motown Groove - Stevie Wonder</li>
+                <li>Day 26: 80s Synth Pop - Tears for Fears</li>
+            </ul>
+        </div>
+
+        <!-- Suggestion & Voting Board -->
+        <div id="panel-voting" class="section-panel">
+            <h3>Suggestion & Voting Board</h3>
+            <p class="subtext">Vote for upcoming tracks. Reaching 5 votes promotes instantly!</p>
+            <div id="vote-list"></div>
+            <div class="pitch-inputs">
+                <input type="text" id="pitch-title" placeholder="Pitch song (Title & Artist)..." />
+                <input type="text" id="pitch-url" placeholder="YouTube URL or ID..." />
+                <button class="primary-btn" style="width: auto; padding: 0.5rem 0.85rem;" onclick="addPitch()">Pitch</button>
+            </div>
+        </div>
+
+        <!-- Bob's Admin Panel -->
+        <div id="panel-admin" class="section-panel" style="margin-top: 1rem; border-color: var(--accent); display: none;">
+            <h3>Bob's Admin Mode</h3>
+            <div class="admin-form">
+                <input type="text" id="admin-url" placeholder="Paste YouTube URL or ID..." />
+                <input type="text" id="admin-title" placeholder="Song Title & Artist..." />
+                <textarea id="admin-comment" placeholder="Custom shout-out or commentary..."></textarea>
+                <button class="primary-btn" onclick="saveAdminSong()">Update Song of the Day</button>
             </div>
         </div>
     </div>
+
+    <script>
+        const VOTE_THRESHOLD = 5;
+        let defaultSuggestions = [
+            { id: "1", title: "Queen - Bohemian Rhapsody", videoId: "fJ9rUzIMcZQ", votes: 3 },
+            { id: "2", title: "Earth, Wind & Fire - September", videoId: "Gs069dndIYk", votes: 4 }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedSong = localStorage.getItem('udd_current_song');
+            if (savedSong) {
+                const data = JSON.parse(savedSong);
+                setSongDisplay(data.id, data.title, data.comment);
+            }
+            renderVotingList();
+        });
+
+        function setSongDisplay(id, title, comment) {
+            document.getElementById('yt-frame').src = 'https://www.youtube.com/embed/' + id + '?enablejsapi=1';
+            document.getElementById('display-title').textContent = title;
+            document.getElementById('display-shoutout').textContent = comment;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.section-panel').forEach(p => {
+                if (p.id !== 'panel-admin') p.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + tabName).classList.add('active');
+            document.getElementById('tab-' + tabName + '-btn').classList.add('active');
+        }
+
+        function toggleAdmin() {
+            const ap = document.getElementById('panel-admin');
+            ap.style.display = ap.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function checkTrivia(year, btn) {
+            const res = document.getElementById('trivia-result');
+            if (year === 1987) {
+                res.style.color = 'var(--success)';
+                res.textContent = "Correct! 1987 smash hit.";
+            } else {
+                res.style.color = 'var(--danger)';
+                res.textContent = "Not quite! Try another answer.";
+            }
+        }
+
+        function renderVotingList() {
+            const container = document.getElementById('vote-list');
+            const suggestions = JSON.parse(localStorage.getItem('udd_suggestions')) || defaultSuggestions;
+            container.innerHTML = '';
+            suggestions.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'vote-item';
+                div.innerHTML = `
+                    <span><strong>${escapeHtml(item.title)}</strong> (${item.votes} / ${VOTE_THRESHOLD} Votes)</span>
+                    <button class="admin-toggle" onclick="castLocalVote(${index})">👍 Vote</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function castLocalVote(index) {
+            let suggestions = JSON.parse(localStorage.getItem('udd_suggestions')) || defaultSuggestions;
+            suggestions[index].votes += 1;
+            if (suggestions[index].votes >= VOTE_THRESHOLD) {
+                const winner = suggestions[index];
+                setSongDisplay(winner.videoId, winner.title, "Promoted unanimously by fan voting!");
+                localStorage.setItem('udd_current_song', JSON.stringify({
+                    id: winner.videoId,
+                    title: winner.title,
+                    comment: "Promoted unanimously by fan voting!"
+                }));
+                suggestions.splice(index, 1);
+                alert("Consensus reached! Track promoted to Song of the Day.");
+            }
+            localStorage.setItem('udd_suggestions', JSON.stringify(suggestions));
+            renderVotingList();
+        }
+
+        function addPitch() {
+            const title = document.getElementById('pitch-title').value.trim();
+            const rawUrl = document.getElementById('pitch-url').value.trim();
+            if (!title) return alert("Please enter song title.");
+            const videoId = parseYouTubeId(rawUrl);
+            let suggestions = JSON.parse(localStorage.getItem('udd_suggestions')) || defaultSuggestions;
+            suggestions.push({ id: Date.now().toString(), title: title, videoId: videoId, votes: 1 });
+            localStorage.setItem('udd_suggestions', JSON.stringify(suggestions));
+            document.getElementById('pitch-title').value = '';
+            document.getElementById('pitch-url').value = '';
+            renderVotingList();
+        }
+
+        function parseYouTubeId(input) {
+            if (!input) return 'dQw4w9WgXcQ';
+            input = input.trim();
+            if (input.length === 11) return input;
+            const match = input.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
+            return (match && match[2].length === 11) ? match[2] : 'dQw4w9WgXcQ';
+        }
+
+        function saveAdminSong() {
+            const url = document.getElementById('admin-url').value;
+            const title = document.getElementById('admin-title').value || 'Featured Track';
+            const comment = document.getElementById('admin-comment').value || 'Curated rotation queue active.';
+            const videoId = parseYouTubeId(url);
+            const songData = { id: videoId, title: title, comment: comment };
+            localStorage.setItem('udd_current_song', JSON.stringify(songData));
+            setSongDisplay(videoId, title, comment);
+            alert("Song updated successfully via Bob's Admin Mode!");
+            toggleAdmin();
+        }
+
+        function shareApp(platform) {
+            const url = window.location.href;
+            const text = "Check out Uncle Dad's Song of the Day!";
+            if (platform === 'whatsapp') {
+                window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text + ' ' + url));
+            } else if (platform === 'telegram') {
+                window.open('https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text));
+            } else {
+                navigator.clipboard.writeText(url);
+                alert('Link copied to clipboard!');
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
+    </script>
 </body>
 </html>
