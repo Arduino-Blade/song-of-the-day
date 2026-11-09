@@ -332,11 +332,12 @@
             if (override) {
                 const data = JSON.parse(override);
                 setSongDisplay(data.id, data.title, data.comment);
+                renderTrivia(scheduledTrack);
             } else {
                 setSongDisplay(scheduledTrack.videoId, scheduledTrack.title, scheduledTrack.shoutout);
+                renderTrivia(scheduledTrack);
             }
 
-            renderTrivia(scheduledTrack);
             renderTimeMachine(currentIndex);
         }
 
@@ -374,20 +375,27 @@
             const list = document.getElementById('archive-list');
             list.innerHTML = '';
 
-            for (let i = 0; i <= currentIndex; i++) {
-                const item = TRACK_ROSTER[i];
+            // Renders all 30 days so every past and current track is playable
+            TRACK_ROSTER.forEach((item, idx) => {
+                const isToday = (idx === currentIndex);
                 const div = document.createElement('div');
                 div.className = 'time-machine-item';
+                div.style.borderLeft = isToday ? '3px solid var(--accent)' : '1px solid var(--glass-border)';
                 div.innerHTML = `
-                    <span><strong>Day ${item.day}:</strong> ${escapeHtml(item.title)}</span>
-                    <span style="color: var(--accent); font-size: 0.75rem;">▶ Play</span>
+                    <span>
+                        <strong>Day ${item.day}</strong> <span style="color:var(--text-muted);font-size:0.75rem;">(${item.theme})</span>: 
+                        ${escapeHtml(item.title)}
+                        ${isToday ? '<span style="color:var(--accent); font-weight:bold; margin-left:4px;">[TODAY]</span>' : ''}
+                    </span>
+                    <span style="color: var(--accent); font-size: 0.75rem; white-space:nowrap; margin-left:8px;">▶ Play</span>
                 `;
                 div.onclick = () => {
                     setSongDisplay(item.videoId, item.title, `[Time Machine - Day ${item.day}] ${item.shoutout}`);
+                    renderTrivia(item);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 };
-                list.prepend(div);
-            }
+                list.appendChild(div);
+            });
         }
 
         function switchTab(tabName) {
