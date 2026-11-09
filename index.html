@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uncle Dad's Song of the Day</title>
 
+    <!-- Open Graph / Messaging Rich Link Previews -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Uncle Dad's Song of the Day">
+    <meta property="og:description" content="Your daily curated modern music drop, trivia challenge, and archive.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f3b5.png">
+    <meta property="og:url" content="https://arduino-blade.github.io/song-of-the-day/">
+
+    <!-- Mobile App Configuration & PWA Icons -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Uncle Dad's">
@@ -139,6 +147,7 @@
         .section-panel h3 { font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--accent); }
         .section-panel p.subtext { color: var(--text-muted); font-size: 0.78rem; margin-bottom: 0.75rem; }
 
+        /* Trivia button styling with active/lock states */
         .trivia-btn {
             display: block;
             width: 100%;
@@ -151,8 +160,23 @@
             border-radius: 0.5rem;
             font-size: 0.82rem;
             cursor: pointer;
+            transition: all 0.2s;
         }
-        .trivia-btn:hover { border-color: var(--accent); }
+        .trivia-btn:not(:disabled):hover { border-color: var(--accent); }
+        .trivia-btn.correct { background: rgba(34, 197, 94, 0.25); border-color: var(--success); color: #86efac; }
+        .trivia-btn.incorrect { background: rgba(239, 68, 68, 0.25); border-color: var(--danger); color: #fca5a5; }
+
+        /* Time Machine search input */
+        .archive-search-input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.5rem 0.65rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+        }
 
         .time-machine-item {
             display: flex;
@@ -213,12 +237,20 @@
         }
         .primary-btn:hover { background: var(--accent-hover); }
 
-        /* Compact Admin Portal at Bottom */
+        /* Compact Footer with Admin & Beta Feedback */
         footer.app-footer {
             margin-top: 1.5rem;
             padding-top: 0.75rem;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .footer-links {
+            display: flex;
+            gap: 1.25rem;
+            align-items: center;
         }
         .admin-subtle-toggle {
             background: transparent;
@@ -226,12 +258,14 @@
             color: var(--text-muted);
             font-size: 0.72rem;
             cursor: pointer;
-            opacity: 0.5;
+            opacity: 0.6;
+            text-decoration: none;
             transition: opacity 0.2s;
         }
         .admin-subtle-toggle:hover { opacity: 1; color: var(--accent); }
 
         .admin-compact-panel {
+            width: 100%;
             background: rgba(15, 23, 42, 0.95);
             border: 1px solid var(--glass-border);
             border-radius: 0.75rem;
@@ -311,8 +345,8 @@
                 <p id="display-shoutout">Calibrating rotation queue...</p>
             </div>
             <div class="share-row">
+                <button class="share-btn" onclick="shareApp('native')">🚀 Share App</button>
                 <button class="share-btn" onclick="shareApp('whatsapp')">💬 WhatsApp</button>
-                <button class="share-btn" onclick="shareApp('telegram')">✈️ Telegram</button>
                 <button class="share-btn" onclick="shareApp('copy')">📋 Copy Link</button>
             </div>
         </div>
@@ -333,6 +367,7 @@
         <div id="panel-machine" class="section-panel">
             <h3>Time Machine Archive</h3>
             <p class="subtext">Browse past days in this month's rotation. Click any track to play it!</p>
+            <input type="text" id="archive-filter" class="archive-search-input" placeholder="🔍 Search songs, artists, or genres..." oninput="filterArchive()" />
             <div id="archive-list"></div>
         </div>
 
@@ -347,9 +382,13 @@
             </div>
         </div>
 
-        <!-- Discreet, Smaller Admin Portal at Bottom -->
+        <!-- Discreet, Smaller Admin Portal & Feedback in Footer -->
         <footer class="app-footer">
-            <button class="admin-subtle-toggle" onclick="toggleAdmin()">⚙️ Bob's Admin Portal</button>
+            <div class="footer-links">
+                <a href="mailto:your-email@example.com?subject=Uncle%20Dad's%20Beta%20Feedback" class="admin-subtle-toggle">💬 Send Beta Feedback</a>
+                <span style="color: rgba(255,255,255,0.2); font-size: 0.7rem;">•</span>
+                <button class="admin-subtle-toggle" onclick="toggleAdmin()">⚙️ Bob's Admin Portal</button>
+            </div>
 
             <div id="panel-admin" class="admin-compact-panel" style="display: none;">
                 <h4>Bob's Admin Portal</h4>
@@ -417,6 +456,8 @@
             { id: "2", title: "Chappell Roan - Good Luck, Babe!", videoId: "1RKqOmSkGgM", votes: 4 }
         ];
 
+        let currentActiveDayIndex = 0;
+
         window.addEventListener('DOMContentLoaded', () => {
             loadDailyTrack();
             renderVotingList();
@@ -430,6 +471,7 @@
         function loadDailyTrack() {
             const override = localStorage.getItem('udd_current_song');
             const currentIndex = getTodayIndex();
+            currentActiveDayIndex = currentIndex;
             const scheduledTrack = TRACK_ROSTER[currentIndex];
 
             if (override) {
@@ -457,31 +499,66 @@
             document.getElementById('trivia-q').textContent = track.q;
             const container = document.getElementById('trivia-options');
             container.innerHTML = '';
-            document.getElementById('trivia-result').textContent = '';
+            const res = document.getElementById('trivia-result');
+            res.textContent = '';
+
+            const storageKey = 'udd_trivia_played_day_' + track.day;
+            const previousPick = localStorage.getItem(storageKey);
 
             track.opts.forEach((opt, idx) => {
                 const btn = document.createElement('button');
                 btn.className = 'trivia-btn';
                 btn.textContent = opt;
+
+                if (previousPick !== null) {
+                    btn.disabled = true;
+                    if (idx === track.ans) btn.classList.add('correct');
+                    if (parseInt(previousPick) === idx && idx !== track.ans) btn.classList.add('incorrect');
+                }
+
                 btn.onclick = () => {
-                    const res = document.getElementById('trivia-result');
+                    localStorage.setItem(storageKey, idx);
+                    const allBtns = container.querySelectorAll('.trivia-btn');
+                    allBtns.forEach(b => b.disabled = true);
+
                     if (idx === track.ans) {
+                        btn.classList.add('correct');
                         res.style.color = 'var(--success)';
-                        res.textContent = "Correct! Great ear for music history.";
+                        res.textContent = "🎯 Spot on! Great ear for music history.";
                     } else {
+                        btn.classList.add('incorrect');
+                        allBtns[track.ans].classList.add('correct');
                         res.style.color = 'var(--danger)';
-                        res.textContent = "Not quite! Try another answer.";
+                        res.textContent = `❌ Missed it! The correct answer was: ${track.opts[track.ans]}`;
                     }
                 };
                 container.appendChild(btn);
             });
+
+            if (previousPick !== null) {
+                const picked = parseInt(previousPick);
+                if (picked === track.ans) {
+                    res.style.color = 'var(--success)';
+                    res.textContent = "🎯 You solved today's trivia challenge!";
+                } else {
+                    res.style.color = 'var(--danger)';
+                    res.textContent = `❌ You answered '${track.opts[picked]}'. Correct: ${track.opts[track.ans]}`;
+                }
+            }
         }
 
-        function renderTimeMachine(currentIndex) {
+        function renderTimeMachine(currentIndex, filterTerm = '') {
             const list = document.getElementById('archive-list');
             list.innerHTML = '';
+            const term = filterTerm.toLowerCase().trim();
 
             TRACK_ROSTER.forEach((item, idx) => {
+                if (term) {
+                    const matchTitle = item.title.toLowerCase().includes(term);
+                    const matchTheme = item.theme.toLowerCase().includes(term);
+                    if (!matchTitle && !matchTheme) return;
+                }
+
                 const isToday = (idx === currentIndex);
                 const div = document.createElement('div');
                 div.className = 'time-machine-item';
@@ -501,6 +578,11 @@
                 };
                 list.appendChild(div);
             });
+        }
+
+        function filterArchive() {
+            const term = document.getElementById('archive-filter').value;
+            renderTimeMachine(getTodayIndex(), term);
         }
 
         function switchTab(tabName) {
@@ -613,15 +695,33 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function shareApp(platform) {
-            const url = window.location.href;
-            const text = "Check out Uncle Dad's Song of the Day!";
+        async function shareApp(platform) {
+            const shareData = {
+                title: "Uncle Dad's Song of the Day",
+                text: "Check out Uncle Dad's Song of the Day! Daily music drop, trivia, and voting:",
+                url: window.location.href
+            };
+
+            if (platform === 'native') {
+                if (navigator.share) {
+                    try {
+                        await navigator.share(shareData);
+                        return;
+                    } catch (e) {
+                        // User dismissed native sheet or unsupported
+                    }
+                }
+                // Fallback if browser doesn't support navigator.share
+                navigator.clipboard.writeText(shareData.url);
+                alert('App link copied to clipboard!');
+                return;
+            }
+
             if (platform === 'whatsapp') {
-                window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text + ' ' + url));
-            } else if (platform === 'telegram') {
-                window.open('https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text));
+                window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(shareData.text + ' ' + shareData.url));
             } else {
-                navigator.clipboard.writeText(url);
+                navigator.clipboard.writeText(shareData.url);
+                alert('App link copied to clipboard!');
             }
         }
 
