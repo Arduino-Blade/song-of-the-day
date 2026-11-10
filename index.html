@@ -101,6 +101,18 @@
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%; border: 0;
         }
+        #embed-error-banner {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.95);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1.25rem;
+            z-index: 10;
+        }
         .track-meta h2 { font-size: 1.1rem; margin-bottom: 0.3rem; }
         .track-meta p { color: var(--text-muted); font-size: 0.82rem; line-height: 1.35; }
         
@@ -339,6 +351,11 @@
         <div class="player-card">
             <div class="video-wrapper">
                 <iframe id="yt-frame" src="https://www.youtube-nocookie.com/embed/TUVcZfQe-Kw?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                <div id="embed-error-banner">
+                    <p style="font-size:0.95rem; margin-bottom:0.35rem; color:#f8fafc;">⚠️ Video restricted by artist</p>
+                    <p style="color:var(--text-muted); font-size:0.78rem; margin-bottom:0.85rem;">Playback is only permitted directly on YouTube.</p>
+                    <a id="embed-error-link" href="#" target="_blank" class="primary-btn" style="text-decoration:none; padding:0.45rem 1rem; display:inline-block; font-size:0.8rem;">Watch on YouTube ↗</a>
+                </div>
             </div>
             <div class="track-meta">
                 <h2 id="display-title">Loading today's drop...</h2>
@@ -414,10 +431,8 @@
     </div>
 
     <script>
-        // --- 1. CONSENSUS THRESHOLD (Lowered to 3 for Beta) ---
         const VOTE_THRESHOLD = 3;
 
-        // --- 2. FIREBASE REALTIME INITIALIZATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyAzcgw5rzUbWERIhLinXv_cNZe9IkG9deM",
             authDomain: "uncle-dads-song-of-the-day.firebaseapp.com",
@@ -434,7 +449,6 @@
         const currentSongRef = db.ref('currentSong');
         const suggestionsRef = db.ref('suggestions');
 
-        // --- 3. 30-DAY MODERN TRACK ROSTER ---
         const TRACK_ROSTER = [
             { day: 1, theme: "Modern Pop Monday", title: "Dua Lipa - Levitating", videoId: "TUVcZfQe-Kw", shoutout: "Day 1: Modern Pop Monday kicks off with Dua Lipa's infectious nu-disco groove!", q: "What subgenre revival drove the sound of Dua Lipa's Future Nostalgia album?", opts: ["Nu-Disco", "Grunge", "Country Pop", "Ska"], ans: 0 },
             { day: 2, theme: "Alt / Indie Tuesday", title: "Glass Animals - Heat Waves", videoId: "mRD0-GxqHVo", shoutout: "Day 2: Alt Tuesday brings the hypnotic sleeper hit that conquered global charts.", q: "How many weeks did 'Heat Waves' take to climb to #1 on the Billboard Hot 100?", opts: ["12 weeks", "28 weeks", "42 weeks", "59 weeks"], ans: 3 },
@@ -468,11 +482,12 @@
             { day: 30, theme: "Grand Finale", title: "Coldplay - Viva La Vida", videoId: "dvgZkm1xWPE", shoutout: "Day 30: Grand Finale of the monthly rotation! Orchestral strings, bells, and chanting crowds.", q: "Which instrument is conspicuously absent from 'Viva La Vida' unlike most Coldplay hits?", opts: ["Lead Guitar Solo", "String Quartet", "Tympani Drums", "Church Bells"], ans: 0 }
         ];
 
-        // --- 4. PRE-SEEDED DEMOS (Chappell Roan @ 2 votes -> 1 vote promotes live) ---
         const PRESEEDED_DEMOS = {
             "demo1": { title: "Sabrina Carpenter - Espresso", videoId: "eVli-tstM5E", votes: 1 },
             "demo2": { title: "Chappell Roan - Good Luck, Babe!", videoId: "1RKqOmSkGgM", votes: 2 }
         };
+
+        let currentActiveDayIndex = 0;
 
         window.addEventListener('DOMContentLoaded', () => {
             initLiveSync();
@@ -485,9 +500,9 @@
 
         function initLiveSync() {
             const currentIndex = getTodayIndex();
+            currentActiveDayIndex = currentIndex;
             const scheduledTrack = TRACK_ROSTER[currentIndex];
 
-            // 1. Live listener for active song (Bob override or consensus promotion)
             currentSongRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data && data.id) {
@@ -499,7 +514,6 @@
                 renderTimeMachine(currentIndex);
             });
 
-            // 2. Live listener for suggestion board & voting
             suggestionsRef.on('value', (snapshot) => {
                 let suggestions = snapshot.val();
                 if (!suggestions) {
@@ -511,12 +525,28 @@
         }
 
         function setSongDisplay(id, title, comment) {
+            const errorBanner = document.getElementById('embed-error-banner');
+            if (errorBanner) errorBanner.style.display = 'none';
+
             document.getElementById('yt-frame').src = 'https://www.youtube-nocookie.com/embed/' + id + '?enablejsapi=1';
             document.getElementById('display-title').textContent = title;
             document.getElementById('display-shoutout').textContent = comment;
+
+            const errorLink = document.getElementById('embed-error-link');
+            if (errorLink) errorLink.href = 'https://www.youtube.com/watch?v=' + id;
         }
 
-        // --- 5. REAL-TIME VOTING & LIVE PROMOTION ---
+        // Catch YouTube embed restrictions (100 = not found, 101/150 = embed blocked)
+        window.addEventListener('message', (event) => {
+            try {
+                const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                if (data.event === 'onError' && (data.info === 101 || data.info === 150 || data.info === 100)) {
+                    const errorBanner = document.getElementById('embed-error-banner');
+                    if (errorBanner) errorBanner.style.display = 'flex';
+                }
+            } catch (e) {}
+        });
+
         function renderVotingList(suggestions) {
             const container = document.getElementById('vote-list');
             const userVotes = JSON.parse(localStorage.getItem('udd_my_votes') || '[]');
@@ -555,7 +585,7 @@
                             title: item.title,
                             comment: "Promoted live by family consensus!"
                         });
-                        return null; // Removes winning track from board
+                        return null;
                     }
                 }
                 return item;
@@ -585,7 +615,6 @@
             document.getElementById('pitch-url').value = '';
         }
 
-        // --- 6. BOB'S ADMIN MODE WITH REAL-TIME DATABASE BROADCAST ---
         function saveAdminSong() {
             const url = document.getElementById('admin-url').value;
             const title = document.getElementById('admin-title').value || 'Featured Track';
@@ -607,7 +636,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // --- 7. TRIVIA & ARCHIVE ---
         function renderTrivia(track) {
             document.getElementById('trivia-q').textContent = track.q;
             const container = document.getElementById('trivia-options');
