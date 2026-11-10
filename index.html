@@ -317,10 +317,11 @@
         }
         .reset-btn:hover { background: rgba(239, 68, 68, 0.15); }
 
-        #install-modal {
+        /* Universal Modals */
+        .modal-overlay {
             display: none;
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            inset: 0;
             background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(8px);
             z-index: 9999;
@@ -328,7 +329,7 @@
             justify-content: center;
             padding: 1.25rem;
         }
-        #install-modal.active { display: flex; }
+        .modal-overlay.active { display: flex; }
         .modal-card {
             background: #1e293b;
             border: 1px solid var(--glass-border);
@@ -407,10 +408,10 @@
             </div>
         </div>
 
-        <!-- Protected Admin Portal in Footer -->
+        <!-- Protected Admin Portal & Feedback in Footer -->
         <footer class="app-footer">
             <div class="footer-links">
-                <a href="mailto:bfisher114@gmail.com?subject=Uncle%20Dad's%20Beta%20Feedback" class="admin-subtle-toggle">💬 Send Beta Feedback</a>
+                <button class="admin-subtle-toggle" onclick="openFeedbackModal()">💬 Send Beta Feedback</button>
                 <span style="color: rgba(255,255,255,0.2); font-size: 0.7rem;">•</span>
                 <button class="admin-subtle-toggle" onclick="toggleAdmin()">🔒 Bob's Admin Portal</button>
             </div>
@@ -444,8 +445,23 @@
         </footer>
     </div>
 
+    <!-- In-App Beta Feedback Modal -->
+    <div id="feedback-modal" class="modal-overlay" onclick="closeFeedbackModal(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <h3 style="margin-bottom: 0.4rem;">💬 Send Beta Feedback</h3>
+            <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.75rem;">Found a bug, have an idea, or want to suggest a song? Send a note directly to Bob:</p>
+            <input type="text" id="feedback-name" placeholder="Your Name or Nickname (optional)" style="width: 100%; background: rgba(15,23,42,0.9); border: 1px solid var(--glass-border); color: #fff; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 0.5rem;" />
+            <textarea id="feedback-msg" rows="4" placeholder="What's on your mind?..." style="width: 100%; background: rgba(15,23,42,0.9); border: 1px solid var(--glass-border); color: #fff; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.8rem; font-family: inherit; margin-bottom: 0.75rem;"></textarea>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="primary-btn" style="flex: 1;" onclick="submitFeedback()">Send Note</button>
+                <button class="primary-btn reset-btn" style="width: auto; padding: 0.5rem 1rem;" onclick="document.getElementById('feedback-modal').classList.remove('active')">Cancel</button>
+            </div>
+            <p id="feedback-status" style="font-size: 0.75rem; text-align: center; margin-top: 0.5rem;"></p>
+        </div>
+    </div>
+
     <!-- PWA Installation Modal -->
-    <div id="install-modal" onclick="closeInstallModal(event)">
+    <div id="install-modal" class="modal-overlay" onclick="closeInstallModal(event)">
         <div class="modal-card" onclick="event.stopPropagation()">
             <h3>📲 Add Uncle Dad's to Phone</h3>
             <ol>
@@ -477,6 +493,7 @@
         const currentSongRef = db.ref('currentSong');
         const suggestionsRef = db.ref('suggestions');
         const cooldownRef = db.ref('cooldownUntil');
+        const feedbackRef = db.ref('feedback');
 
         let activeCooldownTarget = 0;
         let countdownInterval = null;
@@ -860,6 +877,54 @@
 
             ap.style.display = isOpening ? 'block' : 'none';
             if (isOpening) ap.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- IN-APP FEEDBACK LOGIC ---
+        function openFeedbackModal() {
+            const modal = document.getElementById('feedback-modal');
+            const status = document.getElementById('feedback-status');
+            if (status) status.textContent = '';
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeFeedbackModal(e) {
+            const modal = document.getElementById('feedback-modal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function submitFeedback() {
+            const nameInput = document.getElementById('feedback-name');
+            const msgInput = document.getElementById('feedback-msg');
+            const status = document.getElementById('feedback-status');
+            const message = msgInput.value.trim();
+            const sender = nameInput.value.trim() || 'Anonymous Tester';
+
+            if (!message) {
+                status.style.color = 'var(--danger)';
+                status.textContent = 'Please type a message before sending.';
+                return;
+            }
+
+            status.style.color = 'var(--accent)';
+            status.textContent = 'Sending...';
+
+            feedbackRef.push({
+                sender: sender,
+                message: message,
+                device: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                msgInput.value = '';
+                nameInput.value = '';
+                status.style.color = 'var(--success)';
+                status.textContent = '✅ Thanks! Your note was sent straight to Bob.';
+                setTimeout(() => {
+                    document.getElementById('feedback-modal').classList.remove('active');
+                }, 1500);
+            }).catch((err) => {
+                status.style.color = 'var(--danger)';
+                status.textContent = 'Error sending: ' + err.message;
+            });
         }
 
         function parseYouTubeId(input) {
