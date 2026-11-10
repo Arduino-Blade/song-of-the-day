@@ -25,6 +25,7 @@
     <!-- Firebase SDKs (Compat for static GitHub Pages) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
 
     <style>
         :root {
@@ -575,6 +576,7 @@
             userVotes.push(suggestionKey);
             localStorage.setItem('udd_my_votes', JSON.stringify(userVotes));
 
+            trackEvent('cast_vote', { suggestion_id: suggestionKey });
             const itemRef = db.ref('suggestions/' + suggestionKey);
             itemRef.transaction((item) => {
                 if (item) {
@@ -602,6 +604,7 @@
             if (!title) return;
             const videoId = parseYouTubeId(rawUrl);
 
+            trackEvent('pitch_submitted', { song_title: title });
             const newRef = suggestionsRef.push({
                 title: title,
                 videoId: videoId,
@@ -659,6 +662,7 @@
 
                 btn.onclick = () => {
                     localStorage.setItem(storageKey, idx);
+                    trackEvent('trivia_answered', { day: track.day, is_correct: (idx === track.ans) });
                     const allBtns = container.querySelectorAll('.trivia-btn');
                     allBtns.forEach(b => b.disabled = true);
 
@@ -749,6 +753,7 @@
         }
 
         async function shareApp(platform) {
+            trackEvent('share_clicked', { platform: platform });
             const shareData = {
                 title: "Uncle Dad's Song of the Day",
                 text: "Check out Uncle Dad's Song of the Day! Daily music drop, trivia, and voting:",
