@@ -392,6 +392,13 @@
         <div id="panel-voting" class="section-panel">
             <h3>Suggestion & Voting Board</h3>
             <p class="subtext" id="voting-subtitle">Vote for upcoming tracks. Reaching 3 votes promotes live across all phones!</p>
+            
+            <!-- Live Cooldown Countdown Banner -->
+            <div id="cooldown-banner" style="display: none; background: rgba(56, 189, 248, 0.12); border: 1px solid var(--accent); border-radius: 0.6rem; padding: 0.6rem 0.8rem; margin-bottom: 0.75rem; text-align: center;">
+                <span style="font-size: 0.8rem; color: var(--accent); font-weight: 600;">⏳ Next Promotion Unlocks In: </span>
+                <span id="cooldown-timer-text" style="font-family: monospace; font-size: 0.95rem; font-weight: bold; color: #fff;">00:00</span>
+            </div>
+
             <div id="vote-list"></div>
             <div class="pitch-inputs">
                 <input type="text" id="pitch-title" placeholder="Pitch song (Title & Artist)..." />
@@ -400,7 +407,7 @@
             </div>
         </div>
 
-        <!-- Password-Protected Admin Portal in Footer -->
+        <!-- Protected Admin Portal in Footer -->
         <footer class="app-footer">
             <div class="footer-links">
                 <a href="mailto:your-email@example.com?subject=Uncle%20Dad's%20Beta%20Feedback" class="admin-subtle-toggle">💬 Send Beta Feedback</a>
@@ -423,7 +430,7 @@
                     <p id="admin-auth-error" style="color: var(--danger); font-size: 0.72rem; margin-top: 0.4rem;"></p>
                 </div>
 
-                <!-- Admin Controls (Exposed after login) -->
+                <!-- Admin Controls -->
                 <div id="admin-controls" style="display: none;">
                     <input type="text" id="admin-url" placeholder="YouTube URL or ID..." />
                     <input type="text" id="admin-title" placeholder="Song Title & Artist..." />
@@ -469,6 +476,10 @@
         const auth = firebase.auth();
         const currentSongRef = db.ref('currentSong');
         const suggestionsRef = db.ref('suggestions');
+        const cooldownRef = db.ref('cooldownUntil');
+
+        let activeCooldownTarget = 0;
+        let countdownInterval = null;
 
         // --- 30-DAY MODERN TRACK ROSTER ---
         const TRACK_ROSTER = [
@@ -527,7 +538,6 @@
                 const data = snapshot.val();
                 if (data && data.id) {
                     setSongDisplay(data.id, data.title, data.comment);
-                    // If consensus promoted a song with AI trivia, render that; otherwise use schedule
                     if (data.trivia) {
                         renderTrivia({ ...data.trivia, day: 'winner_' + data.id });
                     } else {
@@ -548,6 +558,39 @@
                 }
                 renderVotingList(suggestions);
             });
+
+            cooldownRef.on('value', (snapshot) => {
+                activeCooldownTarget = snapshot.val() || 0;
+                handleCooldownDisplay();
+            });
+        }
+
+        function handleCooldownDisplay() {
+            clearInterval(countdownInterval);
+            const banner = document.getElementById('cooldown-banner');
+            const timerText = document.getElementById('cooldown-timer-text');
+            if (!banner || !timerText) return;
+
+            function updateTicker() {
+                const now = Date.now();
+                const remainingMs = activeCooldownTarget - now;
+
+                if (remainingMs > 0) {
+                    banner.style.display = 'block';
+                    const totalSecs = Math.ceil(remainingMs / 1000);
+                    const mins = String(Math.floor(totalSecs / 60)).padStart(2, '0');
+                    const secs = String(totalSecs % 60).padStart(2, '0');
+                    timerText.textContent = `${mins}:${secs}`;
+                } else {
+                    banner.style.display = 'none';
+                    clearInterval(countdownInterval);
+                }
+            }
+
+            updateTicker();
+            if (activeCooldownTarget > Date.now()) {
+                countdownInterval = setInterval(updateTicker, 1000);
+            }
         }
 
         function setSongDisplay(id, title, comment) {
@@ -598,6 +641,7 @@
             errorEl.textContent = '';
 
             try {
+                await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
                 await auth.signInWithEmailAndPassword(email, password);
                 document.getElementById('admin-password').value = '';
             } catch (err) {
@@ -684,20 +728,8 @@
             itemRef.transaction((item) => {
                 if (item) {
                     item.votes = (item.votes || 0) + 1;
-                    if (item.votes >= VOTE_THRESHOLD) {
-                        currentSongRef.set({
-                            id: item.videoId,
-                            title: item.title,
-                            comment: "Promoted live by family consensus!"
-                        });
-                        return null;
-                    }
                 }
                 return item;
-            }, (error, committed) => {
-                if (committed) {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
             });
         }
 
@@ -820,9 +852,14 @@
 
         function toggleAdmin() {
             const ap = document.getElementById('panel-admin');
-            const isHidden = ap.style.display === 'none' || ap.style.display === '';
-            ap.style.display = isHidden ? 'block' : 'none';
-            if (isHidden) ap.scrollIntoView({ behavior: 'smooth' });
+            const isOpening = ap.style.display === 'none' || ap.style.display === '';
+            
+            if (!isOpening && auth.currentUser) {
+                auth.signOut();
+            }
+
+            ap.style.display = isOpening ? 'block' : 'none';
+            if (isOpening) ap.scrollIntoView({ behavior: 'smooth' });
         }
 
         function parseYouTubeId(input) {
