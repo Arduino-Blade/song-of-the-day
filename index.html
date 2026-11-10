@@ -25,7 +25,7 @@
     <!-- Firebase SDKs (Compat for static GitHub Pages) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
     <style>
         :root {
@@ -283,7 +283,7 @@
             background: rgba(15, 23, 42, 0.95);
             border: 1px solid var(--glass-border);
             border-radius: 0.75rem;
-            padding: 0.75rem;
+            padding: 0.85rem;
             margin-top: 0.75rem;
             text-align: left;
         }
@@ -297,9 +297,9 @@
             background: rgba(30, 41, 59, 0.85);
             border: 1px solid var(--glass-border);
             color: var(--text-main);
-            padding: 0.4rem 0.5rem;
+            padding: 0.45rem 0.5rem;
             border-radius: 0.4rem;
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.45rem;
             font-size: 0.75rem;
             font-family: inherit;
         }
@@ -391,7 +391,7 @@
 
         <div id="panel-voting" class="section-panel">
             <h3>Suggestion & Voting Board</h3>
-            <p class="subtext">Vote for upcoming tracks. Reaching 3 votes promotes live across all phones!</p>
+            <p class="subtext" id="voting-subtitle">Vote for upcoming tracks. Reaching 3 votes promotes live across all phones!</p>
             <div id="vote-list"></div>
             <div class="pitch-inputs">
                 <input type="text" id="pitch-title" placeholder="Pitch song (Title & Artist)..." />
@@ -400,26 +400,44 @@
             </div>
         </div>
 
+        <!-- Password-Protected Admin Portal in Footer -->
         <footer class="app-footer">
             <div class="footer-links">
                 <a href="mailto:your-email@example.com?subject=Uncle%20Dad's%20Beta%20Feedback" class="admin-subtle-toggle">💬 Send Beta Feedback</a>
                 <span style="color: rgba(255,255,255,0.2); font-size: 0.7rem;">•</span>
-                <button class="admin-subtle-toggle" onclick="toggleAdmin()">⚙️ Bob's Admin Portal</button>
+                <button class="admin-subtle-toggle" onclick="toggleAdmin()">🔒 Bob's Admin Portal</button>
             </div>
 
             <div id="panel-admin" class="admin-compact-panel" style="display: none;">
-                <h4>Bob's Admin Portal</h4>
-                <input type="text" id="admin-url" placeholder="YouTube URL or ID..." />
-                <input type="text" id="admin-title" placeholder="Song Title & Artist..." />
-                <textarea id="admin-comment" rows="2" placeholder="Custom shout-out or commentary..."></textarea>
-                <div class="admin-btn-row">
-                    <button class="primary-btn admin-action-btn" onclick="saveAdminSong()">Update Today's Song</button>
-                    <button class="primary-btn reset-btn admin-action-btn" onclick="resetToSchedule()">Reset Schedule</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h4 style="margin: 0;">🔒 Bob's Admin Portal</h4>
+                    <button id="admin-logout-btn" class="admin-subtle-toggle" style="display: none; color: var(--danger); opacity: 1;" onclick="adminSignOut()">Sign Out</button>
+                </div>
+
+                <!-- Admin Sign In Gate -->
+                <div id="admin-auth-gate">
+                    <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.5rem;">Sign in with administrator credentials to manage track drops.</p>
+                    <input type="email" id="admin-email" placeholder="Admin email..." />
+                    <input type="password" id="admin-password" placeholder="Admin password..." />
+                    <button class="primary-btn admin-action-btn" style="width: 100%; margin-top: 0.2rem;" onclick="adminSignIn()">Sign In</button>
+                    <p id="admin-auth-error" style="color: var(--danger); font-size: 0.72rem; margin-top: 0.4rem;"></p>
+                </div>
+
+                <!-- Admin Controls (Exposed after login) -->
+                <div id="admin-controls" style="display: none;">
+                    <input type="text" id="admin-url" placeholder="YouTube URL or ID..." />
+                    <input type="text" id="admin-title" placeholder="Song Title & Artist..." />
+                    <textarea id="admin-comment" rows="2" placeholder="Custom shout-out or commentary..."></textarea>
+                    <div class="admin-btn-row">
+                        <button class="primary-btn admin-action-btn" onclick="saveAdminSong()">Update Today's Song</button>
+                        <button class="primary-btn reset-btn admin-action-btn" onclick="resetToSchedule()">Reset Schedule</button>
+                    </div>
                 </div>
             </div>
         </footer>
     </div>
 
+    <!-- PWA Installation Modal -->
     <div id="install-modal" onclick="closeInstallModal(event)">
         <div class="modal-card" onclick="event.stopPropagation()">
             <h3>📲 Add Uncle Dad's to Phone</h3>
@@ -434,6 +452,7 @@
     <script>
         const VOTE_THRESHOLD = 3;
 
+        // --- FIREBASE INITIALIZATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyAzcgw5rzUbWERIhLinXv_cNZe9IkG9deM",
             authDomain: "uncle-dads-song-of-the-day.firebaseapp.com",
@@ -447,9 +466,11 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const auth = firebase.auth();
         const currentSongRef = db.ref('currentSong');
         const suggestionsRef = db.ref('suggestions');
 
+        // --- 30-DAY MODERN TRACK ROSTER ---
         const TRACK_ROSTER = [
             { day: 1, theme: "Modern Pop Monday", title: "Dua Lipa - Levitating", videoId: "TUVcZfQe-Kw", shoutout: "Day 1: Modern Pop Monday kicks off with Dua Lipa's infectious nu-disco groove!", q: "What subgenre revival drove the sound of Dua Lipa's Future Nostalgia album?", opts: ["Nu-Disco", "Grunge", "Country Pop", "Ska"], ans: 0 },
             { day: 2, theme: "Alt / Indie Tuesday", title: "Glass Animals - Heat Waves", videoId: "mRD0-GxqHVo", shoutout: "Day 2: Alt Tuesday brings the hypnotic sleeper hit that conquered global charts.", q: "How many weeks did 'Heat Waves' take to climb to #1 on the Billboard Hot 100?", opts: ["12 weeks", "28 weeks", "42 weeks", "59 weeks"], ans: 3 },
@@ -457,27 +478,27 @@
             { day: 4, theme: "Throwback Thursday", title: "Gorillaz - Feel Good Inc.", videoId: "HyHNuVaZJ-k", shoutout: "Day 4: Throwback Thursday with Damon Albarn's virtual cartoon band and De La Soul.", q: "Which legendary hip-hop trio features on the rap verses of 'Feel Good Inc.'?", opts: ["A Tribe Called Quest", "De La Soul", "The Fugees", "Run-D.M.C."], ans: 1 },
             { day: 5, theme: "Upbeat Funk Friday", title: "Mark Ronson ft. Bruno Mars - Uptown Funk", videoId: "OPf0YbXqDm0", shoutout: "Day 5: Funk Friday brings peak brass energy and dancefloor groove.", q: "Which iconic musical city's 1980s sound primarily inspired 'Uptown Funk'?", opts: ["Minneapolis", "Detroit", "Nashville", "Seattle"], ans: 0 },
             { day: 6, theme: "Electronic Saturday", title: "Avicii - Wake Me Up", videoId: "IcrbM1l_BoI", shoutout: "Day 6: Saturday Dance night with the fusion of acoustic folk and stadium EDM.", q: "Which American soul singer provided the lead vocals on 'Wake Me Up'?", opts: ["Aloe Blacc", "Leon Bridges", "John Legend", "CeeLo Green"], ans: 0 },
-            { day: 7, theme: "Chill Sunday", title: "Leon Bridges & Khruangbin - Texas Sun", videoId: "Whe7MURlKLw", shoutout: "Day 7: Sunday Chill brings smooth, sun-drenched Texas soul guitar.", q: "Khruangbin is famous for blending soul with what global guitar style?", opts: ["Flamenco", "Thai funk & psych rock", "Celtic folk", "Delta blues"], ans: 1 },
+            { day: 7, theme: "Chill Sunday", title: "Leon Bridges & Khruangbin - Texas Sun", videoId: "mdt0KjzpafM", shoutout: "Day 7: Sunday Chill brings smooth, sun-drenched Texas soul guitar.", q: "Khruangbin is famous for blending soul with what global guitar style?", opts: ["Flamenco", "Thai funk & psych rock", "Celtic folk", "Delta blues"], ans: 1 },
             { day: 8, theme: "Modern Pop Monday", title: "The Weeknd - Blinding Lights", videoId: "4NRXx6U8ABQ", shoutout: "Day 8: Pop Monday delivers the longest-charting hit in modern pop history.", q: "What signature 1980s drum machine snare tone powers 'Blinding Lights'?", opts: ["Synthwave 80s gated reverb", "Acoustic jazz brush", "Heavy metal double bass", "Trap 808 roll"], ans: 0 },
-            { day: 9, theme: "Alt / Indie Tuesday", title: "Hozier - Too Sweet", videoId: "R3H3lsFoR0o", shoutout: "Day 9: Alt Tuesday with Hozier's driving bassline and signature gravelly vocals.", q: "Hozier became the first artist from which country to top the US charts since 1990?", opts: ["Scotland", "Ireland", "Wales", "New Zealand"], ans: 1 },
+            { day: 9, theme: "Alt / Indie Tuesday", title: "Hozier - Too Sweet", videoId: "aezstBMZZp8", shoutout: "Day 9: Alt Tuesday with Hozier's driving bassline and signature gravelly vocals.", q: "Hozier became the first artist from which country to top the US charts since 1990?", opts: ["Scotland", "Ireland", "Wales", "New Zealand"], ans: 1 },
             { day: 10, theme: "Viral Wednesday", title: "Olivia Rodrigo - good 4 u", videoId: "gNi_6U5Pm_o", shoutout: "Day 10: Viral Wednesday brings early-2000s energetic pop-punk back to radio.", q: "Which rock band received an interpolation songwriting credit on 'good 4 u'?", opts: ["Paramore", "Green Day", "Blink-182", "Avril Lavigne"], ans: 0 },
             { day: 11, theme: "Throwback Thursday", title: "The Killers - Mr. Brightside", videoId: "gGdGFtwCNBE", shoutout: "Day 11: Modern Throwback with the indie rock anthem that refuses to leave the charts.", q: "The song 'Mr. Brightside' was the debut single from which Killers album?", opts: ["Hot Fuss", "Sam's Town", "Day & Age", "Battle Born"], ans: 0 },
             { day: 12, theme: "Upbeat Funk Friday", title: "Lizzo - About Damn Time", videoId: "IXXxciRUMzE", shoutout: "Day 12: Funk Friday brings modern disco optimism and flute breaks.", q: "What classical wind instrument does Lizzo famously perform during her songs?", opts: ["Clarinet", "Flute", "Saxophone", "Trumpet"], ans: 1 },
-            { day: 13, theme: "Electronic Saturday", title: "Daft Punk ft. Pharrell - Get Lucky", videoId: "Rgrt_8mXrK8", shoutout: "Day 13: Saturday groove with the French electronic robots and Nile Rodgers' guitar.", q: "Which Chic guitar pioneer played rhythm guitar on 'Get Lucky'?", opts: ["Nile Rodgers", "Carlos Santana", "The Edge", "Johnny Marr"], ans: 0 },
+            { day: 13, theme: "Electronic Saturday", title: "Daft Punk ft. Pharrell - Get Lucky", videoId: "5NV6Rdv1a3w", shoutout: "Day 13: Saturday groove with the French electronic robots and Nile Rodgers' guitar.", q: "Which Chic guitar pioneer played rhythm guitar on 'Get Lucky'?", opts: ["Nile Rodgers", "Carlos Santana", "The Edge", "Johnny Marr"], ans: 0 },
             { day: 14, theme: "Chill Sunday", title: "Vance Joy - Riptide", videoId: "uJ_1HMAGb4k", shoutout: "Day 14: Sunday Chill acoustic vibes driven by a four-string ukulele.", q: "What instrument carries the primary rhythmic strum throughout 'Riptide'?", opts: ["Ukulele", "Mandolin", "Banjo", "12-String Guitar"], ans: 0 },
             { day: 15, theme: "Modern Pop Monday", title: "Harry Styles - As It Was", videoId: "H5v3kku4y6Q", shoutout: "Day 15: Pop Monday with sparkling indie synth riffs and introspective lyrics.", q: "Whose voice memo is heard speaking in the intro of 'As It Was'?", opts: ["His mother", "His goddaughter Ruby", "His sister Gemma", "A radio host"], ans: 1 },
             { day: 16, theme: "Alt / Indie Tuesday", title: "Arctic Monkeys - Do I Wanna Know?", videoId: "bpOSxM0rNPM", shoutout: "Day 16: Alt Tuesday brings desert rock guitar riffs and thumping floor-toms.", q: "What distinct type of guitar did Alex Turner use to write this riff?", opts: ["12-string Vox guitar", "Fender Stratocaster", "Acoustic nylon", "Bass guitar only"], ans: 0 },
-            { day: 17, theme: "Viral Wednesday", title: "Childish Gambino - Redbone", videoId: "ZSw7YYYwyuI", shoutout: "Day 17: Viral Wednesday delivers Donald Glover's psychedelic soul tribute.", q: "Donald Glover stated the musical style of 'Redbone' was an homage to which artist?", opts: ["Funkadelic / George Clinton", "Michael Jackson", "Bob Dylan", "Stevie Wonder"], ans: 0 },
+            { day: 17, theme: "Viral Wednesday", title: "Childish Gambino - Redbone", videoId: "Kp7eSUU9oy8", shoutout: "Day 17: Viral Wednesday delivers Donald Glover's psychedelic soul tribute.", q: "Donald Glover stated the musical style of 'Redbone' was an homage to which artist?", opts: ["Funkadelic / George Clinton", "Michael Jackson", "Bob Dylan", "Stevie Wonder"], ans: 0 },
             { day: 18, theme: "Throwback Thursday", title: "Outkast - Roses", videoId: "gWju37TZfo0", shoutout: "Day 18: Throwback Thursday with an upbeat piano hook hiding witty lyrics.", q: "Which Outkast double-album contains 'Roses'?", opts: ["Speakerboxxx/The Love Below", "Aquemini", "Stankonia", "ATLiens"], ans: 0 },
-            { day: 19, theme: "Upbeat Funk Friday", title: "Silk Sonic - Leave The Door Open", videoId: "Q37Z4726Gkg", shoutout: "Day 19: Funk Friday brings classic Philadelphia soul chords and modern vocal harmonies.", q: "Silk Sonic is a joint project between Bruno Mars and which drummer/vocalist?", opts: ["Anderson .Paak", "Questlove", "Kamasi Washington", "Thundercat"], ans: 0 },
-            { day: 20, theme: "Electronic Saturday", title: "Calvin Harris ft. Frank Ocean - Slide", videoId: "JvhnZE0LdTg", shoutout: "Day 20: Dance Saturday with bouncy analog piano and summer vocals.", q: "Which hip-hop group features on verses alongside Frank Ocean on 'Slide'?", opts: ["Migos", "Rae Sremmurd", "Brockhampton", "A$AP Mob"], ans: 0 },
-            { day: 21, theme: "Chill Sunday", title: "Frank Ocean - Lost", videoId: "L7Ria8hG_FY", shoutout: "Day 21: Sunday Chill delivers warm indie-R&B keys and nostalgic storytelling.", q: "What acclaimed 2012 album is 'Lost' featured on?", opts: ["Channel Orange", "Blonde", "Nostalgia, Ultra", "Endless"], ans: 0 },
+            { day: 19, theme: "Upbeat Funk Friday", title: "Silk Sonic - Leave The Door Open", videoId: "adLGH4FaZE8", shoutout: "Day 19: Funk Friday brings classic Philadelphia soul chords and modern vocal harmonies.", q: "Silk Sonic is a joint project between Bruno Mars and which drummer/vocalist?", opts: ["Anderson .Paak", "Questlove", "Kamasi Washington", "Thundercat"], ans: 0 },
+            { day: 20, theme: "Electronic Saturday", title: "Calvin Harris ft. Frank Ocean - Slide", videoId: "WFQtS8P65GQ", shoutout: "Day 20: Dance Saturday with bouncy analog piano and summer vocals.", q: "Which hip-hop group features on verses alongside Frank Ocean on 'Slide'?", opts: ["Migos", "Rae Sremmurd", "Brockhampton", "A$AP Mob"], ans: 0 },
+            { day: 21, theme: "Chill Sunday", title: "Frank Ocean - Lost", videoId: "p5n1wGq4eHQ", shoutout: "Day 21: Sunday Chill delivers warm indie-R&B keys and nostalgic storytelling.", q: "What acclaimed 2012 album is 'Lost' featured on?", opts: ["Channel Orange", "Blonde", "Nostalgia, Ultra", "Endless"], ans: 0 },
             { day: 22, theme: "Modern Pop Monday", title: "Billie Eilish - bad guy", videoId: "DyDfgMOUjCI", shoutout: "Day 22: Pop Monday brings whispery vocals, snapping finger clicks, and 808 bass.", q: "Who produced 'bad guy' in a home bedroom studio alongside Billie?", opts: ["Her brother Finneas", "Max Martin", "Jack Antonoff", "Rick Rubin"], ans: 0 },
             { day: 23, theme: "Alt / Indie Tuesday", title: "The Black Keys - Lonely Boy", videoId: "a_426RiwST8", shoutout: "Day 23: Alt Tuesday brings garage-rock fuzz guitar and blues energy.", q: "Who is the solo dancer featured in the famous one-shot music video?", opts: ["Derrick Tuggle", "Patrick Carney", "Dan Auerbach", "Jack White"], ans: 0 },
-            { day: 24, theme: "Viral Wednesday", title: "Lil Nas X - Old Town Road", videoId: "w2Ov5jzm3j8", shoutout: "Day 24: Viral Wednesday with the record-setting country-trap phenomenon.", q: "Which rock band's instrumental banjo track was sampled for 'Old Town Road'?", opts: ["Nine Inch Nails", "Radiohead", "Nirvana", "U2"], ans: 0 },
+            { day: 24, theme: "Viral Wednesday", title: "Lil Nas X - Old Town Road", videoId: "r7qovpjOHQ4", shoutout: "Day 24: Viral Wednesday with the record-setting country-trap phenomenon.", q: "Which rock band's instrumental banjo track was sampled for 'Old Town Road'?", opts: ["Nine Inch Nails", "Radiohead", "Nirvana", "U2"], ans: 0 },
             { day: 25, theme: "Throwback Thursday", title: "Foster the People - Pumped Up Kicks", videoId: "SDTZ7iX4vTQ", shoutout: "Day 25: Throwback Thursday with the infectious whistling hook of early 2010s indie pop.", q: "Mark Foster wrote 'Pumped Up Kicks' while working as a commercial writer for what?", opts: ["Advertising jingles", "TV news intros", "Video games", "Film scores"], ans: 0 },
-            { day: 26, theme: "Upbeat Funk Friday", title: "Anderson .Paak - Come Down", videoId: "uEB_vcWjXac", shoutout: "Day 26: Funk Friday with driving bass, syncopated snare cracks, and live energy.", q: "Anderson .Paak is known for singing lead vocals while playing which instrument live?", opts: ["Drums", "Electric Bass", "Trumpet", "Keyboards"], ans: 0 },
-            { day: 27, theme: "Electronic Saturday", title: "Rufus Du Sol - On My Knees", videoId: "y7fudcFIlZs", shoutout: "Day 27: Saturday Dance with pulsing dark electronic synthesizers and atmospheric vocals.", q: "From which country does the electronic trio Rüfüs Du Sol hail?", opts: ["Australia", "Germany", "United Kingdom", "Sweden"], ans: 0 },
+            { day: 26, theme: "Upbeat Funk Friday", title: "Anderson .Paak - Come Down", videoId: "-_4FwS1I6Xg", shoutout: "Day 26: Funk Friday with driving bass, syncopated snare cracks, and live energy.", q: "Anderson .Paak is known for singing lead vocals while playing which instrument live?", opts: ["Drums", "Electric Bass", "Trumpet", "Keyboards"], ans: 0 },
+            { day: 27, theme: "Electronic Saturday", title: "Rufus Du Sol - On My Knees", videoId: "w4c1xM4x2wM", shoutout: "Day 27: Saturday Dance with pulsing dark electronic synthesizers and atmospheric vocals.", q: "From which country does the electronic trio Rüfüs Du Sol hail?", opts: ["Australia", "Germany", "United Kingdom", "Sweden"], ans: 0 },
             { day: 28, theme: "Chill Sunday", title: "Adele - Easy On Me", videoId: "U3ASj1L6_sY", shoutout: "Day 28: Sunday Chill with a stripped-back piano arrangement and powerhouse vocals.", q: "What was the title of Adele's 2021 comeback album featuring this single?", opts: ["30", "25", "21", "19"], ans: 0 },
             { day: 29, theme: "Modern Anthem", title: "Kendrick Lamar & SZA - All The Stars", videoId: "GfCqMv--ncA", shoutout: "Day 29: Modern Anthem with cinematic strings, punchy drums, and soaring hooks.", q: "Which Marvel film soundtrack was curated and produced by Kendrick Lamar?", opts: ["Black Panther", "Shang-Chi", "Avengers: Endgame", "Thor: Ragnarok"], ans: 0 },
             { day: 30, theme: "Grand Finale", title: "Coldplay - Viva La Vida", videoId: "dvgZkm1xWPE", shoutout: "Day 30: Grand Finale of the monthly rotation! Orchestral strings, bells, and chanting crowds.", q: "Which instrument is conspicuously absent from 'Viva La Vida' unlike most Coldplay hits?", opts: ["Lead Guitar Solo", "String Quartet", "Tympani Drums", "Church Bells"], ans: 0 }
@@ -488,10 +509,9 @@
             "demo2": { title: "Chappell Roan - Good Luck, Babe!", videoId: "1RKqOmSkGgM", votes: 2 }
         };
 
-        let currentActiveDayIndex = 0;
-
         window.addEventListener('DOMContentLoaded', () => {
             initLiveSync();
+            setupAuthListener();
         });
 
         function getTodayIndex() {
@@ -501,7 +521,6 @@
 
         function initLiveSync() {
             const currentIndex = getTodayIndex();
-            currentActiveDayIndex = currentIndex;
             const scheduledTrack = TRACK_ROSTER[currentIndex];
 
             currentSongRef.on('value', (snapshot) => {
@@ -537,7 +556,6 @@
             if (errorLink) errorLink.href = 'https://www.youtube.com/watch?v=' + id;
         }
 
-        // Catch YouTube embed restrictions (100 = not found, 101/150 = embed blocked)
         window.addEventListener('message', (event) => {
             try {
                 const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
@@ -548,6 +566,86 @@
             } catch (e) {}
         });
 
+        // --- AUTHENTICATION & ADMIN LOCK ---
+        function setupAuthListener() {
+            auth.onAuthStateChanged((user) => {
+                const authGate = document.getElementById('admin-auth-gate');
+                const adminControls = document.getElementById('admin-controls');
+                const logoutBtn = document.getElementById('admin-logout-btn');
+
+                if (user) {
+                    if (authGate) authGate.style.display = 'none';
+                    if (adminControls) adminControls.style.display = 'block';
+                    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+                } else {
+                    if (authGate) authGate.style.display = 'block';
+                    if (adminControls) adminControls.style.display = 'none';
+                    if (logoutBtn) logoutBtn.style.display = 'none';
+                }
+            });
+        }
+
+        async function adminSignIn() {
+            const email = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value;
+            const errorEl = document.getElementById('admin-auth-error');
+            errorEl.textContent = '';
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                document.getElementById('admin-password').value = '';
+            } catch (err) {
+                errorEl.textContent = err.message || 'Authentication failed.';
+            }
+        }
+
+        async function adminSignOut() {
+            await auth.signOut();
+            toggleAdmin();
+        }
+
+        function saveAdminSong() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Access denied: You must be signed in as administrator.");
+                return;
+            }
+
+            const url = document.getElementById('admin-url').value;
+            const title = document.getElementById('admin-title').value || 'Featured Track';
+            const comment = document.getElementById('admin-comment').value || 'Curated rotation queue active.';
+            const videoId = parseYouTubeId(url);
+
+            currentSongRef.set({
+                id: videoId,
+                title: title,
+                comment: comment
+            }).then(() => {
+                alert("Song updated successfully across all connected devices!");
+                toggleAdmin();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }).catch((err) => {
+                alert("Update failed: " + err.message);
+            });
+        }
+
+        function resetToSchedule() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Access denied: You must be signed in as administrator.");
+                return;
+            }
+
+            currentSongRef.remove().then(() => {
+                alert("Reset to today's scheduled rotation track!");
+                toggleAdmin();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }).catch((err) => {
+                alert("Reset failed: " + err.message);
+            });
+        }
+
+        // --- REAL-TIME VOTING & SUGGESTIONS ---
         function renderVotingList(suggestions) {
             const container = document.getElementById('vote-list');
             const userVotes = JSON.parse(localStorage.getItem('udd_my_votes') || '[]');
@@ -576,7 +674,6 @@
             userVotes.push(suggestionKey);
             localStorage.setItem('udd_my_votes', JSON.stringify(userVotes));
 
-            trackEvent('cast_vote', { suggestion_id: suggestionKey });
             const itemRef = db.ref('suggestions/' + suggestionKey);
             itemRef.transaction((item) => {
                 if (item) {
@@ -604,7 +701,6 @@
             if (!title) return;
             const videoId = parseYouTubeId(rawUrl);
 
-            trackEvent('pitch_submitted', { song_title: title });
             const newRef = suggestionsRef.push({
                 title: title,
                 videoId: videoId,
@@ -618,27 +714,7 @@
             document.getElementById('pitch-url').value = '';
         }
 
-        function saveAdminSong() {
-            const url = document.getElementById('admin-url').value;
-            const title = document.getElementById('admin-title').value || 'Featured Track';
-            const comment = document.getElementById('admin-comment').value || 'Curated rotation queue active.';
-            const videoId = parseYouTubeId(url);
-
-            currentSongRef.set({
-                id: videoId,
-                title: title,
-                comment: comment
-            });
-            toggleAdmin();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function resetToSchedule() {
-            currentSongRef.remove();
-            toggleAdmin();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
+        // --- TRIVIA & ARCHIVE ---
         function renderTrivia(track) {
             document.getElementById('trivia-q').textContent = track.q;
             const container = document.getElementById('trivia-options');
@@ -662,7 +738,6 @@
 
                 btn.onclick = () => {
                     localStorage.setItem(storageKey, idx);
-                    trackEvent('trivia_answered', { day: track.day, is_correct: (idx === track.ans) });
                     const allBtns = container.querySelectorAll('.trivia-btn');
                     allBtns.forEach(b => b.disabled = true);
 
@@ -753,7 +828,6 @@
         }
 
         async function shareApp(platform) {
-            trackEvent('share_clicked', { platform: platform });
             const shareData = {
                 title: "Uncle Dad's Song of the Day",
                 text: "Check out Uncle Dad's Song of the Day! Daily music drop, trivia, and voting:",
