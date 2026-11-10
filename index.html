@@ -527,10 +527,16 @@
                 const data = snapshot.val();
                 if (data && data.id) {
                     setSongDisplay(data.id, data.title, data.comment);
+                    // If consensus promoted a song with AI trivia, render that; otherwise use schedule
+                    if (data.trivia) {
+                        renderTrivia({ ...data.trivia, day: 'winner_' + data.id });
+                    } else {
+                        renderTrivia(scheduledTrack);
+                    }
                 } else {
                     setSongDisplay(scheduledTrack.videoId, scheduledTrack.title, scheduledTrack.shoutout);
+                    renderTrivia(scheduledTrack);
                 }
-                renderTrivia(scheduledTrack);
                 renderTimeMachine(currentIndex);
             });
 
