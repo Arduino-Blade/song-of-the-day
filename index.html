@@ -500,37 +500,457 @@
 
         // --- 30-DAY MODERN TRACK ROSTER ---
         const TRACK_ROSTER = [
-            { day: 1, theme: "Modern Pop Monday", title: "Dua Lipa - Levitating", videoId: "TUVcZfQe-Kw", shoutout: "Day 1: Modern Pop Monday kicks off with Dua Lipa's infectious nu-disco groove!", q: "What subgenre revival drove the sound of Dua Lipa's Future Nostalgia album?", opts: ["Nu-Disco", "Grunge", "Country Pop", "Ska"], ans: 0 },
-            { day: 2, theme: "Alt / Indie Tuesday", title: "Glass Animals - Heat Waves", videoId: "mRD0-GxqHVo", shoutout: "Day 2: Alt Tuesday brings the hypnotic sleeper hit that conquered global charts.", q: "How many weeks did 'Heat Waves' take to climb to #1 on the Billboard Hot 100?", opts: ["12 weeks", "28 weeks", "42 weeks", "59 weeks"], ans: 3 },
-            { day: 3, theme: "Viral Wednesday", title: "Post Malone & Swae Lee - Sunflower", videoId: "ApXoWvfEYVU", shoutout: "Day 3: Viral Wednesday features the highest certified single in US recording history.", q: "Which animated superhero blockbuster featured 'Sunflower' as its lead single?", opts: ["Into the Spider-Verse", "The Incredibles 2", "Big Hero 6", "Lego Batman"], ans: 0 },
-            { day: 4, theme: "Throwback Thursday", title: "Gorillaz - Feel Good Inc.", videoId: "HyHNuVaZJ-k", shoutout: "Day 4: Throwback Thursday with Damon Albarn's virtual cartoon band and De La Soul.", q: "Which legendary hip-hop trio features on the rap verses of 'Feel Good Inc.'?", opts: ["A Tribe Called Quest", "De La Soul", "The Fugees", "Run-D.M.C."], ans: 1 },
-            { day: 5, theme: "Upbeat Funk Friday", title: "Mark Ronson ft. Bruno Mars - Uptown Funk", videoId: "OPf0YbXqDm0", shoutout: "Day 5: Funk Friday brings peak brass energy and dancefloor groove.", q: "Which iconic musical city's 1980s sound primarily inspired 'Uptown Funk'?", opts: ["Minneapolis", "Detroit", "Nashville", "Seattle"], ans: 0 },
-            { day: 6, theme: "Electronic Saturday", title: "Avicii - Wake Me Up", videoId: "IcrbM1l_BoI", shoutout: "Day 6: Saturday Dance night with the fusion of acoustic folk and stadium EDM.", q: "Which American soul singer provided the lead vocals on 'Wake Me Up'?", opts: ["Aloe Blacc", "Leon Bridges", "John Legend", "CeeLo Green"], ans: 0 },
-            { day: 7, theme: "Chill Sunday", title: "Leon Bridges & Khruangbin - Texas Sun", videoId: "mdt0KjzpafM", shoutout: "Day 7: Sunday Chill brings smooth, sun-drenched Texas soul guitar.", q: "Khruangbin is famous for blending soul with what global guitar style?", opts: ["Flamenco", "Thai funk & psych rock", "Celtic folk", "Delta blues"], ans: 1 },
-            { day: 8, theme: "Modern Pop Monday", title: "The Weeknd - Blinding Lights", videoId: "4NRXx6U8ABQ", shoutout: "Day 8: Pop Monday delivers the longest-charting hit in modern pop history.", q: "What signature 1980s drum machine snare tone powers 'Blinding Lights'?", opts: ["Synthwave 80s gated reverb", "Acoustic jazz brush", "Heavy metal double bass", "Trap 808 roll"], ans: 0 },
-            { day: 9, theme: "Alt / Indie Tuesday", title: "Hozier - Too Sweet", videoId: "aezstBMZZp8", shoutout: "Day 9: Alt Tuesday with Hozier's driving bassline and signature gravelly vocals.", q: "Hozier became the first artist from which country to top the US charts since 1990?", opts: ["Scotland", "Ireland", "Wales", "New Zealand"], ans: 1 },
-            { day: 10, theme: "Viral Wednesday", title: "Olivia Rodrigo - good 4 u", videoId: "gNi_6U5Pm_o", shoutout: "Day 10: Viral Wednesday brings early-2000s energetic pop-punk back to radio.", q: "Which rock band received an interpolation songwriting credit on 'good 4 u'?", opts: ["Paramore", "Green Day", "Blink-182", "Avril Lavigne"], ans: 0 },
-            { day: 11, theme: "Throwback Thursday", title: "The Killers - Mr. Brightside", videoId: "gGdGFtwCNBE", shoutout: "Day 11: Modern Throwback with the indie rock anthem that refuses to leave the charts.", q: "The song 'Mr. Brightside' was the debut single from which Killers album?", opts: ["Hot Fuss", "Sam's Town", "Day & Age", "Battle Born"], ans: 0 },
-            { day: 12, theme: "Upbeat Funk Friday", title: "Lizzo - About Damn Time", videoId: "IXXxciRUMzE", shoutout: "Day 12: Funk Friday brings modern disco optimism and flute breaks.", q: "What classical wind instrument does Lizzo famously perform during her songs?", opts: ["Clarinet", "Flute", "Saxophone", "Trumpet"], ans: 1 },
-            { day: 13, theme: "Electronic Saturday", title: "Daft Punk ft. Pharrell - Get Lucky", videoId: "5NV6Rdv1a3w", shoutout: "Day 13: Saturday groove with the French electronic robots and Nile Rodgers' guitar.", q: "Which Chic guitar pioneer played rhythm guitar on 'Get Lucky'?", opts: ["Nile Rodgers", "Carlos Santana", "The Edge", "Johnny Marr"], ans: 0 },
-            { day: 14, theme: "Chill Sunday", title: "Vance Joy - Riptide", videoId: "uJ_1HMAGb4k", shoutout: "Day 14: Sunday Chill acoustic vibes driven by a four-string ukulele.", q: "What instrument carries the primary rhythmic strum throughout 'Riptide'?", opts: ["Ukulele", "Mandolin", "Banjo", "12-String Guitar"], ans: 0 },
-            { day: 15, theme: "Modern Pop Monday", title: "Harry Styles - As It Was", videoId: "H5v3kku4y6Q", shoutout: "Day 15: Pop Monday with sparkling indie synth riffs and introspective lyrics.", q: "Whose voice memo is heard speaking in the intro of 'As It Was'?", opts: ["His mother", "His goddaughter Ruby", "His sister Gemma", "A radio host"], ans: 1 },
-            { day: 16, theme: "Alt / Indie Tuesday", title: "Arctic Monkeys - Do I Wanna Know?", videoId: "bpOSxM0rNPM", shoutout: "Day 16: Alt Tuesday brings desert rock guitar riffs and thumping floor-toms.", q: "What distinct type of guitar did Alex Turner use to write this riff?", opts: ["12-string Vox guitar", "Fender Stratocaster", "Acoustic nylon", "Bass guitar only"], ans: 0 },
-            { day: 17, theme: "Viral Wednesday", title: "Childish Gambino - Redbone", videoId: "Kp7eSUU9oy8", shoutout: "Day 17: Viral Wednesday delivers Donald Glover's psychedelic soul tribute.", q: "Donald Glover stated the musical style of 'Redbone' was an homage to which artist?", opts: ["Funkadelic / George Clinton", "Michael Jackson", "Bob Dylan", "Stevie Wonder"], ans: 0 },
-            { day: 18, theme: "Throwback Thursday", title: "Outkast - Roses", videoId: "gWju37TZfo0", shoutout: "Day 18: Throwback Thursday with an upbeat piano hook hiding witty lyrics.", q: "Which Outkast double-album contains 'Roses'?", opts: ["Speakerboxxx/The Love Below", "Aquemini", "Stankonia", "ATLiens"], ans: 0 },
-            { day: 19, theme: "Upbeat Funk Friday", title: "Silk Sonic - Leave The Door Open", videoId: "adLGH4FaZE8", shoutout: "Day 19: Funk Friday brings classic Philadelphia soul chords and modern vocal harmonies.", q: "Silk Sonic is a joint project between Bruno Mars and which drummer/vocalist?", opts: ["Anderson .Paak", "Questlove", "Kamasi Washington", "Thundercat"], ans: 0 },
-            { day: 20, theme: "Electronic Saturday", title: "Calvin Harris ft. Frank Ocean - Slide", videoId: "WFQtS8P65GQ", shoutout: "Day 20: Dance Saturday with bouncy analog piano and summer vocals.", q: "Which hip-hop group features on verses alongside Frank Ocean on 'Slide'?", opts: ["Migos", "Rae Sremmurd", "Brockhampton", "A$AP Mob"], ans: 0 },
-            { day: 21, theme: "Chill Sunday", title: "Frank Ocean - Lost", videoId: "p5n1wGq4eHQ", shoutout: "Day 21: Sunday Chill delivers warm indie-R&B keys and nostalgic storytelling.", q: "What acclaimed 2012 album is 'Lost' featured on?", opts: ["Channel Orange", "Blonde", "Nostalgia, Ultra", "Endless"], ans: 0 },
-            { day: 22, theme: "Modern Pop Monday", title: "Billie Eilish - bad guy", videoId: "DyDfgMOUjCI", shoutout: "Day 22: Pop Monday brings whispery vocals, snapping finger clicks, and 808 bass.", q: "Who produced 'bad guy' in a home bedroom studio alongside Billie?", opts: ["Her brother Finneas", "Max Martin", "Jack Antonoff", "Rick Rubin"], ans: 0 },
-            { day: 23, theme: "Alt / Indie Tuesday", title: "The Black Keys - Lonely Boy", videoId: "a_426RiwST8", shoutout: "Day 23: Alt Tuesday brings garage-rock fuzz guitar and blues energy.", q: "Who is the solo dancer featured in the famous one-shot music video?", opts: ["Derrick Tuggle", "Patrick Carney", "Dan Auerbach", "Jack White"], ans: 0 },
-            { day: 24, theme: "Viral Wednesday", title: "Lil Nas X - Old Town Road", videoId: "r7qovpjOHQ4", shoutout: "Day 24: Viral Wednesday with the record-setting country-trap phenomenon.", q: "Which rock band's instrumental banjo track was sampled for 'Old Town Road'?", opts: ["Nine Inch Nails", "Radiohead", "Nirvana", "U2"], ans: 0 },
-            { day: 25, theme: "Throwback Thursday", title: "Foster the People - Pumped Up Kicks", videoId: "SDTZ7iX4vTQ", shoutout: "Day 25: Throwback Thursday with the infectious whistling hook of early 2010s indie pop.", q: "Mark Foster wrote 'Pumped Up Kicks' while working as a commercial writer for what?", opts: ["Advertising jingles", "TV news intros", "Video games", "Film scores"], ans: 0 },
-            { day: 26, theme: "Upbeat Funk Friday", title: "Anderson .Paak - Come Down", videoId: "-_4FwS1I6Xg", shoutout: "Day 26: Funk Friday with driving bass, syncopated snare cracks, and live energy.", q: "Anderson .Paak is known for singing lead vocals while playing which instrument live?", opts: ["Drums", "Electric Bass", "Trumpet", "Keyboards"], ans: 0 },
-            { day: 27, theme: "Electronic Saturday", title: "Rufus Du Sol - On My Knees", videoId: "w4c1xM4x2wM", shoutout: "Day 27: Saturday Dance with pulsing dark electronic synthesizers and atmospheric vocals.", q: "From which country does the electronic trio Rüfüs Du Sol hail?", opts: ["Australia", "Germany", "United Kingdom", "Sweden"], ans: 0 },
-            { day: 28, theme: "Chill Sunday", title: "Adele - Easy On Me", videoId: "U3ASj1L6_sY", shoutout: "Day 28: Sunday Chill with a stripped-back piano arrangement and powerhouse vocals.", q: "What was the title of Adele's 2021 comeback album featuring this single?", opts: ["30", "25", "21", "19"], ans: 0 },
-            { day: 29, theme: "Modern Anthem", title: "Kendrick Lamar & SZA - All The Stars", videoId: "GfCqMv--ncA", shoutout: "Day 29: Modern Anthem with cinematic strings, punchy drums, and soaring hooks.", q: "Which Marvel film soundtrack was curated and produced by Kendrick Lamar?", opts: ["Black Panther", "Shang-Chi", "Avengers: Endgame", "Thor: Ragnarok"], ans: 0 },
-            { day: 30, theme: "Grand Finale", title: "Coldplay - Viva La Vida", videoId: "dvgZkm1xWPE", shoutout: "Day 30: Grand Finale of the monthly rotation! Orchestral strings, bells, and chanting crowds.", q: "Which instrument is conspicuously absent from 'Viva La Vida' unlike most Coldplay hits?", opts: ["Lead Guitar Solo", "String Quartet", "Tympani Drums", "Church Bells"], ans: 0 }
-        ];
+    {
+        "day": 1,
+        "theme": "Modern Pop Monday",
+        "title": "Dua Lipa - Levitating",
+        "videoId": "TUVcZfQe-Kw",
+        "shoutout": "Kicking off Day 1 with an absolute modern disco juggernaut, 'Levitating' propelled Dua Lipa into stratospheric pop royalty with its irresistible cosmic bounce and record-shattering chart run.",
+        "q": "Which acclaimed British producer, known for his work on Madonna's 'Confessions on a Dance Floor', co-produced 'Levitating' alongside Koz?",
+        "opts": [
+            "Jack Antonoff",
+            "Stuart Price",
+            "Mark Ronson",
+            "Max Martin"
+        ],
+        "ans": 1
+    },
+    {
+        "day": 2,
+        "theme": "Alt / Indie Tuesday",
+        "title": "Glass Animals - Heat Waves",
+        "videoId": "mRD0-GxqHVo",
+        "shoutout": "Kicking off Alt / Indie Tuesday for Day 2, 'Heat Waves' proved that a hypnotic, bittersweet sleeper hit could conquer the world by completing an unprecedented 59-week climb to No. 1 on the Billboard Hot 100.",
+        "q": "Frontman Dave Bayley began writing the nostalgic album 'Dreamland'\u2014which features 'Heat Waves'\u2014while waiting in hospital rooms after which bandmate survived a life-threatening 2018 cycling accident?",
+        "opts": [
+            "Drummer Joe Seaward",
+            "Guitarist Drew MacFarlane",
+            "Bassist Edmund Irwin-Singer",
+            "Keyboardist Julian Casablancas"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 3,
+        "theme": "Viral Wednesday",
+        "title": "Post Malone & Swae Lee - Sunflower",
+        "videoId": "ApXoWvfEYVU",
+        "shoutout": "Serving as the heartbeat of 'Spider-Man: Into the Spider-Verse', 'Sunflower' became a record-shattering viral juggernaut that later made history as the RIAA's first-ever double-diamond certified single.",
+        "q": "Which acclaimed producer co-produced 'Sunflower' alongside Louis Bell, and later served as an executive producer on SZA's blockbuster album 'SOS'?",
+        "opts": [
+            "Metro Boomin",
+            "Carter Lang",
+            "Mike WiLL Made-It",
+            "Murda Beatz"
+        ],
+        "ans": 1
+    },
+    {
+        "day": 4,
+        "theme": "Throwback Thursday",
+        "title": "Gorillaz - Feel Good Inc.",
+        "videoId": "HyHNuVaZJ-k",
+        "shoutout": "For Day 4's Throwback Thursday, we're spinning 'Feel Good Inc.', the 2005 masterpiece driven by an irresistible bass groove and De La Soul's chaotic energy. It remains the gold standard of genre-bending 2000s alt-pop that solidified Gorillaz as global icons.",
+        "q": "Which acclaimed producer was recruited to co-produce 'Feel Good Inc.' and the album 'Demon Days' after Damon Albarn heard his mashup project 'The Grey Album'?",
+        "opts": [
+            "Danger Mouse",
+            "Dan the Automator",
+            "Mark Ronson",
+            "Fatboy Slim"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 5,
+        "theme": "Upbeat Funk Friday",
+        "title": "Mark Ronson ft. Bruno Mars - Uptown Funk",
+        "videoId": "OPf0YbXqDm0",
+        "shoutout": "Kicking off Day 5 with an explosive Upbeat Funk Friday, Mark Ronson and Bruno Mars deliver pure retro gold that dominated the airwaves and re-energized modern funk-pop.",
+        "q": "Following a copyright dispute after the song's massive success, members of which legendary funk group were officially added to the songwriting credits of 'Uptown Funk'?",
+        "opts": [
+            "The Gap Band",
+            "Earth, Wind & Fire",
+            "Parliament-Funkadelic",
+            "Kool & the Gang"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 6,
+        "theme": "Electronic Saturday",
+        "title": "Avicii - Wake Me Up",
+        "videoId": "IcrbM1l_BoI",
+        "shoutout": "Kicking off Electronic Saturday with a genre-defying masterpiece, Avicii's 'Wake Me Up' brilliantly fused American roots folk with explosive progressive house to create an era-defining festival anthem.",
+        "q": "Which acclaimed soul singer provided the iconic uncredited lead vocals and co-wrote the lyrics for 'Wake Me Up'?",
+        "opts": [
+            "Aloe Blacc",
+            "Dan Tyminski",
+            "Salem Al Fakir",
+            "John Martin"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 7,
+        "theme": "Chill Sunday",
+        "title": "Leon Bridges & Khruangbin - Texas Sun",
+        "videoId": "Whe7MURlKLw",
+        "shoutout": "Nothing captures the golden haze of a Chill Sunday quite like the seamless fusion of Leon Bridges' velvety soul and Khruangbin's dusty psych-rock groove. 'Texas Sun' rolls down the windows and turns an easy afternoon drive into pure cinematic bliss.",
+        "q": "The Houston trio Khruangbin took their name from a Thai word that translates to what in English?",
+        "opts": [
+            "Airplane",
+            "Desert wind",
+            "Starlight",
+            "Harmonica"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 8,
+        "theme": "Modern Pop Monday",
+        "title": "The Weeknd - Blinding Lights",
+        "videoId": "4NRXx6U8ABQ",
+        "shoutout": "Kicking off Modern Pop Monday for Day 8, 'Blinding Lights' perfected the 1980s synth-pop resurgence and became Billboard's all-time number-one single after spending 90 weeks on the Hot 100.",
+        "q": "Which legendary Swedish songwriter and producer co-wrote and co-produced 'Blinding Lights' alongside The Weeknd and Oscar Holter?",
+        "opts": [
+            "Jack Antonoff",
+            "Max Martin",
+            "Mark Ronson",
+            "Greg Kurstin"
+        ],
+        "ans": 1
+    },
+    {
+        "day": 9,
+        "theme": "Alt / Indie Tuesday",
+        "title": "Hozier - Too Sweet",
+        "videoId": "R3H3lsFoR0o",
+        "shoutout": "Day 9 delivers pure indulgence with 'Too Sweet', the gritty, bass-heavy anthem that unexpectedly captured global airwaves and handed Hozier his first career Billboard Hot 100 number one. Its blend of soulful blues-rock swagger and late-night hedonism proves modern alt-rock can still dominate the pop sphere on its own terms.",
+        "q": "Which four-track EP, consisting of songs recorded during the 'Unreal Unearth' sessions, officially debuted the hit single 'Too Sweet' in March 2024?",
+        "opts": [
+            "Eat Your Young",
+            "Unheard",
+            "Nina Cried Power",
+            "Unaired"
+        ],
+        "ans": 1
+    },
+    {
+        "day": 10,
+        "theme": "Viral Wednesday",
+        "title": "Olivia Rodrigo - good 4 u",
+        "videoId": "gNi_6U5Pm_o",
+        "shoutout": "Exploding with high-octane pop-punk ferocity, 'good 4 u' instantly took over social media and streaming charts as the defining breakup anthem of 2021. Its sarcastic bite and driving guitars catalyzed a massive mainstream revival of 2000s alt-rock energy.",
+        "q": "Which 2007 Paramore single led to Hayley Williams and Josh Farro receiving retroactive songwriting credits on 'good 4 u' due to structural and melodic similarities?",
+        "opts": [
+            "Decode",
+            "Misery Business",
+            "That's What You Get",
+            "Crushcrushcrush"
+        ],
+        "ans": 1
+    },
+    {
+        "day": 11,
+        "theme": "Throwback Thursday",
+        "title": "The Killers - Mr. Brightside",
+        "videoId": "gGdGFtwCNBE",
+        "shoutout": "Kicking off Day 11's Throwback Thursday with 'Mr. Brightside,' the 2004 indie-rock juggernaut that never left the charts or our collective consciousness. Built on an iconic, relentlessly chiming guitar riff, it remains the defining karaoke anthem of a generation.",
+        "q": "Brandon Flowers wrote the lyrics to 'Mr. Brightside' after discovering his girlfriend was cheating on him at which Las Vegas venue?",
+        "opts": [
+            "The Crown & Anchor",
+            "Double Down Saloon",
+            "The Huntridge Theater",
+            "Dino's Lounge"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 12,
+        "theme": "Upbeat Funk Friday",
+        "title": "Lizzo - About Damn Time",
+        "videoId": "IXXxciRUMzE",
+        "shoutout": "Lizzo delivers pure disco-funk euphoria in 'About Damn Time,' anchoring Upbeat Funk Friday with an irresistible bassline and an unforgettable flute-driven groove.",
+        "q": "When 'About Damn Time' won Record of the Year at the 65th Annual Grammy Awards, Lizzo became the first Black woman to win the category since which iconic singer won in 1994?",
+        "opts": [
+            "Whitney Houston",
+            "Lauryn Hill",
+            "Beyonc\u00e9",
+            "Anita Baker"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 13,
+        "theme": "Electronic Saturday",
+        "title": "Daft Punk ft. Pharrell - Get Lucky",
+        "videoId": "Rgrt_8mXrK8",
+        "shoutout": "Daft Punk resurrected classic disco-funk for the modern era on this 2013 juggernaut, driven by Nile Rodgers' indelible guitar chops and Pharrell's effortlessly smooth hooks. It stands as the quintessential anthem for Electronic Saturday, proving that human groove and robotic precision make the ultimate pair.",
+        "q": "During the 56th Annual Grammy Awards in 2014, which legendary musician joined Daft Punk, Pharrell Williams, and Nile Rodgers on stage to perform 'Get Lucky'?",
+        "opts": [
+            "Stevie Wonder",
+            "Prince",
+            "Quincy Jones",
+            "Lionel Richie"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 14,
+        "theme": "Chill Sunday",
+        "title": "Vance Joy - Riptide",
+        "videoId": "uJ_1HMAGb4k",
+        "shoutout": "With its breezy ukulele strum and infectious nostalgia, 'Riptide' remains the quintessential Chill Sunday anthem that catapulted Vance Joy onto the global stage.",
+        "q": "Vance Joy, born James Keogh, took his musical moniker from an eccentric storyteller character in the novel 'Bliss' by which Australian author?",
+        "opts": [
+            "Peter Carey",
+            "Tim Winton",
+            "Richard Flanagan",
+            "Thomas Keneally"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 15,
+        "theme": "Modern Pop Monday",
+        "title": "Harry Styles - As It Was",
+        "videoId": "H5v3kku4y6Q",
+        "shoutout": "Kicking off Modern Pop Monday for Day 15, 'As It Was' took the world by storm with its melancholic lyrics wrapped in an irresistible 80s synth-pop groove. The record-shattering smash cemented Harry Styles' status as a definitive global pop powerhouse.",
+        "q": "Whose voice is heard delivering the opening spoken line, 'Come on, Harry, we want to say goodnight to you', at the beginning of the song?",
+        "opts": [
+            "His goddaughter, Ruby Winston",
+            "His sister, Gemma Styles",
+            "Producer Kid Harpoon's daughter",
+            "Director Olivia Wilde's daughter"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 16,
+        "theme": "Alt / Indie Tuesday",
+        "title": "Arctic Monkeys - Do I Wanna Know?",
+        "videoId": "bpOSxM0rNPM",
+        "shoutout": "Built on one of the most instantly recognizable riffs of the 21st century, 'Do I Wanna Know?' solidified Arctic Monkeys' leap from UK indie darlings to global rock royalty.",
+        "q": "Frontman Alex Turner achieved the distinct, heavy resonance of the song's signature opening riff by recording with which type of instrument?",
+        "opts": [
+            "A 12-string electric guitar",
+            "A fretless baritone guitar",
+            "A 7-string drop-tuned guitar",
+            "A resonator acoustic guitar"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 17,
+        "theme": "Viral Wednesday",
+        "title": "Childish Gambino - Redbone",
+        "videoId": "ZSw7YYYwyuI",
+        "shoutout": "Day 17 brings pure Viral Wednesday heat with Childish Gambino's 'Redbone', the psych-funk anthem that spawned endless internet memes and memorably opened Jordan Peele's 'Get Out'. Its hypnotic, vintage groove and soaring falsetto cemented Donald Glover's status as a generational musical visionary.",
+        "q": "Which longtime Childish Gambino collaborator co-wrote and produced 'Redbone' before winning Academy Awards for scoring 'Black Panther' and 'Oppenheimer'?",
+        "opts": [
+            "Ludwig G\u00f6ransson",
+            "Flying Lotus",
+            "Boi-1da",
+            "Jack Antonoff"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 18,
+        "theme": "Throwback Thursday",
+        "title": "Outkast - Roses",
+        "videoId": "gWju37TZfo0",
+        "shoutout": "For Day 18's Throwback Thursday, Outkast's 'Roses' proves that infectious piano funk and razor-sharp petty humor never go out of style. It remains a theatrical hip-hop masterclass that still smells like an absolute classic.",
+        "q": "On Outkast's acclaimed 2003 double album 'Speakerboxxx/The Love Below', 'Roses' is notable for being the only track on Andr\u00e9 3000's 'The Love Below' disc to feature which artist?",
+        "opts": [
+            "Big Boi",
+            "Sleepy Brown",
+            "CeeLo Green",
+            "Killer Mike"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 19,
+        "theme": "Upbeat Funk Friday",
+        "title": "Silk Sonic - Leave The Door Open",
+        "videoId": "Q37Z4726Gkg",
+        "shoutout": "Silk Sonic's debut single revived vintage 1970s Philly soul with immaculate velvet harmonies and infectious retro swagger. It sets the gold standard for Upbeat Funk Friday with its irresistible charm and buttery groove.",
+        "q": "Which funk music icon served as the special guest host of their debut album and officially named the duo 'Silk Sonic'?",
+        "opts": [
+            "George Clinton",
+            "Bootsy Collins",
+            "Stevie Wonder",
+            "Sly Stone"
+        ],
+        "ans": 1
+    },
+    {
+        "day": 20,
+        "theme": "Electronic Saturday",
+        "title": "Calvin Harris ft. Frank Ocean - Slide",
+        "videoId": "JvhnZE0LdTg",
+        "shoutout": "Calvin Harris brilliantly pivoted from stadium EDM to warm, analog funk-pop on 'Slide', blending Frank Ocean's effortless cool with crisp disco instrumentation. It remains one of the defining, sun-soaked crossover hits of the 2010s.",
+        "q": "Frank Ocean's opening line, 'I might empty my bank account and buy that boy with a pipe,' directly references an iconic 1905 masterpiece by which painter?",
+        "opts": [
+            "Pablo Picasso",
+            "Jean-Michel Basquiat",
+            "Vincent van Gogh",
+            "Salvador Dal\u00ed"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 21,
+        "theme": "Chill Sunday",
+        "title": "Frank Ocean - Lost",
+        "videoId": "L7Ria8hG_FY",
+        "shoutout": "Gliding effortlessly over bright keys and an intoxicating groove, Frank Ocean's 'Lost' disguises heavy narrative in pure sunshine pop, delivering the ultimate breezy groove for Day 21.",
+        "q": "Which acclaimed producer and multi-instrumentalist co-wrote and produced 'Lost' alongside Frank Ocean for the album Channel Orange?",
+        "opts": [
+            "Pharrell Williams",
+            "Malay",
+            "Tyler, the Creator",
+            "Dev Hynes"
+        ],
+        "ans": 1
+    },
+    {
+        "day": 22,
+        "theme": "Modern Pop Monday",
+        "title": "Billie Eilish - bad guy",
+        "videoId": "DyDfgMOUjCI",
+        "shoutout": "For Modern Pop Monday, 'bad guy' revolutionized top-40 radio with its menacing, minimalist bassline and whispered bedroom-pop aesthetic. It officially cemented Billie Eilish and Finneas as the defining architects of a new sonic era.",
+        "q": "Which real-world ambient sound did Billie Eilish and Finneas record and pitch to create the distinctive rhythmic ticking in 'bad guy'?",
+        "opts": [
+            "An Australian pedestrian crossing signal",
+            "A car's emergency flasher relay",
+            "An antique pocket watch",
+            "A dripping kitchen faucet"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 23,
+        "theme": "Alt / Indie Tuesday",
+        "title": "The Black Keys - Lonely Boy",
+        "videoId": "a_426RiwST8",
+        "shoutout": "Kicking off Alt / Indie Tuesday for Day 23, 'Lonely Boy' delivers an unstoppable blast of fuzzy garage-rock swagger that propelled The Black Keys straight into arena-headlining royalty. Driven by an infectious riff and an instantly iconic one-take dance video, this track is pure high-voltage fun.",
+        "q": "Which acclaimed producer co-wrote 'Lonely Boy' and co-produced the multi-Grammy-winning album 'El Camino' alongside The Black Keys?",
+        "opts": [
+            "Rick Rubin",
+            "Danger Mouse",
+            "Jack White",
+            "Butch Vig"
+        ],
+        "ans": 1
+    },
+    {
+        "day": 24,
+        "theme": "Viral Wednesday",
+        "title": "Lil Nas X - Old Town Road",
+        "videoId": "w2Ov5jzm3j8",
+        "shoutout": "Lil Nas X redefined viral stardom on Day 24 with 'Old Town Road,' parlaying TikTok memes and a $30 beat into the longest-running No. 1 hit in Billboard Hot 100 history.",
+        "q": "Which band's instrumental track was sampled to create the signature banjo riff heard throughout 'Old Town Road'?",
+        "opts": [
+            "Nine Inch Nails",
+            "Fleetwood Mac",
+            "The Black Keys",
+            "Mumford & Sons"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 25,
+        "theme": "Throwback Thursday",
+        "title": "Foster the People - Pumped Up Kicks",
+        "videoId": "SDTZ7iX4vTQ",
+        "shoutout": "For Day 25's Throwback Thursday, we revisit Foster the People's breakthrough smash 'Pumped Up Kicks', which paired an irresistibly sunny, whistle-along groove with surprisingly haunting lyrics to define early-2010s indie pop.",
+        "q": "What profession was frontman Mark Foster working in when he wrote and recorded the original demo of 'Pumped Up Kicks' in a single day?",
+        "opts": [
+            "Coffee shop barista",
+            "Commercial jingle writer",
+            "High school music teacher",
+            "Soundtrack mastering engineer"
+        ],
+        "ans": 1
+    },
+    {
+        "day": 26,
+        "theme": "Upbeat Funk Friday",
+        "title": "Anderson .Paak - Come Down",
+        "videoId": "uEB_vcWjXac",
+        "shoutout": "Anderson .Paak kicks off Day 26's Upbeat Funk Friday with 'Come Down,' delivering a masterclass in kinetic energy, blistering live drums, and irresistible swagger. It is the definitive modern funk anthem that cemented his status as one of music's premier groove architects.",
+        "q": "Which acclaimed hip-hop producer crafted the driving, bass-heavy beat for Anderson .Paak's breakout track 'Come Down'?",
+        "opts": [
+            "9th Wonder",
+            "Hi-Tek",
+            "Knxwledge",
+            "Kaytranada"
+        ],
+        "ans": 1
+    },
+    {
+        "day": 27,
+        "theme": "Electronic Saturday",
+        "title": "Rufus Du Sol - On My Knees",
+        "videoId": "y7fudcFIlZs",
+        "shoutout": "Delivering a masterclass in dark, brooding electronic production, 'On My Knees' showcases R\u00dcF\u00dcS DU SOL at their peak with heavyweight synths and haunting, arena-sized emotion.",
+        "q": "At the 64th Annual Grammy Awards in 2022, 'On My Knees' won R\u00dcF\u00dcS DU SOL their first Grammy Award in which category?",
+        "opts": [
+            "Best Dance/Electronic Recording",
+            "Best Dance/Electronic Album",
+            "Best Remixed Recording",
+            "Best Alternative Music Performance"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 28,
+        "theme": "Chill Sunday",
+        "title": "Adele - Easy On Me",
+        "videoId": "U3ASj1L6_sY",
+        "shoutout": "Adele's stripped-back piano ballad 'Easy On Me' makes for the ultimate reflective Chill Sunday listening, marking her emotional return with soaring, vulnerable vocals.",
+        "q": "Which acclaimed producer, who previously collaborated with Adele on 'Hello', co-wrote and produced 'Easy On Me'?",
+        "opts": [
+            "Greg Kurstin",
+            "Paul Epworth",
+            "Max Martin",
+            "Mark Ronson"
+        ],
+        "ans": 0
+    },
+    {
+        "day": 29,
+        "theme": "Modern Anthem",
+        "title": "Kendrick Lamar & SZA - All The Stars",
+        "videoId": "GfCqMv--ncA",
+        "shoutout": "As the dazzling centerpiece of the 'Black Panther' soundtrack, 'All The Stars' pairs Kendrick Lamar's fierce cadence with SZA's celestial hook to create an unforgettable modern anthem. Its regal blend of synth-pop and hip-hop earned four Grammy nominations alongside an Oscar nod for Best Original Song.",
+        "q": "Which British producer, who previously co-wrote and produced Jay-Z's smash hit 'Empire State of Mind', co-produced 'All The Stars' alongside Sounwave?",
+        "opts": [
+            "Mark Ronson",
+            "Al Shux",
+            "Paul Epworth",
+            "Inflo"
+        ],
+        "ans": 1
+    },
+    {
+        "day": 30,
+        "theme": "Grand Finale",
+        "title": "Coldplay - Viva La Vida",
+        "videoId": "dvgZkm1xWPE",
+        "shoutout": "Coldplay delivers an exhilarating orchestral tour de force that closes our journey with sweeping strings, triumphant bells, and stadium-sized grandeur. It is the ultimate anthem to crown Day 30's Grand Finale in magnificent style.",
+        "q": "Which legendary artist inspired the title of Coldplay's 'Viva La Vida' with one of their final still-life paintings?",
+        "opts": [
+            "Frida Kahlo",
+            "Diego Rivera",
+            "Salvador Dal\u00ed",
+            "Pablo Picasso"
+        ],
+        "ans": 0
+    }
+];
 
         const PRESEEDED_DEMOS = {
             "demo1": { title: "Sabrina Carpenter - Espresso", videoId: "eVli-tstM5E", votes: 1 },
