@@ -6,44 +6,128 @@
     <title>Uncle Dad's Song of the Day</title>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <style>
-        :root { --bg-dark: #090d16; --accent: #38bdf8; }
-        body { font-family: sans-serif; background: var(--bg-dark); color: #fff; padding: 1rem; }
-        .app-shell { max-width: 580px; margin: auto; background: #131b2e; padding: 1rem; border-radius: 1rem; }
-        .reaction-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-top: 0.7rem; }
-        .reaction-pill { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.5rem; border-radius: 0.5rem; cursor: pointer; font-weight: bold; }
+        :root { --bg-dark: #090d16; --surface: #131b2e; --surface-elevated: #1e293b; --accent: #38bdf8; --text-main: #f8fafc; --text-muted: #94a3b8; --border: rgba(255, 255, 255, 0.1); }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-dark); color: var(--text-main); margin: 0; padding: 1rem; }
+        .app-shell { max-width: 600px; margin: auto; background: var(--surface); padding: 1.2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--border); }
+        h1 { font-size: 1.4rem; margin-top: 0; text-align: center; color: var(--accent); }
+        .player-card { background: var(--surface-elevated); padding: 1rem; border-radius: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border); }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 0.5rem; background: #000; margin-bottom: 0.8rem; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        
+        /* Vibe Reactions Styling */
+        .reaction-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-top: 0.8rem; }
+        .reaction-pill { background: var(--surface); border: 1px solid var(--border); color: var(--text-main); padding: 0.5rem 0.2rem; border-radius: 0.6rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.35rem; }
+        .reaction-pill:hover { border-color: var(--accent); background: rgba(56, 189, 248, 0.12); transform: translateY(-1px); }
+        
+        /* Floating Emoji Particle Animation */
         .floating-emoji { position: fixed; pointer-events: none; z-index: 99999; font-size: 1.8rem; animation: floatUpAndFade 1.6s ease-out forwards; }
-        @keyframes floatUpAndFade { 0% { transform: translateY(0) scale(0.6); opacity: 1; } 100% { transform: translateY(-130px) scale(1.3); opacity: 0; } }
+        @keyframes floatUpAndFade {
+            0% { transform: translateY(0px) scale(0.6); opacity: 1; }
+            100% { transform: translateY(-130px) scale(1.3); opacity: 0; }
+        }
+        
+        .section-title { font-size: 1rem; margin: 1rem 0 0.5rem 0; color: var(--text-muted); font-weight: 600; }
+        .track-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 250px; overflow-y: auto; }
+        .track-item { background: var(--surface-elevated); padding: 0.6rem 0.8rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px solid var(--border); transition: all 0.2s; }
+        .track-item:hover { border-color: var(--accent); }
     </style>
 </head>
 <body>
     <div class="app-shell">
-        <h1>Uncle Dad's Song of the Day</h1>
-        <div class="reaction-bar">
-            <button class="reaction-pill" onclick="sendReaction('fire', '🔥')">🔥 <span id="cnt-fire">0</span></button>
-            <button class="reaction-pill" onclick="sendReaction('classic', '🎸')">🎸 <span id="cnt-classic">0</span></button>
-            <button class="reaction-pill" onclick="sendReaction('groove', '🕺')">🕺 <span id="cnt-groove">0</span></button>
-            <button class="reaction-pill" onclick="sendReaction('skip', '💤')">💤 <span id="cnt-skip">0</span></button>
+        <h1>🎵 Uncle Dad's Song of the Day</h1>
+        
+        <div class="player-card">
+            <div id="song-title" style="font-weight: bold; margin-bottom: 0.5rem; font-size: 1.1rem;">Loading Today's Track...</div>
+            <div class="video-container" id="video-box">
+                <iframe id="yt-player" src="" allowfullscreen></iframe>
+            </div>
+            <div id="song-comment" style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;"></div>
+
+            <!-- Live Vibe Reactions Bar -->
+            <div class="reaction-bar" id="reaction-bar-container">
+                <button class="reaction-pill" onclick="sendReaction('fire', '🔥')"><span>🔥</span> <span id="cnt-fire">0</span></button>
+                <button class="reaction-pill" onclick="sendReaction('classic', '🎸')"><span>🎸</span> <span id="cnt-classic">0</span></button>
+                <button class="reaction-pill" onclick="sendReaction('groove', '🕺')"><span>🕺</span> <span id="cnt-groove">0</span></button>
+                <button class="reaction-pill" onclick="sendReaction('skip', '💤')"><span>💤</span> <span id="cnt-skip">0</span></button>
+            </div>
+        </div>
+
+        <div class="section-title">Recent Songs</div>
+        <div class="track-list" id="track-roster">
+            <!-- Roster populated dynamically -->
         </div>
     </div>
+
     <script>
-        firebase.initializeApp({ apiKey: "AIzaSyAzcgw5rzUbWERIhLinXv_cNZe9IkG9deM", databaseURL: "https://uncle-dads-song-of-the-day-default-rtdb.firebaseio.com" });
+        firebase.initializeApp({ 
+            apiKey: "AIzaSyAzcgw5rzUbWERIhLinXv_cNZe9IkG9deM", 
+            databaseURL: "https://uncle-dads-song-of-the-day-default-rtdb.firebaseio.com" 
+        });
         const db = firebase.database();
+
+        let activeSongKey = 'default_track';
+
+        // Sample initial playlist roster
+        const sampleTracks = [
+            { id: 'dQw4w9WgXcQ', title: "Rick Astley - Never Gonna Give You Up", comment: "The ultimate family classic!" },
+            { id: 'L_LUpnjgPso', title: "Eagles - Hotel California", comment: "Such a lovely place." },
+            { id: 'kJQP7kiw5Fk', title: "Luis Fonsi - Despacito", comment: "Bringing the groove." }
+        ];
+
+        function loadRoster() {
+            const listEl = document.getElementById('track-roster');
+            listEl.innerHTML = '';
+            sampleTracks.forEach((t, index) => {
+                const div = document.createElement('div');
+                div.className = 'track-item';
+                div.innerHTML = `<span>Day ${index + 1}: ${t.title}</span>`;
+                div.onclick = () => setSongDisplay('song_' + index, t.title, t.comment, t.id);
+                listEl.appendChild(div);
+            });
+            // Load first song by default
+            setSongDisplay('song_0', sampleTracks[0].title, sampleTracks[0].comment, sampleTracks[0].id);
+        }
+
+        function setSongDisplay(id, title, comment, ytId) {
+            activeSongKey = id;
+            document.getElementById('song-title').textContent = title;
+            document.getElementById('song-comment').textContent = comment ? `"${comment}"` : '';
+            document.getElementById('yt-player').src = `https://www.youtube.com/embed/${ytId}`;
+            setupReactionListener(activeSongKey);
+        }
+
         function sendReaction(type, emoji) {
-            db.ref('reactions/default_track/' + type).transaction(val => (val || 0) + 1);
+            const ref = db.ref('reactions/' + activeSongKey + '/' + type);
+            ref.transaction(val => (val || 0) + 1);
+            triggerFloatingEmoji(emoji);
+        }
+
+        function triggerFloatingEmoji(emoji) {
             const el = document.createElement('div');
-            el.className = 'floating-emoji'; el.textContent = emoji;
-            el.style.left = (window.innerWidth / 2 + (Math.random() * 100 - 50)) + 'px';
-            el.style.bottom = '100px'; document.body.appendChild(el);
+            el.className = 'floating-emoji';
+            el.textContent = emoji;
+            const xPos = window.innerWidth / 2 + (Math.random() * 140 - 70);
+            el.style.left = xPos + 'px';
+            el.style.bottom = '120px';
+            document.body.appendChild(el);
             setTimeout(() => el.remove(), 1600);
         }
-        db.ref('reactions/default_track').on('value', snap => {
-            const val = snap.val() || {};
-            document.getElementById('cnt-fire').textContent = val.fire || 0;
-            document.getElementById('cnt-classic').textContent = val.classic || 0;
-            document.getElementById('cnt-groove').textContent = val.groove || 0;
-            document.getElementById('cnt-skip').textContent = val.skip || 0;
-        });
+
+        function setupReactionListener(songId) {
+            db.ref('reactions/' + songId).off(); // Remove previous listeners
+            db.ref('reactions/' + songId).on('value', (snap) => {
+                const val = snap.val() || {};
+                document.getElementById('cnt-fire').textContent = val.fire || 0;
+                document.getElementById('cnt-classic').textContent = val.classic || 0;
+                document.getElementById('cnt-groove').textContent = val.groove || 0;
+                document.getElementById('cnt-skip').textContent = val.skip || 0;
+            });
+        }
+
+        // Initialize
+        loadRoster();
     </script>
 </body>
 </html>
