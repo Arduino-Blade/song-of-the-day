@@ -106,8 +106,9 @@
             <div class="section-title">Community Voting Board (Reaches 3 Votes = Promotes!)</div>
             <div class="list-container" id="suggestions-list"></div>
             <div class="pitch-box">
-                <input type="text" id="pitch-title" placeholder="Song Title & Artist...">
-                <input type="text" id="pitch-url" placeholder="YouTube Video ID (e.g. dQw4w9WgXcQ)...">
+                <div style="font-size: 0.85rem; color: var(--text-muted);">💡 Tip: Copy any YouTube link and paste it below!</div>
+                <input type="text" id="pitch-title" placeholder="Song Title & Artist (e.g. Queen - Don't Stop Me Now)...">
+                <input type="text" id="pitch-url" placeholder="Paste YouTube Link or Video ID...">
                 <button class="primary-btn" onclick="submitPitch()">Pitch Song (+25 Pts)</button>
             </div>
         </div>
@@ -318,14 +319,29 @@
             });
         }
 
+        // Helper function to automatically extract YouTube ID from any YouTube URL or ID
+        function extractYouTubeId(urlOrId) {
+            if (!urlOrId) return '';
+            const cleaned = urlOrId.trim();
+            if (cleaned.length === 11 && !cleaned.includes('/')) return cleaned;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = cleaned.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : cleaned;
+        }
+
         function submitPitch() {
             const title = document.getElementById('pitch-title').value;
-            const videoId = document.getElementById('pitch-url').value;
-            if (!title || !videoId) return alert('Please enter both title and YouTube ID.');
+            const rawUrl = document.getElementById('pitch-url').value;
+            if (!title || !rawUrl) return alert('Please enter both song title and YouTube link/ID.');
+            
+            const videoId = extractYouTubeId(rawUrl);
+            if (!videoId || videoId.length !== 11) {
+                return alert('Invalid YouTube link or ID. Please check and try again.');
+            }
             
             db.ref('suggestions').push({
                 title: title,
-                videoId: videoId.trim(),
+                videoId: videoId,
                 votes: 1,
                 pitchedBy: currentUser ? currentUser.email.split('@')[0] : 'Guest',
                 trivia: { q: `What makes ${title} a great family pick?`, options: ["The beat", "The nostalgia", "Everything"], correct: 2 }
@@ -340,6 +356,19 @@
                 const list = document.getElementById('suggestions-list');
                 list.innerHTML = '';
                 const data = snap.val() || {};
+                
+                // If board is empty, auto-seed a demo track so it's never blank
+                if (Object.keys(data).length === 0) {
+                    db.ref('suggestions').push({
+                        title: "Queen - Don't Stop Me Now",
+                        videoId: "HgzGwKwLmgM",
+                        votes: 1,
+                        pitchedBy: "Uncle Dad",
+                        trivia: { q: "What year was Don't Stop Me Now released?", options: ["1976", "1978", "1980"], correct: 1 }
+                    });
+                    return;
+                }
+
                 Object.entries(data).forEach(([key, item]) => {
                     const div = document.createElement('div');
                     div.className = 'list-item';
@@ -352,11 +381,8 @@
 
         function voteSong(key, currentVotes, title, videoId) {
             const newVotes = currentVotes + 1;
-            console.log(`Voting for ${title}: new total = ${newVotes}`);
-            
             db.ref('suggestions/' + key + '/votes').set(newVotes).then(() => {
                 if (newVotes >= VOTE_THRESHOLD) {
-                    console.log(`Threshold reached (${newVotes}/${VOTE_THRESHOLD}). Promoting song: ${title}`);
                     db.ref('currentSong').set({
                         title: title,
                         videoId: videoId,
@@ -365,12 +391,8 @@
                         db.ref('suggestions/' + key).remove();
                         alert(`🏆 "${title}" reached ${newVotes} votes and is now Today's Featured Song!`);
                         switchTab('player');
-                    }).catch(err => {
-                        console.error("Failed to promote currentSong:", err);
                     });
                 }
-            }).catch(err => {
-                console.error("Failed to update vote count:", err);
             });
         }
 
