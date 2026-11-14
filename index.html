@@ -140,6 +140,7 @@
 
         let remainingAttempts = 2;
         let triviaAnsweredCorrectly = false;
+        let hasActiveOverride = false;
 
         const curatedTracks = [
             { 
@@ -214,12 +215,14 @@
                 archiveEl.appendChild(div);
             });
 
+            // Listen for promoted song. If none exists, load default Day 1.
             db.ref('currentSong').on('value', snap => {
                 const val = snap.val();
                 if (val && val.videoId) {
+                    hasActiveOverride = true;
                     const cleanId = extractYouTubeId(val.videoId);
                     setSongDisplay('promoted_song', val.title, val.comment || 'Community Consensus Pick!', cleanId, val.trivia);
-                } else {
+                } else if (!hasActiveOverride) {
                     loadTrackData('song_0', curatedTracks[0]);
                 }
             });
@@ -228,6 +231,7 @@
         }
 
         function loadTrackData(key, track) {
+            if (hasActiveOverride && key.startsWith('song_')) return; // Don't let default schedule override active consensus pick unless explicitly selected
             setSongDisplay(key, track.title, track.comment, track.id, track.trivia);
         }
 
@@ -453,6 +457,7 @@
             const cleanId = extractYouTubeId(videoId);
             db.ref('suggestions/' + key + '/votes').set(newVotes).then(() => {
                 if (newVotes >= VOTE_THRESHOLD) {
+                    hasActiveOverride = true;
                     db.ref('currentSong').set({
                         title: title,
                         videoId: cleanId,
