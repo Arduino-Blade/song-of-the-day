@@ -48,7 +48,8 @@
         /* Trivia Options */
         .trivia-options { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.8rem; }
         .trivia-btn { background: var(--surface); border: 1px solid var(--border); color: #fff; padding: 0.6rem; border-radius: 0.5rem; text-align: left; cursor: pointer; font-weight: 500; }
-        .trivia-btn:hover { border-color: var(--accent); }
+        .trivia-btn:hover:not(:disabled) { border-color: var(--accent); }
+        .trivia-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
         /* Pitch Box */
         .pitch-box { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; background: var(--surface-elevated); padding: 0.8rem; border-radius: 0.6rem; border: 1px solid var(--border); }
@@ -102,7 +103,10 @@
         <!-- Tab 2: Daily Trivia -->
         <div id="panel-trivia" class="panel">
             <div class="trivia-card">
-                <div style="font-size: 0.85rem; color: var(--accent); font-weight: bold; margin-bottom: 0.3rem;">DAILY MUSIC CHALLENGE (+100 Pts)</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                    <span style="font-size: 0.85rem; color: var(--accent); font-weight: bold;">DAILY MUSIC CHALLENGE (+100 Pts)</span>
+                    <span id="trivia-attempts" style="font-size: 0.8rem; color: var(--text-muted);">Attempts: 2 / 2</span>
+                </div>
                 <div id="trivia-question" style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.8rem;">Loading today's trivia question...</div>
                 <div class="trivia-options" id="trivia-options-box"></div>
                 <div id="trivia-result" style="margin-top: 0.8rem; font-weight: bold; font-size: 0.9rem;"></div>
@@ -137,7 +141,11 @@
 
         let currentUser = null;
         let activeSongKey = 'default_track';
-        const VOTE_THRESHOLD = 3; // Promotes when votes reach 3
+        const VOTE_THRESHOLD = 3;
+
+        // Trivia attempt tracker state
+        let remainingAttempts = 2;
+        let triviaAnsweredCorrectly = false;
 
         const curatedTracks = [
             { 
@@ -160,7 +168,6 @@
             }
         ];
 
-        // Auth State
         auth.onAuthStateChanged(user => {
             currentUser = user;
             if (user) {
@@ -203,7 +210,6 @@
             event.currentTarget.classList.add('active');
         }
 
-        // Init App & Listen to currentSong override
         function initApp() {
             const archiveEl = document.getElementById('archive-list');
             curatedTracks.forEach((t, index) => {
@@ -214,7 +220,6 @@
                 archiveEl.appendChild(div);
             });
 
-            // Listen for live promoted song or default to Day 1
             db.ref('currentSong').on('value', snap => {
                 const val = snap.val();
                 if (val && val.videoId) {
@@ -238,6 +243,11 @@
             document.getElementById('yt-player').src = `https://www.youtube.com/embed/${ytId}`;
             setupReactionListener(activeSongKey);
 
+            // Reset trivia attempts on song change
+            remainingAttempts = 2;
+            triviaAnsweredCorrectly = false;
+            document.getElementById('trivia-attempts').textContent = `Attempts: 2 / 2`;
+
             if (triviaObj) {
                 setupTrivia(triviaObj);
             } else {
@@ -248,32 +258,58 @@
 
         function setupTrivia(trivia) {
             document.getElementById('trivia-question').textContent = trivia.q;
+            renderTriviaButtons(trivia);
+        }
+
+        function renderTriviaButtons(trivia) {
             const box = document.getElementById('trivia-options-box');
             box.innerHTML = '';
-            document.getElementById('trivia-result').textContent = '';
+            const res = document.getElementById('trivia-result');
+
+            if (triviaAnsweredCorrectly) {
+                res.style.color = '#4ade80';
+                res.textContent = '🎉 Completed! You already solved this daily trivia.';
+                return;
+            }
+
+            if (remainingAttempts <= 0) {
+                res.style.color = '#f87171';
+                res.textContent = '🔒 Locked out! You used both attempts for today.';
+                return;
+            }
 
             trivia.options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
                 btn.className = 'trivia-btn';
                 btn.textContent = opt;
                 btn.onclick = () => {
-                    const res = document.getElementById('trivia-result');
+                    if (triviaAnsweredCorrectly || remainingAttempts <= 0) return;
+
                     if (idx === trivia.correct) {
+                        triviaAnsweredCorrectly = true;
                         res.style.color = '#4ade80';
                         res.textContent = '🎉 Correct! +100 Points awarded!';
                         if (currentUser) {
                             db.ref('users/' + currentUser.uid + '/points').transaction(p => (p || 50) + 100);
                         }
+                        renderTriviaButtons(trivia); // Lock buttons & show success
                     } else {
-                        res.style.color = '#f87171';
-                        res.textContent = '❌ Not quite! Try again.';
+                        remainingAttempts--;
+                        document.getElementById('trivia-attempts').textContent = `Attempts: ${remainingAttempts} / 2`;
+                        if (remainingAttempts > 0) {
+                            res.style.color = '#f87171';
+                            res.textContent = `❌ Incorrect! ${remainingAttempts} attempt remaining.`;
+                        } else {
+                            res.style.color = '#f87171';
+                            res.textContent = '❌ Incorrect! Out of attempts. Locked out for today.';
+                            renderTriviaButtons(trivia); // Lock buttons
+                        }
                     }
                 };
                 box.appendChild(btn);
             });
         }
 
-        // Vibe Reactions
         function sendReaction(type, emoji) {
             db.ref('reactions/' + activeSongKey + '/' + type).transaction(val => (val || 0) + 1);
             const el = document.createElement('div');
@@ -296,7 +332,6 @@
             });
         }
 
-        // Voting & Consensus Promotion Logic
         function submitPitch() {
             const title = document.getElementById('pitch-title').value;
             const videoId = document.getElementById('pitch-url').value;
@@ -333,14 +368,13 @@
             const newVotes = currentVotes + 1;
             db.ref('suggestions/' + key + '/votes').set(newVotes);
 
-            // Check consensus promotion threshold
             if (newVotes >= VOTE_THRESHOLD) {
                 db.ref('currentSong').set({
                     title: title,
                     videoId: videoId,
                     comment: `Promoted by community consensus (${newVotes} votes)!`
                 });
-                db.ref('suggestions/' + key).remove(); // Clear from board
+                db.ref('suggestions/' + key).remove();
                 alert(`🏆 "${title}" reached ${newVotes} votes and is now Today's Featured Song!`);
                 switchTab('player');
             }
