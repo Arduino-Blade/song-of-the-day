@@ -20,7 +20,7 @@
         .auth-btn { background: var(--accent); color: #000; border: none; padding: 0.4rem 0.8rem; border-radius: 0.4rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
 
         h1 { font-size: 1.3rem; margin: 0 0 0.8rem 0; text-align: center; color: var(--accent); }
-        .player-card { background: var(--surface-elevated); padding: 1rem; border-radius: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border); }
+        .player-card, .trivia-card { background: var(--surface-elevated); padding: 1rem; border-radius: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border); }
         .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 0.5rem; background: #000; margin-bottom: 0.8rem; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
         
@@ -40,11 +40,16 @@
         .panel.active { display: block; }
         .section-title { font-size: 1rem; margin: 1rem 0 0.5rem 0; color: var(--text-muted); font-weight: 600; }
         
-        /* Track & Vote Lists */
+        /* Lists & Buttons */
         .list-container { display: flex; flex-direction: column; gap: 0.5rem; max-height: 300px; overflow-y: auto; }
         .list-item { background: var(--surface-elevated); padding: 0.7rem 0.9rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
         .vote-btn { background: var(--accent); color: #000; border: none; padding: 0.3rem 0.6rem; border-radius: 0.4rem; font-weight: bold; cursor: pointer; }
         
+        /* Trivia Options */
+        .trivia-options { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.8rem; }
+        .trivia-btn { background: var(--surface); border: 1px solid var(--border); color: #fff; padding: 0.6rem; border-radius: 0.5rem; text-align: left; cursor: pointer; font-weight: 500; }
+        .trivia-btn:hover { border-color: var(--accent); }
+
         /* Pitch Box */
         .pitch-box { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; background: var(--surface-elevated); padding: 0.8rem; border-radius: 0.6rem; border: 1px solid var(--border); }
         .pitch-box input { background: var(--bg-dark); border: 1px solid var(--border); color: #fff; padding: 0.5rem; border-radius: 0.4rem; }
@@ -59,7 +64,7 @@
                 <div class="avatar" id="user-avatar">UD</div>
                 <div>
                     <div id="user-name" style="font-weight: bold; font-size: 0.9rem;">Guest User</div>
-                    <div class="user-stats" id="user-stats-text">🔥 0-Day Streak • 0 Pts</div>
+                    <div class="user-stats" id="user-stats-text">🔥 1-Day Streak • 50 Pts</div>
                 </div>
             </div>
             <button class="auth-btn" id="auth-action-btn" onclick="toggleAuth()">Sign In</button>
@@ -70,8 +75,8 @@
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
             <div class="nav-tab active" onclick="switchTab('player')">🎵 Player</div>
+            <div class="nav-tab" onclick="switchTab('trivia')">❓ Trivia</div>
             <div class="nav-tab" onclick="switchTab('voting')">🗳️ Vote</div>
-            <div class="nav-tab" onclick="switchTab('leaderboard')">🏆 Ranks</div>
             <div class="nav-tab" onclick="switchTab('archive')">⏱️ Archive</div>
         </div>
 
@@ -94,21 +99,25 @@
             </div>
         </div>
 
-        <!-- Tab 2: Voting & Pitching Board -->
+        <!-- Tab 2: Daily Trivia -->
+        <div id="panel-trivia" class="panel">
+            <div class="trivia-card">
+                <div style="font-size: 0.85rem; color: var(--accent); font-weight: bold; margin-bottom: 0.3rem;">DAILY MUSIC CHALLENGE (+100 Pts)</div>
+                <div id="trivia-question" style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.8rem;">Loading today's trivia question...</div>
+                <div class="trivia-options" id="trivia-options-box"></div>
+                <div id="trivia-result" style="margin-top: 0.8rem; font-weight: bold; font-size: 0.9rem;"></div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Voting & Pitching Board -->
         <div id="panel-voting" class="panel">
-            <div class="section-title">Community Suggestions & Voting</div>
+            <div class="section-title">Community Voting Board (Reaches 3 Votes = Promotes!)</div>
             <div class="list-container" id="suggestions-list"></div>
             <div class="pitch-box">
                 <input type="text" id="pitch-title" placeholder="Song Title & Artist...">
                 <input type="text" id="pitch-url" placeholder="YouTube Video ID (e.g. dQw4w9WgXcQ)...">
                 <button class="primary-btn" onclick="submitPitch()">Pitch Song (+25 Pts)</button>
             </div>
-        </div>
-
-        <!-- Tab 3: Leaderboard -->
-        <div id="panel-leaderboard" class="panel">
-            <div class="section-title">Family Leaderboard & Streaks</div>
-            <div class="list-container" id="leaderboard-list"></div>
         </div>
 
         <!-- Tab 4: Archive -->
@@ -128,14 +137,30 @@
 
         let currentUser = null;
         let activeSongKey = 'default_track';
+        const VOTE_THRESHOLD = 3; // Promotes when votes reach 3
 
         const curatedTracks = [
-            { id: 'dQw4w9WgXcQ', title: "Rick Astley - Never Gonna Give You Up", comment: "The ultimate family classic!" },
-            { id: 'L_LUpnjgPso', title: "Eagles - Hotel California", comment: "Such a lovely place." },
-            { id: 'kJQP7kiw5Fk', title: "Luis Fonsi - Despacito", comment: "Bringing the groove." }
+            { 
+                id: 'dQw4w9WgXcQ', 
+                title: "Rick Astley - Never Gonna Give You Up", 
+                comment: "The ultimate family classic!",
+                trivia: { q: "In what year was Never Gonna Give You Up released?", options: ["1985", "1987", "1991"], correct: 1 }
+            },
+            { 
+                id: 'L_LUpnjgPso', 
+                title: "Eagles - Hotel California", 
+                comment: "Such a lovely place.",
+                trivia: { q: "What instrument carries the famous closing outro melody?", options: ["Dual Electric Guitars", "Grand Piano", "Saxophone"], correct: 0 }
+            },
+            { 
+                id: 'kJQP7kiw5Fk', 
+                title: "Luis Fonsi - Despacito", 
+                comment: "Bringing the groove.",
+                trivia: { q: "Which artist features alongside Luis Fonsi on Despacito?", options: ["Daddy Yankee", "Bad Bunny", "J Balvin"], correct: 0 }
+            }
         ];
 
-        // Auth State Listener
+        // Auth State
         auth.onAuthStateChanged(user => {
             currentUser = user;
             if (user) {
@@ -147,7 +172,6 @@
                 document.getElementById('user-name').textContent = 'Guest User';
                 document.getElementById('user-avatar').textContent = 'UD';
                 document.getElementById('auth-action-btn').textContent = 'Sign In';
-                document.getElementById('user-stats-text').textContent = '🔥 0-Day Streak • 0 Pts';
             }
         });
 
@@ -155,7 +179,7 @@
             if (currentUser) {
                 auth.signOut();
             } else {
-                const email = prompt("Enter email for sign in/sign up:");
+                const email = prompt("Enter email:");
                 const pass = prompt("Enter password:");
                 if (email && pass) {
                     auth.signInWithEmailAndPassword(email, pass).catch(() => {
@@ -179,27 +203,74 @@
             event.currentTarget.classList.add('active');
         }
 
-        // Load Player & Roster
+        // Init App & Listen to currentSong override
         function initApp() {
             const archiveEl = document.getElementById('archive-list');
             curatedTracks.forEach((t, index) => {
                 const div = document.createElement('div');
                 div.className = 'list-item';
                 div.innerHTML = `<span>Day ${index + 1}: ${t.title}</span>`;
-                div.onclick = () => setSongDisplay('song_' + index, t.title, t.comment, t.id);
+                div.onclick = () => loadTrackData('song_' + index, t);
                 archiveEl.appendChild(div);
             });
-            setSongDisplay('song_0', curatedTracks[0].title, curatedTracks[0].comment, curatedTracks[0].id);
+
+            // Listen for live promoted song or default to Day 1
+            db.ref('currentSong').on('value', snap => {
+                const val = snap.val();
+                if (val && val.videoId) {
+                    setSongDisplay('promoted_song', val.title, val.comment || 'Community Consensus Pick!', val.videoId, val.trivia);
+                } else {
+                    loadTrackData('song_0', curatedTracks[0]);
+                }
+            });
+
             loadSuggestions();
-            loadLeaderboard();
         }
 
-        function setSongDisplay(key, title, comment, ytId) {
+        function loadTrackData(key, track) {
+            setSongDisplay(key, track.title, track.comment, track.id, track.trivia);
+        }
+
+        function setSongDisplay(key, title, comment, ytId, triviaObj) {
             activeSongKey = key;
             document.getElementById('song-title').textContent = title;
             document.getElementById('song-comment').textContent = comment ? `"${comment}"` : '';
             document.getElementById('yt-player').src = `https://www.youtube.com/embed/${ytId}`;
             setupReactionListener(activeSongKey);
+
+            if (triviaObj) {
+                setupTrivia(triviaObj);
+            } else {
+                document.getElementById('trivia-question').textContent = "No trivia for this community pick!";
+                document.getElementById('trivia-options-box').innerHTML = '';
+            }
+        }
+
+        function setupTrivia(trivia) {
+            document.getElementById('trivia-question').textContent = trivia.q;
+            const box = document.getElementById('trivia-options-box');
+            box.innerHTML = '';
+            document.getElementById('trivia-result').textContent = '';
+
+            trivia.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'trivia-btn';
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    const res = document.getElementById('trivia-result');
+                    if (idx === trivia.correct) {
+                        res.style.color = '#4ade80';
+                        res.textContent = '🎉 Correct! +100 Points awarded!';
+                        if (currentUser) {
+                            db.ref('users/' + currentUser.uid + '/points').transaction(p => (p || 50) + 100);
+                        }
+                    } else {
+                        res.style.color = '#f87171';
+                        res.textContent = '❌ Not quite! Try again.';
+                    }
+                };
+                box.appendChild(btn);
+            });
         }
 
         // Vibe Reactions
@@ -225,7 +296,7 @@
             });
         }
 
-        // Voting & Suggestions
+        // Voting & Consensus Promotion Logic
         function submitPitch() {
             const title = document.getElementById('pitch-title').value;
             const videoId = document.getElementById('pitch-url').value;
@@ -235,7 +306,8 @@
                 title: title,
                 videoId: videoId.trim(),
                 votes: 1,
-                pitchedBy: currentUser ? currentUser.email.split('@')[0] : 'Guest'
+                pitchedBy: currentUser ? currentUser.email.split('@')[0] : 'Guest',
+                trivia: { q: `What makes ${title} a great family pick?`, options: ["The beat", "The nostalgia", "Everything"], correct: 2 }
             });
             document.getElementById('pitch-title').value = '';
             document.getElementById('pitch-url').value = '';
@@ -251,31 +323,27 @@
                     const div = document.createElement('div');
                     div.className = 'list-item';
                     div.innerHTML = `<div><strong>${item.title}</strong><br><small style="color:var(--text-muted)">Pitched by @${item.pitchedBy || 'Family'} • ${item.votes || 0} Votes</small></div>
-                                     <button class="vote-btn" onclick="voteSong('${key}')">👍 Vote</button>`;
+                                     <button class="vote-btn" onclick="voteSong('${key}', ${item.votes || 0}, '${item.title}', '${item.videoId}')">👍 Vote</button>`;
                     list.appendChild(div);
                 });
             });
         }
 
-        function voteSong(key) {
-            db.ref('suggestions/' + key + '/votes').transaction(val => (val || 0) + 1);
-        }
+        function voteSong(key, currentVotes, title, videoId) {
+            const newVotes = currentVotes + 1;
+            db.ref('suggestions/' + key + '/votes').set(newVotes);
 
-        // Leaderboard Mock
-        function loadLeaderboard() {
-            const lb = document.getElementById('leaderboard-list');
-            const family = [
-                { name: 'Uncle Dad', streak: 14, points: 1450 },
-                { name: 'Sarah', streak: 9, points: 920 },
-                { name: 'Arduino-Blade', streak: 5, points: 680 }
-            ];
-            lb.innerHTML = '';
-            family.forEach((f, idx) => {
-                const div = document.createElement('div');
-                div.className = 'list-item';
-                div.innerHTML = `<span>#${idx+1} <strong>${f.name}</strong></span><span>🔥 ${f.streak} days • ${f.points} pts</span>`;
-                lb.appendChild(div);
-            });
+            // Check consensus promotion threshold
+            if (newVotes >= VOTE_THRESHOLD) {
+                db.ref('currentSong').set({
+                    title: title,
+                    videoId: videoId,
+                    comment: `Promoted by community consensus (${newVotes} votes)!`
+                });
+                db.ref('suggestions/' + key).remove(); // Clear from board
+                alert(`🏆 "${title}" reached ${newVotes} votes and is now Today's Featured Song!`);
+                switchTab('player');
+            }
         }
 
         initApp();
