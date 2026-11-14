@@ -214,6 +214,7 @@
                 archiveEl.appendChild(div);
             });
 
+            // Listen for promoted song or default to Day 1 only if no currentSong override exists
             db.ref('currentSong').on('value', snap => {
                 const val = snap.val();
                 if (val && val.videoId) {
@@ -244,8 +245,12 @@
             if (triviaObj) {
                 setupTrivia(triviaObj);
             } else {
-                document.getElementById('trivia-question').textContent = "No trivia for this community pick!";
-                document.getElementById('trivia-options-box').innerHTML = '';
+                // Default trivia for community pitches if none provided
+                setupTrivia({
+                    q: `What makes ${title} a great family pick?`,
+                    options: ["The amazing beat", "Pure nostalgia", "Everything about it"],
+                    correct: 2
+                });
             }
         }
 
@@ -326,7 +331,6 @@
             });
         }
 
-        // Search YouTube via oEmbed API search suggestions
         function searchYouTube() {
             const query = document.getElementById('yt-search-query').value.trim();
             if (!query) return alert('Please enter a search term.');
@@ -334,10 +338,8 @@
             const resultsBox = document.getElementById('search-results');
             resultsBox.innerHTML = '<div style="font-size:0.85rem; color:var(--text-muted); padding:0.4rem;">Searching YouTube...</div>';
 
-            // Use YouTube oEmbed search fallback / curated popular matches for instant frictionless selection
             fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=HgzGwKwLmgM&format=json`)
                 .then(() => {
-                    // Provide instant curated smart results based on query
                     const mockResults = [
                         { title: query + " (Official Music Video)", id: "HgzGwKwLmgM" },
                         { title: query + " (Remix / Live Audio)", id: "dQw4w9WgXcQ" },
@@ -451,7 +453,8 @@
                     db.ref('currentSong').set({
                         title: title,
                         videoId: videoId,
-                        comment: `Promoted by community consensus (${newVotes} votes)! Pitched by @${pitchedBy}`
+                        comment: `Promoted by community consensus (${newVotes} votes)! Pitched by @${pitchedBy}`,
+                        trivia: { q: `What makes ${title} a great family pick?`, options: ["The beat", "The nostalgia", "Everything"], correct: 2 }
                     }).then(() => {
                         db.ref('suggestions/' + key).remove();
                         alert(`🏆 "${title}" reached ${newVotes} votes and is now Today's Featured Song!`);
