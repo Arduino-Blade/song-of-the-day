@@ -214,11 +214,11 @@
                 archiveEl.appendChild(div);
             });
 
-            // Listen for promoted song or default to Day 1 only if no currentSong override exists
             db.ref('currentSong').on('value', snap => {
                 const val = snap.val();
                 if (val && val.videoId) {
-                    setSongDisplay('promoted_song', val.title, val.comment || 'Community Consensus Pick!', val.videoId, val.trivia);
+                    const cleanId = extractYouTubeId(val.videoId);
+                    setSongDisplay('promoted_song', val.title, val.comment || 'Community Consensus Pick!', cleanId, val.trivia);
                 } else {
                     loadTrackData('song_0', curatedTracks[0]);
                 }
@@ -233,9 +233,10 @@
 
         function setSongDisplay(key, title, comment, ytId, triviaObj) {
             activeSongKey = key;
+            const cleanId = extractYouTubeId(ytId);
             document.getElementById('song-title').textContent = title;
             document.getElementById('song-comment').textContent = comment ? `"${comment}"` : '';
-            document.getElementById('yt-player').src = `https://www.youtube.com/embed/${ytId}`;
+            document.getElementById('yt-player').src = `https://www.youtube.com/embed/${cleanId}`;
             setupReactionListener(activeSongKey);
 
             remainingAttempts = 2;
@@ -245,7 +246,6 @@
             if (triviaObj) {
                 setupTrivia(triviaObj);
             } else {
-                // Default trivia for community pitches if none provided
                 setupTrivia({
                     q: `What makes ${title} a great family pick?`,
                     options: ["The amazing beat", "Pure nostalgia", "Everything about it"],
@@ -331,6 +331,15 @@
             });
         }
 
+        function extractYouTubeId(urlOrId) {
+            if (!urlOrId) return 'dQw4w9WgXcQ';
+            const cleaned = urlOrId.trim();
+            if (cleaned.length === 11 && !cleaned.includes('/')) return cleaned;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = cleaned.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : cleaned;
+        }
+
         function searchYouTube() {
             const query = document.getElementById('yt-search-query').value.trim();
             if (!query) return alert('Please enter a search term.');
@@ -360,9 +369,10 @@
         }
 
         function pitchSelectedSearch(title, videoId) {
+            const cleanId = extractYouTubeId(videoId);
             db.ref('suggestions').push({
                 title: title,
-                videoId: videoId,
+                videoId: cleanId,
                 votes: 1,
                 pitchedBy: currentUser ? currentUser.email.split('@')[0] : 'Guest',
                 trivia: { q: `What makes ${title} a great family pick?`, options: ["The beat", "The nostalgia", "Everything"], correct: 2 }
@@ -374,15 +384,6 @@
             }
             alert(`✅ Pitched "${title}" successfully! (+25 Pts)`);
             switchTab('voting');
-        }
-
-        function extractYouTubeId(urlOrId) {
-            if (!urlOrId) return '';
-            const cleaned = urlOrId.trim();
-            if (cleaned.length === 11 && !cleaned.includes('/')) return cleaned;
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = cleaned.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : cleaned;
         }
 
         function submitPitch() {
@@ -428,7 +429,8 @@
                 }
 
                 Object.entries(data).forEach(([key, item]) => {
-                    const thumbUrl = `https://img.youtube.com/vi/${item.videoId}/mqdefault.jpg`;
+                    const cleanId = extractYouTubeId(item.videoId);
+                    const thumbUrl = `https://img.youtube.com/vi/${cleanId}/mqdefault.jpg`;
                     const div = document.createElement('div');
                     div.className = 'list-item';
                     div.innerHTML = `
@@ -439,7 +441,7 @@
                                 <small style="color:var(--text-muted)">Pitched by @${item.pitchedBy || 'Family'} • 🔥 ${item.votes || 0} Votes</small>
                             </div>
                         </div>
-                        <button class="vote-btn" onclick="voteSong('${key}', ${item.votes || 0}, '${item.title.replace(/'/g, "\\'")}', '${item.videoId}', '${item.pitchedBy || 'Family'}')">👍 Vote</button>
+                        <button class="vote-btn" onclick="voteSong('${key}', ${item.votes || 0}, '${item.title.replace(/'/g, "\\'")}', '${cleanId}', '${item.pitchedBy || 'Family'}')">👍 Vote</button>
                     `;
                     list.appendChild(div);
                 });
@@ -448,11 +450,12 @@
 
         function voteSong(key, currentVotes, title, videoId, pitchedBy) {
             const newVotes = currentVotes + 1;
+            const cleanId = extractYouTubeId(videoId);
             db.ref('suggestions/' + key + '/votes').set(newVotes).then(() => {
                 if (newVotes >= VOTE_THRESHOLD) {
                     db.ref('currentSong').set({
                         title: title,
-                        videoId: videoId,
+                        videoId: cleanId,
                         comment: `Promoted by community consensus (${newVotes} votes)! Pitched by @${pitchedBy}`,
                         trivia: { q: `What makes ${title} a great family pick?`, options: ["The beat", "The nostalgia", "Everything"], correct: 2 }
                     }).then(() => {
