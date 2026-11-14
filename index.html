@@ -1,3 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uncle Dad's Song of the Day</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <style>
+        :root { --bg-dark: #090d16; --accent: #38bdf8; }
+        body { font-family: sans-serif; background: var(--bg-dark); color: #fff; padding: 1rem; }
+        .app-shell { max-width: 580px; margin: auto; background: #131b2e; padding: 1rem; border-radius: 1rem; }
+        .reaction-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-top: 0.7rem; }
+        .reaction-pill { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.5rem; border-radius: 0.5rem; cursor: pointer; font-weight: bold; }
+        .floating-emoji { position: fixed; pointer-events: none; z-index: 99999; font-size: 1.8rem; animation: floatUpAndFade 1.6s ease-out forwards; }
+        @keyframes floatUpAndFade { 0% { transform: translateY(0) scale(0.6); opacity: 1; } 100% { transform: translateY(-130px) scale(1.3); opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <h1>Uncle Dad's Song of the Day</h1>
+        <div class="reaction-bar">
+            <button class="reaction-pill" onclick="sendReaction('fire', '🔥')">🔥 <span id="cnt-fire">0</span></button>
+            <button class="reaction-pill" onclick="sendReaction('classic', '🎸')">🎸 <span id="cnt-classic">0</span></button>
+            <button class="reaction-pill" onclick="sendReaction('groove', '🕺')">🕺 <span id="cnt-groove">0</span></button>
+            <button class="reaction-pill" onclick="sendReaction('skip', '💤')">💤 <span id="cnt-skip">0</span></button>
+        </div>
+    </div>
+    <script>
+        firebase.initializeApp({ apiKey: "AIzaSyAzcgw5rzUbWERIhLinXv_cNZe9IkG9deM", databaseURL: "https://uncle-dads-song-of-the-day-default-rtdb.firebaseio.com" });
+        const db = firebase.database();
+        function sendReaction(type, emoji) {
+            db.ref('reactions/default_track/' + type).transaction(val => (val || 0) + 1);
+            const el = document.createElement('div');
+            el.className = 'floating-emoji'; el.textContent = emoji;
+            el.style.left = (window.innerWidth / 2 + (Math.random() * 100 - 50)) + 'px';
+            el.style.bottom = '100px'; document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1600);
+        }
+        db.ref('reactions/default_track').on('value', snap => {
+            const val = snap.val() || {};
+            document.getElementById('cnt-fire').textContent = val.fire || 0;
+            document.getElementById('cnt-classic').textContent = val.classic || 0;
+            document.getElementById('cnt-groove').textContent = val.groove || 0;
+            document.getElementById('cnt-skip').textContent = val.skip || 0;
+        });
+    </script>
+</body>
+</html>
