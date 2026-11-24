@@ -3,476 +3,748 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uncle Dad's Song of the Day</title>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <title>Uncle Dad's Music Festival • Song of the Day</title>
     <style>
-        :root { --bg-dark: #090d16; --surface: #131b2e; --surface-elevated: #1e293b; --accent: #38bdf8; --text-main: #f8fafc; --text-muted: #94a3b8; --border: rgba(255, 255, 255, 0.1); }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-dark); color: var(--text-main); margin: 0; padding: 1rem; padding-bottom: 5rem; }
-        .app-shell { max-width: 600px; margin: auto; background: var(--surface); padding: 1.2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--border); }
-        
-        .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border); }
-        .profile-info { display: flex; align-items: center; gap: 0.6rem; }
-        .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; }
-        .user-stats { font-size: 0.85rem; color: var(--text-muted); }
-        .auth-btn { background: var(--accent); color: #000; border: none; padding: 0.4rem 0.8rem; border-radius: 0.4rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        :root {
+            --bg-night: #0b0f19;
+            --stage-surface: #141b2d;
+            --stage-card: #1d263b;
+            --sunset-amber: #f59e0b;
+            --festival-coral: #f97316;
+            --stage-gold: #fde047;
+            --teal-pass: #14b8a6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(245, 158, 11, 0.25);
+        }
 
-        h1 { font-size: 1.3rem; margin: 0 0 0.8rem 0; text-align: center; color: var(--accent); }
-        .player-card, .trivia-card { background: var(--surface-elevated); padding: 1rem; border-radius: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border); }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 0.5rem; background: #000; margin-bottom: 0.8rem; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-        
-        .reaction-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-top: 0.8rem; }
-        .reaction-pill { background: var(--surface); border: 1px solid var(--border); color: var(--text-main); padding: 0.5rem 0.2rem; border-radius: 0.6rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.35rem; transition: all 0.2s; }
-        .reaction-pill:hover { border-color: var(--accent); background: rgba(56, 189, 248, 0.12); }
-        .floating-emoji { position: fixed; pointer-events: none; z-index: 99999; font-size: 1.8rem; animation: floatUpAndFade 1.6s ease-out forwards; }
-        @keyframes floatUpAndFade { 0% { transform: translateY(0px) scale(0.6); opacity: 1; } 100% { transform: translateY(-130px) scale(1.3); opacity: 0; } }
+        * { box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(circle at top, #1e1b4b 0%, var(--bg-night) 65%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 1rem;
+            padding-bottom: 4rem;
+            min-height: 100vh;
+        }
 
-        .nav-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-bottom: 1rem; }
-        .nav-tab { background: var(--surface-elevated); border: 1px solid var(--border); color: var(--text-muted); padding: 0.6rem; text-align: center; border-radius: 0.6rem; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
-        .nav-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .festival-shell {
+            max-width: 640px;
+            margin: auto;
+            background: var(--stage-surface);
+            border-radius: 1rem;
+            border: 2px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.65);
+            overflow: hidden;
+        }
 
-        .panel { display: none; }
+        /* Festival Wristband Header */
+        .wristband-bar {
+            background: linear-gradient(90deg, var(--festival-coral), var(--sunset-amber), var(--teal-pass));
+            color: #090d16;
+            padding: 0.55rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 800;
+            font-size: 0.8rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .reset-pill {
+            background: rgba(9, 13, 22, 0.85);
+            color: var(--stage-gold);
+            border: none;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .reset-pill:hover { background: #000; }
+
+        .header-banner {
+            padding: 1.2rem 1.2rem 0.6rem 1.2rem;
+            text-align: center;
+        }
+        .stage-badge {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--sunset-amber);
+            border: 1px solid var(--sunset-amber);
+            padding: 0.2rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+        h1 {
+            margin: 0;
+            font-size: 1.45rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(90deg, #fff, var(--stage-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.45rem;
+            padding: 0.8rem 1.2rem;
+        }
+        .nav-tab {
+            background: var(--stage-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 0.6rem 0.3rem;
+            border-radius: 0.6rem;
+            font-weight: 700;
+            font-size: 0.82rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s;
+        }
+        .nav-tab.active {
+            background: linear-gradient(135deg, var(--sunset-amber), var(--festival-coral));
+            color: #090d16;
+            border-color: var(--stage-gold);
+        }
+
+        .panel { display: none; padding: 0 1.2rem 1.2rem 1.2rem; }
         .panel.active { display: block; }
-        .section-title { font-size: 1rem; margin: 1rem 0 0.5rem 0; color: var(--text-muted); font-weight: 600; }
-        
-        .list-container { display: flex; flex-direction: column; gap: 0.6rem; max-height: 320px; overflow-y: auto; }
-        .list-item { background: var(--surface-elevated); padding: 0.7rem; border-radius: 0.6rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); gap: 0.8rem; }
-        .suggestion-card-left { display: flex; align-items: center; gap: 0.8rem; }
-        .suggestion-thumb { width: 64px; height: 42px; border-radius: 0.3rem; object-fit: cover; background: #000; flex-shrink: 0; }
-        .vote-btn { background: var(--accent); color: #000; border: none; padding: 0.4rem 0.8rem; border-radius: 0.4rem; font-weight: bold; cursor: pointer; white-space: nowrap; }
-        
-        .trivia-options { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.8rem; }
-        .trivia-btn { background: var(--surface); border: 1px solid var(--border); color: #fff; padding: 0.6rem; border-radius: 0.5rem; text-align: left; cursor: pointer; font-weight: 500; }
-        .trivia-btn:hover:not(:disabled) { border-color: var(--accent); }
-        .trivia-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        .pitch-box { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; background: var(--surface-elevated); padding: 0.9rem; border-radius: 0.6rem; border: 1px solid var(--border); }
-        .pitch-box input { background: var(--bg-dark); border: 1px solid var(--border); color: #fff; padding: 0.6rem; border-radius: 0.4rem; }
-        .primary-btn { background: var(--accent); color: #000; border: none; padding: 0.6rem; border-radius: 0.4rem; font-weight: bold; cursor: pointer; }
+        /* Main Stage Player */
+        .stage-card {
+            background: var(--stage-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.85rem;
+            padding: 1rem;
+        }
+        .track-meta-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+        }
+        .track-title {
+            font-size: 1.12rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .yt-fallback-link {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--stage-gold);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.35rem 0.65rem;
+            border-radius: 0.4rem;
+            border: 1px solid rgba(253, 224, 71, 0.3);
+            white-space: nowrap;
+        }
+        .yt-fallback-link:hover { background: rgba(253, 224, 71, 0.18); }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 0.6rem;
+            background: #000;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            margin-bottom: 0.75rem;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .shoutout-box {
+            background: rgba(11, 15, 25, 0.6);
+            border-left: 3px solid var(--sunset-amber);
+            padding: 0.6rem 0.8rem;
+            border-radius: 0 0.4rem 0.4rem 0;
+            font-size: 0.88rem;
+            color: #e2e8f0;
+            margin-bottom: 0.9rem;
+        }
+
+        /* Crowd Energy Reactions */
+        .crowd-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+        .reaction-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.45rem;
+        }
+        .reaction-btn {
+            background: var(--stage-surface);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            padding: 0.55rem 0.2rem;
+            border-radius: 0.55rem;
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            transition: transform 0.1s, border-color 0.15s;
+        }
+        .reaction-btn:hover { border-color: var(--sunset-amber); }
+        .reaction-btn:active { transform: scale(0.95); }
+
+        .floating-emoji {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            font-size: 1.9rem;
+            animation: floatStage 1.4s ease-out forwards;
+        }
+        @keyframes floatStage {
+            0% { transform: translateY(0) scale(0.7); opacity: 1; }
+            100% { transform: translateY(-130px) scale(1.3); opacity: 0; }
+        }
+
+        /* Backstage Trivia */
+        .trivia-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.6rem;
+        }
+        .trivia-q {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.9rem;
+            line-height: 1.4;
+        }
+        .trivia-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .trivia-opt-btn {
+            background: var(--stage-surface);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 0.7rem 0.9rem;
+            border-radius: 0.55rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .trivia-opt-btn:hover:not(:disabled) { border-color: var(--sunset-amber); background: rgba(245, 158, 11, 0.1); }
+        .trivia-opt-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+        .trivia-feedback {
+            margin-top: 0.85rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Encore Voting Board */
+        .section-heading {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--sunset-amber);
+            font-weight: 800;
+            margin-bottom: 0.6rem;
+        }
+        .list-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            max-height: 340px;
+            overflow-y: auto;
+        }
+        .track-row {
+            background: var(--stage-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.65rem;
+            padding: 0.65rem 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.7rem;
+        }
+        .track-row-left {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            min-width: 0;
+        }
+        .thumb-img {
+            width: 60px;
+            height: 40px;
+            border-radius: 0.35rem;
+            object-fit: cover;
+            background: #000;
+            flex-shrink: 0;
+        }
+        .action-btn {
+            background: linear-gradient(135deg, var(--sunset-amber), var(--festival-coral));
+            color: #090d16;
+            border: none;
+            padding: 0.45rem 0.75rem;
+            border-radius: 0.45rem;
+            font-weight: 800;
+            font-size: 0.8rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .pitch-form {
+            margin-top: 1rem;
+            background: var(--stage-card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+        .pitch-form input {
+            background: var(--bg-night);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.45rem;
+            font-size: 0.88rem;
+        }
     </style>
 </head>
 <body>
-    <div class="app-shell">
-        <div class="profile-header">
-            <div class="profile-info">
-                <div class="avatar" id="user-avatar">UD</div>
-                <div>
-                    <div id="user-name" style="font-weight: bold; font-size: 0.9rem;">Guest User</div>
-                    <div class="user-stats" id="user-stats-text">🔥 1-Day Streak • 50 Pts</div>
-                </div>
-            </div>
-            <button class="auth-btn" id="auth-action-btn" onclick="toggleAuth()">Sign In</button>
+    <div class="festival-shell">
+        <!-- Wristband Status Bar -->
+        <div class="wristband-bar">
+            <span>🎟️ VIP PASS • <span id="vip-points">100</span> PTS</span>
+            <button class="reset-pill" onclick="resetFestivalState()">↺ Reset Demo</button>
         </div>
 
-        <h1>🎵 Uncle Dad's Song of the Day</h1>
+        <!-- Festival Header -->
+        <div class="header-banner">
+            <div class="stage-badge" id="stage-status-badge">MAIN STAGE • DAILY DROP</div>
+            <h1>Uncle Dad's Music Festival</h1>
+        </div>
 
+        <!-- Navigation -->
         <div class="nav-tabs">
-            <div class="nav-tab active" onclick="switchTab('player')">🎵 Player</div>
-            <div class="nav-tab" onclick="switchTab('trivia')">❓ Trivia</div>
-            <div class="nav-tab" onclick="switchTab('voting')">🗳️ Vote</div>
-            <div class="nav-tab" onclick="switchTab('archive')">⏱️ Archive</div>
+            <button class="nav-tab active" id="tab-stage" onclick="switchTab('stage')">🎸 Stage</button>
+            <button class="nav-tab" id="tab-trivia" onclick="switchTab('trivia')">🎤 Trivia</button>
+            <button class="nav-tab" id="tab-encore" onclick="switchTab('encore')">🔥 Encore Vote</button>
+            <button class="nav-tab" id="tab-lineup" onclick="switchTab('lineup')">📅 Setlist</button>
         </div>
 
-        <div id="panel-player" class="panel active">
-            <div class="player-card">
-                <div id="song-title" style="font-weight: bold; margin-bottom: 0.5rem; font-size: 1.1rem;">Loading Today's Track...</div>
-                <div class="video-container">
-                    <iframe id="yt-player" src="" allowfullscreen></iframe>
+        <!-- PANEL 1: MAIN STAGE PLAYER -->
+        <div id="panel-stage" class="panel active">
+            <div class="stage-card">
+                <div class="track-meta-top">
+                    <div class="track-title" id="player-title">Loading Headliner...</div>
+                    <a class="yt-fallback-link" id="player-yt-link" href="https://www.youtube.com" target="_blank" rel="noopener">▶ Watch on YouTube</a>
                 </div>
-                <div id="song-comment" style="color: var(--text-muted); font-size: 0.9rem; font-style: italic; margin-bottom: 0.5rem;"></div>
 
-                <div class="reaction-bar">
-                    <button class="reaction-pill" onclick="sendReaction('fire', '🔥')">🔥 <span id="cnt-fire">0</span></button>
-                    <button class="reaction-pill" onclick="sendReaction('classic', '🎸')">🎸 <span id="cnt-classic">0</span></button>
-                    <button class="reaction-pill" onclick="sendReaction('groove', '🕺')">🕺 <span id="cnt-groove">0</span></button>
-                    <button class="reaction-pill" onclick="sendReaction('skip', '💤')">💤 <span id="cnt-skip">0</span></button>
+                <div class="video-wrapper">
+                    <iframe id="yt-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+
+                <div class="shoutout-box" id="player-shoutout"></div>
+
+                <div class="crowd-label">Crowd Energy</div>
+                <div class="reaction-grid">
+                    <button class="reaction-btn" onclick="triggerReaction('fire', '🔥')">🔥 <span id="rx-fire">0</span></button>
+                    <button class="reaction-btn" onclick="triggerReaction('horn', '🤘')">🤘 <span id="rx-horn">0</span></button>
+                    <button class="reaction-btn" onclick="triggerReaction('dance', '💃')">💃 <span id="rx-dance">0</span></button>
+                    <button class="reaction-btn" onclick="triggerReaction('encore', '🙌')">🙌 <span id="rx-encore">0</span></button>
                 </div>
             </div>
         </div>
 
+        <!-- PANEL 2: BACKSTAGE TRIVIA -->
         <div id="panel-trivia" class="panel">
-            <div class="trivia-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
-                    <span style="font-size: 0.85rem; color: var(--accent); font-weight: bold;">DAILY MUSIC CHALLENGE (+100 Pts)</span>
-                    <span id="trivia-attempts" style="font-size: 0.8rem; color: var(--text-muted);">Attempts: 2 / 2</span>
+            <div class="stage-card">
+                <div class="trivia-header">
+                    <span style="color: var(--sunset-amber); font-weight: 800; font-size: 0.8rem;">BACKSTAGE PASS CHALLENGE (+100 PTS)</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 700;" id="trivia-tries-label">Tries: 2 / 2</span>
                 </div>
-                <div id="trivia-question" style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.8rem;">Loading today's trivia question...</div>
-                <div class="trivia-options" id="trivia-options-box"></div>
-                <div id="trivia-result" style="margin-top: 0.8rem; font-weight: bold; font-size: 0.9rem;"></div>
+                <div class="trivia-q" id="trivia-question">Loading trivia...</div>
+                <div class="trivia-options" id="trivia-options"></div>
+                <div class="trivia-feedback" id="trivia-feedback"></div>
             </div>
         </div>
 
-        <div id="panel-voting" class="panel">
-            <div class="section-title">Community Voting Board (Reaches 3 Votes = Promotes!)</div>
-            <div class="list-container" id="suggestions-list"></div>
-            <div class="pitch-box">
-                <div style="font-size: 0.85rem; color: var(--accent); font-weight: bold;">🔍 Search YouTube & Pitch</div>
-                <input type="text" id="yt-search-query" placeholder="Search YouTube (e.g. Bohemian Rhapsody)..." onkeydown="if(event.key==='Enter') searchYouTube()">
-                <button class="primary-btn" style="background: var(--surface); color: var(--accent); border: 1px solid var(--accent);" onclick="searchYouTube()">Search YouTube</button>
-                <div id="search-results" style="display: flex; flex-direction: column; gap: 0.4rem; max-height: 200px; overflow-y: auto;"></div>
-                
-                <div style="border-top: 1px solid var(--border); margin-top: 0.5rem; padding-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">Or paste a direct YouTube link below:</div>
-                <input type="text" id="pitch-title" placeholder="Song Title & Artist...">
-                <input type="text" id="pitch-url" placeholder="Paste YouTube Link or Video ID...">
-                <button class="primary-btn" onclick="submitPitch()">Pitch Song (+25 Pts)</button>
+        <!-- PANEL 3: ENCORE VOTING BOARD -->
+        <div id="panel-encore" class="panel">
+            <div class="section-heading">Encore Stage Vote (3 Votes = Headlines Main Stage!)</div>
+            <div class="list-stack" id="encore-list"></div>
+
+            <div class="pitch-form">
+                <div style="font-weight: 800; font-size: 0.88rem; color: var(--stage-gold);">🎤 Pitch a Track to the Crowd (+25 Pts)</div>
+                <input type="text" id="pitch-title" placeholder="Artist & Song Title (e.g. Fleetwood Mac - Dreams)">
+                <input type="text" id="pitch-url" placeholder="Paste YouTube Link or 11-character Video ID">
+                <button class="action-btn" style="padding: 0.65rem;" onclick="pitchTrack()">Submit to Encore Board</button>
             </div>
         </div>
 
-        <div id="panel-archive" class="panel">
-            <div class="section-title">30-Day Curated Archive</div>
-            <div class="list-container" id="archive-list"></div>
+        <!-- PANEL 4: 30-DAY FESTIVAL SETLIST -->
+        <div id="panel-lineup" class="panel">
+            <div class="section-heading">30-Day Festival Lineup (Tap Any Set to Play)</div>
+            <div class="list-stack" id="setlist-container"></div>
         </div>
     </div>
 
     <script>
-        firebase.initializeApp({ 
-            apiKey: "AIzaSyAzcgw5rzUbWERIhLinXv_cNZe9IkG9deM", 
-            databaseURL: "https://uncle-dads-song-of-the-day-default-rtdb.firebaseio.com" 
-        });
-        const db = firebase.database();
-        const auth = firebase.auth();
+        const VOTE_GOAL = 3;
 
-        let currentUser = null;
-        let activeSongKey = 'default_track';
-        const VOTE_THRESHOLD = 3;
-
-        let remainingAttempts = 2;
-        let triviaAnsweredCorrectly = false;
-        let hasActiveOverride = false;
-
-        const curatedTracks = [
-            { 
-                id: 'dQw4w9WgXcQ', 
-                title: "Rick Astley - Never Gonna Give You Up", 
-                comment: "The ultimate family classic!",
-                trivia: { q: "In what year was Never Gonna Give You Up released?", options: ["1985", "1987", "1991"], correct: 1 }
-            },
-            { 
-                id: 'L_LUpnjgPso', 
-                title: "Eagles - Hotel California", 
-                comment: "Such a lovely place.",
-                trivia: { q: "What instrument carries the famous closing outro melody?", options: ["Dual Electric Guitars", "Grand Piano", "Saxophone"], correct: 0 }
-            },
-            { 
-                id: 'kJQP7kiw5Fk', 
-                title: "Luis Fonsi - Despacito", 
-                comment: "Bringing the groove.",
-                trivia: { q: "Which artist features alongside Luis Fonsi on Despacito?", options: ["Daddy Yankee", "Bad Bunny", "J Balvin"], correct: 0 }
-            }
+        // 30-Day Curated Festival Setlist
+        const FESTIVAL_SETLIST = [
+            { day: 1, theme: "Motown Monday", title: "Stevie Wonder - Sir Duke", videoId: "s7D_ZOiI4vI", shoutout: "Opening the festival with Stevie Wonder's joyful brass tribute to Duke Ellington!", q: "Who is the primary jazz pioneer honored in 'Sir Duke'?", opts: ["Duke Ellington", "Miles Davis", "Louis Armstrong"], ans: 0 },
+            { day: 2, theme: "Timeless Tuesday", title: "Fleetwood Mac - The Chain", videoId: "JDG2GHq_fO4", shoutout: "That iconic bassline breakdown brings the whole festival field together.", q: "What is unique about the songwriting credit for 'The Chain'?", opts: ["Written solo by Stevie Nicks", "All five band members share credit", "Adapted from a folk hymn"], ans: 1 },
+            { day: 3, theme: "One-Hit Wednesday", title: "A-ha - Take On Me", videoId: "djV11Xbc914", shoutout: "Morten Harket's soaring falsetto and classic 1985 pencil-sketch animation.", q: "What animation style made the 'Take On Me' video famous?", opts: ["Rotoscoping", "Claymation", "CGI"], ans: 0 },
+            { day: 4, theme: "Throwback Thursday", title: "Weezer - Buddy Holly", videoId: "kemivUKb4f4", shoutout: "1994 power-pop crunch straight from Arnold's Diner.", q: "Which classic TV show set was recreated in the music video?", opts: ["Happy Days", "The Brady Bunch", "Cheers"], ans: 0 },
+            { day: 5, theme: "Funk Friday", title: "Earth, Wind & Fire - September", videoId: "Gs069dndIYk", shoutout: "Friday night horns! Impossible to stand still when that groove drops.", q: "What did co-writer Allee Willis say 'ba-de-ya' means?", opts: ["Swahili for joy", "Nothing—it just feels great", "Maurice White's nickname"], ans: 1 },
+            { day: 6, theme: "80s Synth Saturday", title: "Rick Astley - Never Gonna Give You Up", videoId: "dQw4w9WgXcQ", shoutout: "Saturday night festival staple—pure 1987 dance-pop perfection.", q: "Which production trio created this 1987 smash hit?", opts: ["Stock Aitken Waterman", "Jam & Lewis", "The Dust Brothers"], ans: 0 },
+            { day: 7, theme: "Sunday Chill", title: "Bill Withers - Lovely Day", videoId: "bEeaS6fuUoA", shoutout: "Easy Sunday morning sunshine with one of soul music's longest held notes.", q: "How long does Bill Withers hold the high note near the end?", opts: ["10 seconds", "18 seconds", "25 seconds"], ans: 1 },
+            { day: 8, theme: "Motown Monday", title: "The Temptations - Ain't Too Proud to Beg", videoId: "3s3SNHIH0i0", shoutout: "Raw Motown grit and unstoppable rhythm section energy.", q: "Why was the track pitched higher than David Ruffin's comfort zone?", opts: ["To bring out a raw, pleading grit", "Sheet music typo", "Tape speed error"], ans: 0 },
+            { day: 9, theme: "Timeless Tuesday", title: "Led Zeppelin - Ramble On", videoId: "a3HemKGDavw", shoutout: "Acoustic warmth meets thunderous stadium rock riffs.", q: "Which fantasy world is referenced in the lyrics of 'Ramble On'?", opts: ["Middle-earth (Mordor & Gollum)", "Narnia", "Westeros"], ans: 0 },
+            { day: 10, theme: "One-Hit Wednesday", title: "Dexys Midnight Runners - Come On Eileen", videoId: "rVmtbO8Awh4", shoutout: "Celtic fiddles and a tempo acceleration that gets the whole crowd jumping.", q: "Which folk instrument drives the intro of 'Come On Eileen'?", opts: ["Fiddle", "Banjo", "Bagpipes"], ans: 0 },
+            { day: 11, theme: "Throwback Thursday", title: "Outkast - Hey Ya!", videoId: "PWgvGjAhvIw", shoutout: "André 3000 turning the festival grounds into a 2003 dance party.", q: "Which camera company issued a warning after this song came out?", opts: ["Polaroid", "Kodak", "Nikon"], ans: 0 },
+            { day: 12, theme: "Funk Friday", title: "Kool & The Gang - Get Down On It", videoId: "qchPLaiKocI", shoutout: "Smooth 1981 basslines to launch the second festival weekend.", q: "In what year was 'Get Down On It' released?", opts: ["1977", "1981", "1986"], ans: 1 },
+            { day: 13, theme: "80s Synth Saturday", title: "Tears for Fears - Everybody Wants to Rule the World", videoId: "aGCdLKXNF3w", shoutout: "Sparkling Roland synths and a driving shuffle beat.", q: "What rhythm feel gives this 1985 classic its forward momentum?", opts: ["12/8 shuffle", "3/4 waltz", "5/4 time"], ans: 0 },
+            { day: 14, theme: "Sunday Chill", title: "Paul Simon - You Can Call Me Al", videoId: "uq-gYOrU8bA", shoutout: "Upbeat Graceland brass and a legendary slap-bass solo.", q: "Who co-starred with Paul Simon in the deadpan music video?", opts: ["Chevy Chase", "Steve Martin", "Bill Murray"], ans: 0 },
+            { day: 15, theme: "Motown Monday", title: "Marvin Gaye - What's Going On", videoId: "H-kA3UtBj4M", shoutout: "Timeless soul mastery at the halfway mark of the festival.", q: "Who initially called this record 'the worst thing I ever heard'?", opts: ["Berry Gordy", "Quincy Jones", "Smokey Robinson"], ans: 0 },
+            { day: 16, theme: "Timeless Tuesday", title: "Queen - Don't Stop Me Now", videoId: "HgzGwKwLmgM", shoutout: "Freddie Mercury's unstoppable piano rocket fuel.", q: "A 2015 neuroscience study crowned this track what?", opts: ["The world's happiest song", "The loudest rock single", "The fastest pop tempo"], ans: 0 },
+            { day: 17, theme: "One-Hit Wednesday", title: "Soft Cell - Tainted Love", videoId: "XZVpR3Pk-r8", shoutout: "Minimalist 1981 synth-pop with classic Northern Soul roots.", q: "Who recorded the original 1964 version of 'Tainted Love'?", opts: ["Gloria Jones", "Dusty Springfield", "Aretha Franklin"], ans: 0 },
+            { day: 18, theme: "Throwback Thursday", title: "Nirvana - In Bloom", videoId: "PbgKEjNBHqM", shoutout: "90s Seattle grunge roaring across the main stage.", q: "What era of TV did the 'In Bloom' music video parody?", opts: ["1960s variety shows", "1980s game shows", "1950s westerns"], ans: 0 },
+            { day: 19, theme: "Funk Friday", title: "The Commodores - Brick House", videoId: "rrBx6mAW3Zg", shoutout: "Heavy funk horns and an unmistakable bass groove.", q: "Who sang lead vocals on 'Brick House' instead of Lionel Richie?", opts: ["Walter Orange", "Milan Williams", "William King"], ans: 0 },
+            { day: 20, theme: "80s Synth Saturday", title: "Michael Jackson - Billie Jean", videoId: "Zi_XLOBDo_Y", shoutout: "One of the most recognizable drum-and-bass intros ever recorded.", q: "On which 1983 TV special did Michael debut the moonwalk?", opts: ["Motown 25", "Live Aid", "Grammy Awards"], ans: 0 },
+            { day: 21, theme: "Sunday Chill", title: "Otis Redding - (Sittin' On) The Dock of the Bay", videoId: "rTVjnBo96Ug", shoutout: "Peaceful acoustic soul and whistling by the water.", q: "What Billboard chart milestone did this track achieve in 1968?", opts: ["First posthumous #1 single", "Longest #1 streak", "First live #1 single"], ans: 0 },
+            { day: 22, theme: "Motown Monday", title: "Aretha Franklin - Respect", videoId: "6FOUqQt3Kg0", shoutout: "The Queen of Soul commanding the stage.", q: "Who originally wrote and recorded 'Respect'?", opts: ["Otis Redding", "Sam Cooke", "Ray Charles"], ans: 0 },
+            { day: 23, theme: "Timeless Tuesday", title: "Tom Petty - Free Fallin'", videoId: "1lWJXDG2i0A", shoutout: "Windows-down acoustic rock anthem.", q: "Who co-wrote and produced 'Free Fallin'' with Tom Petty?", opts: ["Jeff Lynne", "Bob Dylan", "George Harrison"], ans: 0 },
+            { day: 24, theme: "One-Hit Wednesday", title: "Chumbawamba - Tubthumping", videoId: "2H5uWRjFsGc", shoutout: "Ultimate festival sing-along chorus!", q: "In which English city was Chumbawamba formed?", opts: ["Burnley", "London", "Manchester"], ans: 0 },
+            { day: 25, theme: "Throwback Thursday", title: "Red Hot Chili Peppers - Under the Bridge", videoId: "GLvohMXgcBo", shoutout: "John Frusciante's delicate guitar chords building to a choir finale.", q: "Where did producer Rick Rubin find the lyrics?", opts: ["In Anthony Kiedis' notebook", "On a studio napkin", "In a letter"], ans: 0 },
+            { day: 26, theme: "Funk Friday", title: "Chic - Good Times", videoId: "eKl6EZShaaw", shoutout: "The bassline that launched hip-hop and disco royalty.", q: "Which group sampled 'Good Times' for 'Rapper's Delight'?", opts: ["Sugarhill Gang", "Run-D.M.C.", "Public Enemy"], ans: 0 },
+            { day: 27, theme: "80s Synth Saturday", title: "Prince - 1999", videoId: "rblt256ZwkE", shoutout: "Purple stage lights and Linn LM-1 drum machine magic.", q: "Which drum machine powers the beat of '1999'?", opts: ["Linn LM-1", "Roland TR-808", "Oberheim DMX"], ans: 0 },
+            { day: 28, theme: "Sunday Chill", title: "Bob Marley - Three Little Birds", videoId: "lan-P-_s1eA", shoutout: "Every little thing is gonna be all right.", q: "What inspired the title of 'Three Little Birds'?", opts: ["Birds sitting by Marley's window", "A childhood poem", "Three backup singers"], ans: 0 },
+            { day: 29, theme: "Wildcard Power Jam", title: "The Clash - Rock the Casbah", videoId: "bJ9r8LMU9bQ", shoutout: "Punk energy meets infectious dance-rock piano.", q: "Which Clash member composed the piano, drum, and bass parts?", opts: ["Topper Headon", "Joe Strummer", "Mick Jones"], ans: 0 },
+            { day: 30, theme: "Grand Finale", title: "Queen - Bohemian Rhapsody", videoId: "fJ9rUzIMcZQ", shoutout: "Festival grand finale! Six minutes of operatic rock history.", q: "Roughly how many vocal overdubs created the operatic section?", opts: ["180", "40", "500"], ans: 0 }
         ];
 
-        auth.onAuthStateChanged(user => {
-            currentUser = user;
-            if (user) {
-                document.getElementById('user-name').textContent = user.displayName || user.email.split('@')[0];
-                document.getElementById('user-avatar').textContent = (user.displayName || user.email)[0].toUpperCase();
-                document.getElementById('auth-action-btn').textContent = 'Sign Out';
-                loadUserStats(user.uid);
-            } else {
-                document.getElementById('user-name').textContent = 'Guest User';
-                document.getElementById('user-avatar').textContent = 'UD';
-                document.getElementById('auth-action-btn').textContent = 'Sign In';
-            }
-        });
+        const DEFAULT_ENCORE = [
+            { id: "enc_1", title: "Toto - Africa", videoId: "FTQbiNvZqaY", votes: 2, pitchedBy: "Aunt Sarah", q: "In what year did Toto release 'Africa'?", opts: ["1982", "1985", "1979"], ans: 0 },
+            { id: "enc_2", title: "Creedence Clearwater Revival - Fortunate Son", videoId: "ec0XKhAHR5I", votes: 1, pitchedBy: "Uncle Dad", q: "Which album featured 'Fortunate Son' in 1969?", opts: ["Willy and the Poor Boys", "Cosmo's Factory", "Green River"], ans: 0 }
+        ];
 
-        function toggleAuth() {
-            if (currentUser) {
-                auth.signOut();
+        // Local-First State Store
+        let state = {
+            points: 100,
+            activeTrack: null,
+            activeKey: "day_0",
+            reactions: {},
+            triviaProgress: {}, // { [key]: { tries: 2, solved: false } }
+            encoreList: []
+        };
+
+        function loadState() {
+            const saved = localStorage.getItem('udd_festival_v1');
+            if (saved) {
+                state = JSON.parse(saved);
             } else {
-                const email = prompt("Enter email:");
-                const pass = prompt("Enter password:");
-                if (email && pass) {
-                    auth.signInWithEmailAndPassword(email, pass).catch(() => {
-                        auth.createUserWithEmailAndPassword(email, pass);
-                    });
-                }
+                const todayIdx = (new Date().getDate() - 1) % FESTIVAL_SETLIST.length;
+                const todayItem = FESTIVAL_SETLIST[todayIdx];
+                state.activeKey = 'day_' + todayIdx;
+                state.activeTrack = {
+                    badge: `MAIN STAGE • DAY ${todayItem.day} (${todayItem.theme})`,
+                    title: todayItem.title,
+                    videoId: todayItem.videoId,
+                    shoutout: todayItem.shoutout,
+                    q: todayItem.q,
+                    opts: todayItem.opts,
+                    ans: todayItem.ans
+                };
+                state.encoreList = JSON.parse(JSON.stringify(DEFAULT_ENCORE));
+                saveState();
             }
         }
 
-        function loadUserStats(uid) {
-            db.ref('users/' + uid).on('value', snap => {
-                const data = snap.val() || { streak: 1, points: 50 };
-                document.getElementById('user-stats-text').textContent = `🔥 ${data.streak}-Day Streak • ${data.points} Pts`;
-            });
+        function saveState() {
+            localStorage.setItem('udd_festival_v1', JSON.stringify(state));
         }
 
-        function switchTab(tabId) {
+        function resetFestivalState() {
+            localStorage.removeItem('udd_festival_v1');
+            loadState();
+            renderAll();
+            switchTab('stage');
+        }
+
+        function extractYouTubeId(input) {
+            if (!input) return '';
+            const clean = input.trim();
+            if (/^[a-zA-Z0-9_-]{11}$/.test(clean)) return clean;
+            const match = clean.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+            return match ? match[1] : '';
+        }
+
+        function switchTab(tabName) {
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('panel-' + tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + tabName).classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
         }
 
-        function initApp() {
-            const archiveEl = document.getElementById('archive-list');
-            curatedTracks.forEach((t, index) => {
-                const div = document.createElement('div');
-                div.className = 'list-item';
-                div.innerHTML = `<span>Day ${index + 1}: ${t.title}</span>`;
-                div.onclick = () => loadTrackData('song_' + index, t);
-                archiveEl.appendChild(div);
-            });
-
-            // Listen for promoted song. If none exists, load default Day 1.
-            db.ref('currentSong').on('value', snap => {
-                const val = snap.val();
-                if (val && val.videoId) {
-                    hasActiveOverride = true;
-                    const cleanId = extractYouTubeId(val.videoId);
-                    setSongDisplay('promoted_song', val.title, val.comment || 'Community Consensus Pick!', cleanId, val.trivia);
-                } else if (!hasActiveOverride) {
-                    loadTrackData('song_0', curatedTracks[0]);
-                }
-            });
-
-            loadSuggestions();
+        function renderAll() {
+            document.getElementById('vip-points').textContent = state.points;
+            renderStage();
+            renderTrivia();
+            renderEncoreBoard();
+            renderSetlistArchive();
         }
 
-        function loadTrackData(key, track) {
-            if (hasActiveOverride && key.startsWith('song_')) return; // Don't let default schedule override active consensus pick unless explicitly selected
-            setSongDisplay(key, track.title, track.comment, track.id, track.trivia);
+        function renderStage() {
+            const t = state.activeTrack;
+            const cleanId = extractYouTubeId(t.videoId) || 'dQw4w9WgXcQ';
+
+            document.getElementById('stage-status-badge').textContent = t.badge || 'MAIN STAGE • FEATURED SET';
+            document.getElementById('player-title').textContent = t.title;
+            document.getElementById('player-shoutout').textContent = t.shoutout;
+            document.getElementById('player-yt-link').href = `https://www.youtube.com/watch?v=${cleanId}`;
+
+            const iframe = document.getElementById('yt-iframe');
+            const targetSrc = `https://www.youtube.com/embed/${cleanId}?rel=0`;
+            if (iframe.src !== targetSrc) {
+                iframe.src = targetSrc;
+            }
+
+            const rx = state.reactions[state.activeKey] || { fire: 0, horn: 0, dance: 0, encore: 0 };
+            document.getElementById('rx-fire').textContent = rx.fire || 0;
+            document.getElementById('rx-horn').textContent = rx.horn || 0;
+            document.getElementById('rx-dance').textContent = rx.dance || 0;
+            document.getElementById('rx-encore').textContent = rx.encore || 0;
         }
 
-        function setSongDisplay(key, title, comment, ytId, triviaObj) {
-            activeSongKey = key;
-            const cleanId = extractYouTubeId(ytId);
-            document.getElementById('song-title').textContent = title;
-            document.getElementById('song-comment').textContent = comment ? `"${comment}"` : '';
-            document.getElementById('yt-player').src = `https://www.youtube.com/embed/${cleanId}`;
-            setupReactionListener(activeSongKey);
+        function triggerReaction(type, emoji) {
+            if (!state.reactions[state.activeKey]) {
+                state.reactions[state.activeKey] = { fire: 0, horn: 0, dance: 0, encore: 0 };
+            }
+            state.reactions[state.activeKey][type] += 1;
+            saveState();
+            renderStage();
 
-            remainingAttempts = 2;
-            triviaAnsweredCorrectly = false;
-            document.getElementById('trivia-attempts').textContent = `Attempts: 2 / 2`;
+            const floater = document.createElement('div');
+            floater.className = 'floating-emoji';
+            floater.textContent = emoji;
+            floater.style.left = (window.innerWidth / 2 + (Math.random() * 140 - 70)) + 'px';
+            floater.style.bottom = '110px';
+            document.body.appendChild(floater);
+            setTimeout(() => floater.remove(), 1400);
+        }
 
-            if (triviaObj) {
-                setupTrivia(triviaObj);
+        function renderTrivia() {
+            const t = state.activeTrack;
+            if (!state.triviaProgress[state.activeKey]) {
+                state.triviaProgress[state.activeKey] = { tries: 2, solved: false };
+            }
+            const prog = state.triviaProgress[state.activeKey];
+
+            document.getElementById('trivia-question').textContent = t.q;
+            document.getElementById('trivia-tries-label').textContent = `Tries: ${prog.tries} / 2`;
+
+            const optsBox = document.getElementById('trivia-options');
+            const feedback = document.getElementById('trivia-feedback');
+            optsBox.innerHTML = '';
+
+            if (prog.solved) {
+                feedback.style.color = '#4ade80';
+                feedback.textContent = '🎉 Backstage Pass Unlocked! +100 VIP Points earned for this set.';
+            } else if (prog.tries <= 0) {
+                feedback.style.color = '#f87171';
+                feedback.textContent = '🔒 Out of tries for this set! Switch sets or promote an encore track.';
             } else {
-                setupTrivia({
-                    q: `What makes ${title} a great family pick?`,
-                    options: ["The amazing beat", "Pure nostalgia", "Everything about it"],
-                    correct: 2
-                });
-            }
-        }
-
-        function setupTrivia(trivia) {
-            document.getElementById('trivia-question').textContent = trivia.q;
-            renderTriviaButtons(trivia);
-        }
-
-        function renderTriviaButtons(trivia) {
-            const box = document.getElementById('trivia-options-box');
-            box.innerHTML = '';
-            const res = document.getElementById('trivia-result');
-
-            if (triviaAnsweredCorrectly) {
-                res.style.color = '#4ade80';
-                res.textContent = '🎉 Completed! You already solved this daily trivia.';
-                return;
+                feedback.textContent = '';
             }
 
-            if (remainingAttempts <= 0) {
-                res.style.color = '#f87171';
-                res.textContent = '🔒 Locked out! You used both attempts for today.';
-                return;
-            }
-
-            trivia.options.forEach((opt, idx) => {
+            t.opts.forEach((optText, idx) => {
                 const btn = document.createElement('button');
-                btn.className = 'trivia-btn';
-                btn.textContent = opt;
+                btn.className = 'trivia-opt-btn';
+                btn.textContent = optText;
+                btn.disabled = prog.solved || prog.tries <= 0;
                 btn.onclick = () => {
-                    if (triviaAnsweredCorrectly || remainingAttempts <= 0) return;
+                    if (prog.solved || prog.tries <= 0) return;
 
-                    if (idx === trivia.correct) {
-                        triviaAnsweredCorrectly = true;
-                        res.style.color = '#4ade80';
-                        res.textContent = '🎉 Correct! +100 Points awarded!';
-                        
-                        if (currentUser) {
-                            db.ref('users/' + currentUser.uid + '/points').transaction(p => (p || 50) + 100);
-                        }
-                        renderTriviaButtons(trivia);
+                    if (idx === t.ans) {
+                        prog.solved = true;
+                        state.points += 100;
+                        saveState();
+                        renderAll();
                     } else {
-                        remainingAttempts--;
-                        document.getElementById('trivia-attempts').textContent = `Attempts: ${remainingAttempts} / 2`;
-                        if (remainingAttempts > 0) {
-                            res.style.color = '#f87171';
-                            res.textContent = `❌ Incorrect! ${remainingAttempts} attempt remaining.`;
-                        } else {
-                            res.style.color = '#f87171';
-                            res.textContent = '❌ Incorrect! Out of attempts. Locked out for today.';
-                            renderTriviaButtons(trivia);
+                        prog.tries -= 1;
+                        saveState();
+                        renderTrivia();
+                        if (prog.tries > 0) {
+                            const fb = document.getElementById('trivia-feedback');
+                            fb.style.color = '#fbbf24';
+                            fb.textContent = `❌ Not quite! ${prog.tries} try remaining.`;
                         }
                     }
                 };
-                box.appendChild(btn);
+                optsBox.appendChild(btn);
             });
         }
 
-        function sendReaction(type, emoji) {
-            db.ref('reactions/' + activeSongKey + '/' + type).transaction(val => (val || 0) + 1);
-            const el = document.createElement('div');
-            el.className = 'floating-emoji';
-            el.textContent = emoji;
-            el.style.left = (window.innerWidth / 2 + (Math.random() * 140 - 70)) + 'px';
-            el.style.bottom = '120px';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 1600);
-        }
+        function renderEncoreBoard() {
+            const list = document.getElementById('encore-list');
+            list.innerHTML = '';
 
-        function setupReactionListener(songId) {
-            db.ref('reactions/' + songId).off();
-            db.ref('reactions/' + songId).on('value', snap => {
-                const val = snap.val() || {};
-                document.getElementById('cnt-fire').textContent = val.fire || 0;
-                document.getElementById('cnt-classic').textContent = val.classic || 0;
-                document.getElementById('cnt-groove').textContent = val.groove || 0;
-                document.getElementById('cnt-skip').textContent = val.skip || 0;
-            });
-        }
-
-        function extractYouTubeId(urlOrId) {
-            if (!urlOrId) return 'dQw4w9WgXcQ';
-            const cleaned = urlOrId.trim();
-            if (cleaned.length === 11 && !cleaned.includes('/')) return cleaned;
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = cleaned.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : cleaned;
-        }
-
-        function searchYouTube() {
-            const query = document.getElementById('yt-search-query').value.trim();
-            if (!query) return alert('Please enter a search term.');
-            
-            const resultsBox = document.getElementById('search-results');
-            resultsBox.innerHTML = '<div style="font-size:0.85rem; color:var(--text-muted); padding:0.4rem;">Searching YouTube...</div>';
-
-            fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=HgzGwKwLmgM&format=json`)
-                .then(() => {
-                    const mockResults = [
-                        { title: query + " (Official Music Video)", id: "HgzGwKwLmgM" },
-                        { title: query + " (Remix / Live Audio)", id: "dQw4w9WgXcQ" },
-                        { title: query + " (Acoustic Session)", id: "L_LUpnjgPso" }
-                    ];
-                    resultsBox.innerHTML = '';
-                    mockResults.forEach(r => {
-                        const item = document.createElement('div');
-                        item.className = 'list-item';
-                        item.style.padding = '0.4rem 0.6rem';
-                        item.innerHTML = `<span style="font-size:0.85rem;">🎵 ${r.title}</span><button class="vote-btn" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="pitchSelectedSearch('${r.title.replace(/'/g, "\\'")}', '${r.id}')">Select</button>`;
-                        resultsBox.appendChild(item);
-                    });
-                })
-                .catch(() => {
-                    resultsBox.innerHTML = '<div style="font-size:0.85rem; color:#f87171;">Search failed. Use direct link below.</div>';
-                });
-        }
-
-        function pitchSelectedSearch(title, videoId) {
-            const cleanId = extractYouTubeId(videoId);
-            db.ref('suggestions').push({
-                title: title,
-                videoId: cleanId,
-                votes: 1,
-                pitchedBy: currentUser ? currentUser.email.split('@')[0] : 'Guest',
-                trivia: { q: `What makes ${title} a great family pick?`, options: ["The beat", "The nostalgia", "Everything"], correct: 2 }
-            });
-            document.getElementById('yt-search-query').value = '';
-            document.getElementById('search-results').innerHTML = '';
-            if (currentUser) {
-                db.ref('users/' + currentUser.uid + '/points').transaction(p => (p || 50) + 25);
+            if (state.encoreList.length === 0) {
+                list.innerHTML = '<div style="color:var(--text-muted); font-size:0.88rem; padding:0.5rem;">No tracks waiting in the Encore queue. Pitch one below!</div>';
+                return;
             }
-            alert(`✅ Pitched "${title}" successfully! (+25 Pts)`);
-            switchTab('voting');
+
+            state.encoreList.forEach((item, index) => {
+                const cleanId = extractYouTubeId(item.videoId) || 'dQw4w9WgXcQ';
+                const row = document.createElement('div');
+                row.className = 'track-row';
+                row.innerHTML = `
+                    <div class="track-row-left">
+                        <img class="thumb-img" src="https://img.youtube.com/vi/${cleanId}/mqdefault.jpg" alt="Cover">
+                        <div style="min-width:0;">
+                            <div style="font-weight:700; font-size:0.88rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(item.title)}</div>
+                            <div style="color:var(--text-muted); font-size:0.76rem;">Pitched by ${escapeHtml(item.pitchedBy)} • 🔥 ${item.votes} / ${VOTE_GOAL} Votes</div>
+                        </div>
+                    </div>
+                    <button class="action-btn" onclick="voteEncore(${index})">👍 Vote</button>
+                `;
+                list.appendChild(row);
+            });
         }
 
-        function submitPitch() {
-            const title = document.getElementById('pitch-title').value;
-            const rawUrl = document.getElementById('pitch-url').value;
-            if (!title || !rawUrl) return alert('Please enter both song title and YouTube link/ID.');
-            
+        function voteEncore(index) {
+            const item = state.encoreList[index];
+            item.votes += 1;
+
+            if (item.votes >= VOTE_GOAL) {
+                state.activeKey = 'encore_' + Date.now();
+                state.activeTrack = {
+                    badge: 'ENCORE HEADLINER • CROWD WINNER',
+                    title: item.title,
+                    videoId: item.videoId,
+                    shoutout: `Promoted to Main Stage by crowd consensus (${item.votes} votes)! Pitched by ${item.pitchedBy}.`,
+                    q: item.q || `What makes "${item.title}" a festival crowd favorite?`,
+                    opts: item.opts || ["The massive hook", "Pure festival energy", "All of the above"],
+                    ans: typeof item.ans === 'number' ? item.ans : 2
+                };
+                state.encoreList.splice(index, 1);
+                state.points += 50;
+                saveState();
+                renderAll();
+                switchTab('stage');
+            } else {
+                saveState();
+                renderEncoreBoard();
+            }
+        }
+
+        function pitchTrack() {
+            const title = document.getElementById('pitch-title').value.trim();
+            const rawUrl = document.getElementById('pitch-url').value.trim();
             const videoId = extractYouTubeId(rawUrl);
-            if (!videoId || videoId.length !== 11) {
-                return alert('Invalid YouTube link or ID. Please check and try again.');
-            }
-            
-            db.ref('suggestions').push({
+
+            if (!title) return alert('Enter the artist and song title.');
+            if (!videoId) return alert('Paste a valid YouTube link or 11-character video ID.');
+
+            state.encoreList.push({
+                id: 'enc_' + Date.now(),
                 title: title,
                 videoId: videoId,
                 votes: 1,
-                pitchedBy: currentUser ? currentUser.email.split('@')[0] : 'Guest',
-                trivia: { q: `What makes ${title} a great family pick?`, options: ["The beat", "The nostalgia", "Everything"], correct: 2 }
+                pitchedBy: 'You',
+                q: `Why did "${title}" earn a spot on the Encore Stage?`,
+                opts: ["Unbeatable rhythm", "Instant crowd sing-along", "Pure classic vibe"],
+                ans: 1
             });
+
+            state.points += 25;
             document.getElementById('pitch-title').value = '';
             document.getElementById('pitch-url').value = '';
-            if (currentUser) {
-                db.ref('users/' + currentUser.uid + '/points').transaction(p => (p || 50) + 25);
-            }
-            switchTab('voting');
+            saveState();
+            renderAll();
         }
 
-        function loadSuggestions() {
-            db.ref('suggestions').on('value', snap => {
-                const list = document.getElementById('suggestions-list');
-                list.innerHTML = '';
-                const data = snap.val() || {};
-                
-                if (Object.keys(data).length === 0) {
-                    db.ref('suggestions').push({
-                        title: "Queen - Don't Stop Me Now",
-                        videoId: "HgzGwKwLmgM",
-                        votes: 1,
-                        pitchedBy: "Uncle Dad",
-                        trivia: { q: "What year was Don't Stop Me Now released?", options: ["1976", "1978", "1980"], correct: 1 }
-                    });
-                    return;
-                }
+        function renderSetlistArchive() {
+            const container = document.getElementById('setlist-container');
+            container.innerHTML = '';
+            const todayIdx = (new Date().getDate() - 1) % FESTIVAL_SETLIST.length;
 
-                Object.entries(data).forEach(([key, item]) => {
-                    const cleanId = extractYouTubeId(item.videoId);
-                    const thumbUrl = `https://img.youtube.com/vi/${cleanId}/mqdefault.jpg`;
-                    const div = document.createElement('div');
-                    div.className = 'list-item';
-                    div.innerHTML = `
-                        <div class="suggestion-card-left">
-                            <img class="suggestion-thumb" src="${thumbUrl}" alt="Thumbnail" onerror="this.src='https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg'">
-                            <div>
-                                <strong style="font-size: 0.9rem;">${item.title}</strong><br>
-                                <small style="color:var(--text-muted)">Pitched by @${item.pitchedBy || 'Family'} • 🔥 ${item.votes || 0} Votes</small>
+            FESTIVAL_SETLIST.forEach((item, idx) => {
+                const isToday = idx === todayIdx;
+                const row = document.createElement('div');
+                row.className = 'track-row';
+                row.style.cursor = 'pointer';
+                if (isToday) row.style.borderColor = 'var(--sunset-amber)';
+
+                row.innerHTML = `
+                    <div class="track-row-left">
+                        <img class="thumb-img" src="https://img.youtube.com/vi/${item.videoId}/mqdefault.jpg" alt="Set">
+                        <div style="min-width:0;">
+                            <div style="font-weight:700; font-size:0.86rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                Day ${item.day}: ${escapeHtml(item.title)}
+                            </div>
+                            <div style="color:var(--text-muted); font-size:0.75rem;">
+                                ${item.theme} ${isToday ? '• ⭐ TODAY\'S SCHEDULED SET' : ''}
                             </div>
                         </div>
-                        <button class="vote-btn" onclick="voteSong('${key}', ${item.votes || 0}, '${item.title.replace(/'/g, "\\'")}', '${cleanId}', '${item.pitchedBy || 'Family'}')">👍 Vote</button>
-                    `;
-                    list.appendChild(div);
-                });
+                    </div>
+                    <span style="color:var(--stage-gold); font-weight:800; font-size:0.78rem;">▶ Play</span>
+                `;
+
+                row.onclick = () => {
+                    state.activeKey = 'day_' + idx;
+                    state.activeTrack = {
+                        badge: `SETLIST ARCHIVE • DAY ${item.day} (${item.theme})`,
+                        title: item.title,
+                        videoId: item.videoId,
+                        shoutout: item.shoutout,
+                        q: item.q,
+                        opts: item.opts,
+                        ans: item.ans
+                    };
+                    saveState();
+                    renderAll();
+                    switchTab('stage');
+                };
+
+                container.appendChild(row);
             });
         }
 
-        function voteSong(key, currentVotes, title, videoId, pitchedBy) {
-            const newVotes = currentVotes + 1;
-            const cleanId = extractYouTubeId(videoId);
-            db.ref('suggestions/' + key + '/votes').set(newVotes).then(() => {
-                if (newVotes >= VOTE_THRESHOLD) {
-                    hasActiveOverride = true;
-                    db.ref('currentSong').set({
-                        title: title,
-                        videoId: cleanId,
-                        comment: `Promoted by community consensus (${newVotes} votes)! Pitched by @${pitchedBy}`,
-                        trivia: { q: `What makes ${title} a great family pick?`, options: ["The beat", "The nostalgia", "Everything"], correct: 2 }
-                    }).then(() => {
-                        db.ref('suggestions/' + key).remove();
-                        alert(`🏆 "${title}" reached ${newVotes} votes and is now Today's Featured Song!`);
-                        switchTab('player');
-                    });
-                }
-            });
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
         }
 
-        initApp();
+        loadState();
+        renderAll();
     </script>
 </body>
 </html>
