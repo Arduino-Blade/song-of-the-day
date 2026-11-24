@@ -1,15 +1,14 @@
-index
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uncle Dad's Song of the Day</title>
+    <title>Uncle Dad's — Song of the Day</title>
 
     <!-- Open Graph / Messaging Rich Link Previews -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Uncle Dad's Song of the Day">
-    <meta property="og:description" content="Your daily curated modern music drop, trivia challenge, and live voting.">
+    <meta property="og:title" content="Uncle Dad's — Song of the Day">
+    <meta property="og:description" content="Your daily curated modern music drop, live vibe reactions, trivia challenge, and community voting.">
     <meta property="og:image" content="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f3b5.png">
     <meta property="og:url" content="https://arduino-blade.github.io/song-of-the-day/">
 
@@ -17,7 +16,7 @@ index
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Uncle Dad's">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#090d16">
     <link rel="manifest" href="manifest.json">
 
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f3b5.png">
@@ -31,64 +30,157 @@ index
 
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            --glass-bg: rgba(30, 41, 59, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.12);
+            --bg-dark: #090d16;
+            --bg-glow: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.14) 0%, rgba(9, 13, 22, 1) 65%);
+            --surface: #131b2e;
+            --surface-elevated: #1e293b;
+            --border: rgba(255, 255, 255, 0.1);
             --accent: #38bdf8;
             --accent-hover: #0ea5e9;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --card-bg: rgba(15, 23, 42, 0.75);
             --success: #22c55e;
             --danger: #ef4444;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: var(--bg-gradient);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-dark);
+            background-image: var(--bg-glow);
             color: var(--text-main);
             min-height: 100vh;
             padding: 1rem;
+            padding-bottom: 3rem;
             display: flex;
             justify-content: center;
             align-items: flex-start;
         }
-        .app-container {
+        .app-shell {
             width: 100%;
-            max-width: 620px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 1.5rem;
-            padding: 1.25rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            max-width: 600px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1.35rem;
+            padding: 1.2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);
         }
-        header {
+
+        /* Sticky Profile & Utility Bar */
+        .profile-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border);
             gap: 0.5rem;
         }
-        header h1 { font-size: 1.25rem; color: var(--accent); }
-        .install-btn {
-            background: rgba(34, 197, 94, 0.2);
-            border: 1px solid var(--success);
-            color: #86efac;
-            padding: 0.35rem 0.65rem;
-            border-radius: 0.5rem;
-            font-size: 0.75rem;
-            cursor: pointer;
-            white-space: nowrap;
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            min-width: 0;
         }
-        .install-btn:hover { background: rgba(34, 197, 94, 0.35); }
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: #090d16;
+            flex-shrink: 0;
+        }
+        .user-name-text {
+            font-weight: 700;
+            font-size: 0.88rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-stats {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+        }
+        .header-btns {
+            display: flex;
+            gap: 0.4rem;
+            flex-shrink: 0;
+        }
+        .pill-top-btn {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.38rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pill-top-btn:hover { border-color: var(--accent); }
+        .pill-install {
+            background: rgba(34, 197, 94, 0.16);
+            border-color: rgba(34, 197, 94, 0.5);
+            color: #86efac;
+        }
+        .pill-signin {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #090d16;
+            font-weight: 700;
+        }
 
+        /* Brand Title & Subtitle */
+        .brand-header {
+            text-align: center;
+            margin-bottom: 1.1rem;
+        }
+        .brand-header h1 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.15;
+        }
+        .brand-header .subtitle {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+
+        /* Hero Player Card */
         .player-card {
-            background: var(--card-bg);
-            border: 1px solid var(--glass-border);
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
             border-radius: 1rem;
-            padding: 0.85rem;
+            padding: 0.9rem;
             margin-bottom: 1rem;
+        }
+        .drop-badge-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.6rem;
+        }
+        .drop-badge {
+            background: rgba(56, 189, 248, 0.14);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .video-wrapper {
             position: relative;
@@ -98,7 +190,8 @@ index
             border-radius: 0.75rem;
             overflow: hidden;
             background: #000;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
         }
         .video-wrapper iframe {
             position: absolute;
@@ -108,7 +201,7 @@ index
             display: none;
             position: absolute;
             inset: 0;
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(9, 13, 22, 0.95);
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -116,201 +209,308 @@ index
             padding: 1.25rem;
             z-index: 10;
         }
-        .track-meta h2 { font-size: 1.1rem; margin-bottom: 0.3rem; }
-        .track-meta p { color: var(--text-muted); font-size: 0.82rem; line-height: 1.35; }
-        
-        .share-row { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
-        .share-btn {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            padding: 0.45rem;
-            border-radius: 0.5rem;
-            font-size: 0.75rem;
-            cursor: pointer;
+        .track-meta h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
         }
-        .share-btn:hover { background: rgba(56, 189, 248, 0.15); border-color: var(--accent); }
+        .track-meta p {
+            color: var(--text-muted);
+            font-size: 0.84rem;
+            line-height: 1.4;
+        }
 
-        .nav-tabs {
+        /* Share Action Bar */
+        .action-bar {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
+            gap: 0.45rem;
+            margin-top: 0.8rem;
+        }
+        .action-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.48rem 0.4rem;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            background: rgba(56, 189, 248, 0.14);
+            border-color: var(--accent);
+        }
+
+        /* Live Vibe Reactions Pill Button Row */
+        .reaction-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.45rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+        .reaction-pill {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.5rem 0.25rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            user-select: none;
+        }
+        .reaction-pill:hover {
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.14);
+            transform: translateY(-2px);
+        }
+        .reaction-pill:active {
+            transform: scale(0.95);
+        }
+
+        /* Floating Emoji Particle Animation */
+        .floating-emoji {
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+            font-size: 1.9rem;
+            animation: floatUpAndFade 1.6s ease-out forwards;
+        }
+        @keyframes floatUpAndFade {
+            0% { transform: translateY(0px) scale(0.6); opacity: 1; }
+            100% { transform: translateY(-140px) scale(1.35); opacity: 0; }
+        }
+
+        /* 4-Tab Navigation */
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 0.4rem;
             margin-bottom: 1rem;
         }
         .tab-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            padding: 0.6rem 0.4rem;
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.6rem 0.3rem;
             border-radius: 0.75rem;
             font-size: 0.78rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             text-align: center;
+            transition: all 0.2s;
         }
         .tab-btn.active, .tab-btn:hover {
             background: var(--accent);
-            color: #0f172a;
+            color: #090d16;
             border-color: var(--accent);
         }
 
+        /* Panels */
         .section-panel {
             display: none;
-            background: var(--card-bg);
-            border: 1px solid var(--glass-border);
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
             border-radius: 1rem;
             padding: 1rem;
         }
         .section-panel.active { display: block; }
-        .section-panel h3 { font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--accent); }
-        .section-panel p.subtext { color: var(--text-muted); font-size: 0.78rem; margin-bottom: 0.75rem; }
+        .section-panel h3 {
+            font-size: 0.98rem;
+            margin-bottom: 0.3rem;
+            color: var(--accent);
+        }
+        .section-panel p.subtext {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
 
+        /* Trivia Buttons */
         .trivia-btn {
             display: block;
             width: 100%;
             text-align: left;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--glass-border);
+            background: var(--surface);
+            border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 0.55rem 0.7rem;
-            margin-bottom: 0.4rem;
-            border-radius: 0.5rem;
-            font-size: 0.82rem;
+            padding: 0.62rem 0.8rem;
+            margin-bottom: 0.45rem;
+            border-radius: 0.65rem;
+            font-size: 0.84rem;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .trivia-btn:not(:disabled):hover { border-color: var(--accent); }
-        .trivia-btn.correct { background: rgba(34, 197, 94, 0.25); border-color: var(--success); color: #86efac; }
-        .trivia-btn.incorrect { background: rgba(239, 68, 68, 0.25); border-color: var(--danger); color: #fca5a5; }
+        .trivia-btn:not(:disabled):hover {
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.08);
+        }
+        .trivia-btn.correct {
+            background: rgba(34, 197, 94, 0.22);
+            border-color: var(--success);
+            color: #86efac;
+            font-weight: 700;
+        }
+        .trivia-btn.incorrect {
+            background: rgba(239, 68, 68, 0.22);
+            border-color: var(--danger);
+            color: #fca5a5;
+        }
 
+        /* Archive & Lists */
         .archive-search-input {
             width: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid var(--glass-border);
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 0.5rem 0.65rem;
-            border-radius: 0.5rem;
-            font-size: 0.8rem;
+            padding: 0.55rem 0.75rem;
+            border-radius: 0.65rem;
+            font-size: 0.82rem;
             margin-bottom: 0.75rem;
         }
-
-        .time-machine-item {
+        .list-scroll {
+            max-height: 320px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+        .time-machine-item, .vote-item, .rank-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            padding: 0.5rem 0.7rem;
-            border-radius: 0.5rem;
-            margin-bottom: 0.4rem;
-            font-size: 0.8rem;
-            cursor: pointer;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.65rem;
+            font-size: 0.82rem;
+            gap: 0.5rem;
         }
+        .time-machine-item { cursor: pointer; transition: border-color 0.2s; }
         .time-machine-item:hover { border-color: var(--accent); }
 
-        .vote-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            padding: 0.6rem 0.7rem;
-            border-radius: 0.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.45rem;
-            font-size: 0.82rem;
-        }
         .vote-btn-local {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--glass-border);
-            color: var(--text-muted);
-            padding: 0.35rem 0.65rem;
-            border-radius: 0.5rem;
-            font-size: 0.75rem;
+            background: var(--accent);
+            border: none;
+            color: #090d16;
+            padding: 0.38rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
             cursor: pointer;
+            white-space: nowrap;
         }
-        .vote-btn-local:hover { color: var(--text-main); border-color: var(--accent); }
+        .vote-btn-local:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
 
-        .pitch-inputs { display: flex; gap: 0.4rem; margin-top: 0.75rem; }
+        .pitch-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            margin-top: 0.85rem;
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--border);
+        }
+        .pitch-row {
+            display: flex;
+            gap: 0.4rem;
+        }
         .pitch-inputs input {
             flex: 1;
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid var(--glass-border);
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            font-size: 0.78rem;
+            padding: 0.55rem 0.65rem;
+            border-radius: 0.55rem;
+            font-size: 0.8rem;
         }
 
         .primary-btn {
             background: var(--accent);
-            color: #0f172a;
+            color: #090d16;
             border: 0;
-            padding: 0.65rem;
-            border-radius: 0.5rem;
+            padding: 0.6rem 0.9rem;
+            border-radius: 0.55rem;
             font-weight: 700;
             font-size: 0.82rem;
             cursor: pointer;
+            transition: background 0.2s;
         }
         .primary-btn:hover { background: var(--accent-hover); }
 
+        /* Footer & Compact Admin Portal */
         footer.app-footer {
-            margin-top: 1.5rem;
-            padding-top: 0.75rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 1.4rem;
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.45rem;
         }
         .footer-links {
             display: flex;
-            gap: 1.25rem;
+            gap: 0.9rem;
             align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .admin-subtle-toggle {
             background: transparent;
             border: none;
             color: var(--text-muted);
-            font-size: 0.72rem;
+            font-size: 0.74rem;
             cursor: pointer;
-            opacity: 0.6;
-            text-decoration: none;
-            transition: opacity 0.2s;
+            opacity: 0.75;
+            transition: opacity 0.2s, color 0.2s;
         }
         .admin-subtle-toggle:hover { opacity: 1; color: var(--accent); }
 
         .admin-compact-panel {
             width: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid var(--glass-border);
-            border-radius: 0.75rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 0.8rem;
             padding: 0.85rem;
-            margin-top: 0.75rem;
+            margin-top: 0.6rem;
             text-align: left;
         }
         .admin-compact-panel h4 {
-            font-size: 0.82rem;
+            font-size: 0.84rem;
             color: var(--accent);
             margin-bottom: 0.45rem;
         }
         .admin-compact-panel input, .admin-compact-panel textarea {
             width: 100%;
-            background: rgba(30, 41, 59, 0.85);
-            border: 1px solid var(--glass-border);
+            background: var(--surface);
+            border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 0.45rem 0.5rem;
-            border-radius: 0.4rem;
+            padding: 0.48rem 0.6rem;
+            border-radius: 0.45rem;
             margin-bottom: 0.45rem;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             font-family: inherit;
         }
-        .admin-btn-row { display: flex; gap: 0.4rem; margin-top: 0.2rem; }
+        .admin-btn-row { display: flex; gap: 0.45rem; margin-top: 0.2rem; }
         .admin-action-btn {
             flex: 1;
-            padding: 0.45rem;
-            font-size: 0.75rem;
-            border-radius: 0.4rem;
+            padding: 0.48rem;
+            font-size: 0.76rem;
+            border-radius: 0.45rem;
         }
         .reset-btn {
             background: transparent;
@@ -319,39 +519,62 @@ index
         }
         .reset-btn:hover { background: rgba(239, 68, 68, 0.15); }
 
-        #install-modal {
+        /* Modals */
+        .modal-backdrop {
             display: none;
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            inset: 0;
+            background: rgba(0, 0, 0, 0.82);
             backdrop-filter: blur(8px);
             z-index: 9999;
             align-items: center;
             justify-content: center;
             padding: 1.25rem;
         }
-        #install-modal.active { display: flex; }
+        .modal-backdrop.active { display: flex; }
         .modal-card {
-            background: #1e293b;
-            border: 1px solid var(--glass-border);
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
             border-radius: 1rem;
             padding: 1.25rem;
             max-width: 420px;
             width: 100%;
         }
-        .modal-card h3 { color: var(--accent); margin-bottom: 0.75rem; font-size: 1.1rem; }
-        .modal-card ol { margin-left: 1.2rem; color: var(--text-main); font-size: 0.85rem; line-height: 1.6; }
+        .modal-card h3 { color: var(--accent); margin-bottom: 0.65rem; font-size: 1.05rem; }
+        .modal-card ol { margin-left: 1.2rem; color: var(--text-main); font-size: 0.84rem; line-height: 1.6; }
         .modal-card li { margin-bottom: 0.5rem; }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <h1>🎵 Uncle Dad's Song</h1>
-            <button class="install-btn" onclick="showInstallHelp()">📲 Install</button>
-        </header>
+    <div class="app-shell">
+        <!-- Profile & Quick Actions Header -->
+        <div class="profile-header">
+            <div class="profile-info">
+                <div class="avatar" id="user-avatar">UD</div>
+                <div style="min-width:0;">
+                    <div class="user-name-text" id="user-name">Guest Listener</div>
+                    <div class="user-stats" id="user-stats-text">🔥 1-Day Streak • <span id="local-pts">0</span> Pts</div>
+                </div>
+            </div>
+            <div class="header-btns">
+                <button class="pill-top-btn pill-install" onclick="showInstallHelp()">📲 Install</button>
+                <button class="pill-top-btn pill-signin" id="auth-action-btn" onclick="toggleUserAuth()">Sign In</button>
+            </div>
+        </div>
 
+        <!-- Brand Title & Subtitle -->
+        <div class="brand-header">
+            <h1>Uncle Dad's</h1>
+            <div class="subtitle">Song of the Day</div>
+        </div>
+
+        <!-- Main Streaming Player Card -->
         <div class="player-card">
+            <div class="drop-badge-row">
+                <span class="drop-badge" id="track-badge">TODAY'S DROP</span>
+                <span style="font-size: 0.72rem; color: var(--text-muted);" id="track-date-label"></span>
+            </div>
+
             <div class="video-wrapper">
                 <iframe id="yt-frame" src="https://www.youtube-nocookie.com/embed/TUVcZfQe-Kw?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                 <div id="embed-error-banner">
@@ -360,59 +583,89 @@ index
                     <a id="embed-error-link" href="#" target="_blank" class="primary-btn" style="text-decoration:none; padding:0.45rem 1rem; display:inline-block; font-size:0.8rem;">Watch on YouTube ↗</a>
                 </div>
             </div>
+
             <div class="track-meta">
                 <h2 id="display-title">Loading today's drop...</h2>
                 <p id="display-shoutout">Calibrating rotation queue...</p>
             </div>
-            <div class="share-row">
-                <button class="share-btn" onclick="shareApp('native')">🚀 Share App</button>
-                <button class="share-btn" onclick="shareApp('whatsapp')">💬 WhatsApp</button>
-                <button class="share-btn" onclick="shareApp('copy')">📋 Copy Link</button>
+
+            <!-- Share Pill Row -->
+            <div class="action-bar">
+                <button class="action-btn" onclick="shareApp('native')">🚀 Share</button>
+                <button class="action-btn" onclick="shareApp('whatsapp')">💬 WhatsApp</button>
+                <button class="action-btn" onclick="shareApp('copy')">📋 Copy Link</button>
+            </div>
+
+            <!-- Live Vibe Reactions Pill Button Row -->
+            <div class="reaction-bar" id="reaction-bar-container">
+                <button class="reaction-pill" onclick="sendReaction('fire', '🔥')"><span>🔥</span> <span id="cnt-fire">0</span></button>
+                <button class="reaction-pill" onclick="sendReaction('classic', '🎸')"><span>🎸</span> <span id="cnt-classic">0</span></button>
+                <button class="reaction-pill" onclick="sendReaction('groove', '🕺')"><span>🕺</span> <span id="cnt-groove">0</span></button>
+                <button class="reaction-pill" onclick="sendReaction('skip', '💤')"><span>💤</span> <span id="cnt-skip">0</span></button>
             </div>
         </div>
 
+        <!-- 4-Tab Navigation -->
         <div class="nav-tabs">
             <button class="tab-btn active" id="tab-trivia-btn" onclick="switchTab('trivia')">❓ Trivia</button>
+            <button class="tab-btn" id="tab-voting-btn" onclick="switchTab('voting')">🗳️ Vote</button>
+            <button class="tab-btn" id="tab-ranks-btn" onclick="switchTab('ranks')">🏆 Ranks</button>
             <button class="tab-btn" id="tab-machine-btn" onclick="switchTab('machine')">⏱️ Archive</button>
-            <button class="tab-btn" id="tab-voting-btn" onclick="switchTab('voting')">🗳️ Voting</button>
         </div>
 
+        <!-- Panel 1: Daily Music Trivia (2-Strike Rule + Green Highlight) -->
         <div id="panel-trivia" class="section-panel active">
-            <h3>Daily Music Trivia</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
+                <h3 style="margin:0;">Daily Music Trivia (+100 Pts)</h3>
+                <span id="trivia-tries-badge" style="font-size:0.74rem; color:var(--text-muted); font-weight:600;">2 Tries</span>
+            </div>
             <p class="subtext" id="trivia-q">Loading daily question...</p>
             <div id="trivia-options"></div>
-            <p id="trivia-result" style="margin-top: 0.75rem; font-weight: bold; font-size: 0.85rem;"></p>
+            <p id="trivia-result" style="margin-top: 0.75rem; font-weight: 700; font-size: 0.85rem;"></p>
         </div>
 
-        <div id="panel-machine" class="section-panel">
-            <h3>Time Machine Archive</h3>
-            <p class="subtext">Browse past days in this month's rotation. Click any track to play it!</p>
-            <input type="text" id="archive-filter" class="archive-search-input" placeholder="🔍 Search songs, artists, or genres..." oninput="filterArchive()" />
-            <div id="archive-list"></div>
-        </div>
-
+        <!-- Panel 2: Community Voting & Pitching -->
         <div id="panel-voting" class="section-panel">
             <h3>Suggestion & Voting Board</h3>
-            <p class="subtext" id="voting-subtitle">Vote for upcoming tracks. Reaching 3 votes promotes live across all phones!</p>
-            
-            <!-- Live Cooldown Countdown Banner -->
+            <p class="subtext">Vote for upcoming tracks (+10 Pts). Reaching 3 votes promotes live across all phones!</p>
+
             <div id="cooldown-banner" style="display: none; background: rgba(56, 189, 248, 0.12); border: 1px solid var(--accent); border-radius: 0.6rem; padding: 0.6rem 0.8rem; margin-bottom: 0.75rem; text-align: center;">
                 <span style="font-size: 0.8rem; color: var(--accent); font-weight: 600;">⏳ Next Promotion Unlocks In: </span>
                 <span id="cooldown-timer-text" style="font-family: monospace; font-size: 0.95rem; font-weight: bold; color: #fff;">00:00</span>
             </div>
 
-            <div id="vote-list"></div>
+            <div class="list-scroll" id="vote-list"></div>
+
             <div class="pitch-inputs">
-                <input type="text" id="pitch-title" placeholder="Pitch song (Title & Artist)..." />
-                <input type="text" id="pitch-url" placeholder="YouTube URL or ID..." />
-                <button class="primary-btn" style="width: auto; padding: 0.5rem 0.85rem;" onclick="addPitch()">Pitch</button>
+                <div class="pitch-row">
+                    <input type="text" id="pitch-title" placeholder="Pitch song (Title & Artist)..." />
+                    <input type="text" id="pitch-url" placeholder="YouTube URL or ID..." />
+                </div>
+                <button class="primary-btn" onclick="addPitch()">Pitch Song (+25 Pts)</button>
             </div>
         </div>
 
-        <!-- Protected Admin Portal in Footer -->
+        <!-- Panel 3: Leaderboard & Streaks -->
+        <div id="panel-ranks" class="section-panel">
+            <h3>Family & Friends Leaderboard</h3>
+            <p class="subtext">Earn points by solving daily trivia (+100), pitching tracks (+25), and voting (+10).</p>
+            <div class="list-scroll" id="leaderboard-list"></div>
+        </div>
+
+        <!-- Panel 4: Time Machine Archive -->
+        <div id="panel-machine" class="section-panel">
+            <h3>Time Machine Archive</h3>
+            <p class="subtext">Browse this month's 30-day rotation. Tap any track to load it in the player!</p>
+            <input type="text" id="archive-filter" class="archive-search-input" placeholder="🔍 Search songs, artists, or themes..." oninput="filterArchive()" />
+            <div class="list-scroll" id="archive-list"></div>
+        </div>
+
+        <!-- Footer with Feedback, Local Reset & Bob's Admin Portal -->
         <footer class="app-footer">
             <div class="footer-links">
                 <button class="admin-subtle-toggle" onclick="openFeedbackModal()">💬 Send Beta Feedback</button>
+                <span style="color: rgba(255,255,255,0.2); font-size: 0.7rem;">•</span>
+                <button class="admin-subtle-toggle" onclick="resetLocalLocks()">🔄 Unlock My Local Buttons</button>
                 <span style="color: rgba(255,255,255,0.2); font-size: 0.7rem;">•</span>
                 <button class="admin-subtle-toggle" onclick="toggleAdmin()">🔒 Bob's Admin Portal</button>
             </div>
@@ -423,7 +676,6 @@ index
                     <button id="admin-logout-btn" class="admin-subtle-toggle" style="display: none; color: var(--danger); opacity: 1;" onclick="adminSignOut()">Sign Out</button>
                 </div>
 
-                <!-- Admin Sign In Gate -->
                 <div id="admin-auth-gate">
                     <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.5rem;">Sign in with administrator credentials to manage track drops.</p>
                     <input type="email" id="admin-email" placeholder="Admin email..." />
@@ -432,7 +684,6 @@ index
                     <p id="admin-auth-error" style="color: var(--danger); font-size: 0.72rem; margin-top: 0.4rem;"></p>
                 </div>
 
-                <!-- Admin Controls -->
                 <div id="admin-controls" style="display: none;">
                     <input type="text" id="admin-url" placeholder="YouTube URL or ID..." />
                     <input type="text" id="admin-title" placeholder="Song Title & Artist..." />
@@ -447,24 +698,22 @@ index
     </div>
 
     <!-- In-App Beta Feedback Modal -->
-    <div id="feedback-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 1.25rem;" onclick="closeFeedbackModal(event)">
+    <div id="feedback-modal" class="modal-backdrop" onclick="closeFeedbackModal(event)">
         <div class="modal-card" onclick="event.stopPropagation()">
-            <h3 style="color: var(--accent); margin-bottom: 0.5rem; font-size: 1.1rem;">💬 Send Beta Feedback</h3>
+            <h3>💬 Send Beta Feedback</h3>
             <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.75rem;">Found a bug, have an idea, or want to suggest a song? Let Bob know directly:</p>
-            
-            <input type="text" id="feedback-name" placeholder="Your Name or Nickname (optional)" style="width: 100%; background: rgba(15,23,42,0.9); border: 1px solid var(--glass-border); color: #fff; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 0.5rem;" />
-            <textarea id="feedback-msg" rows="4" placeholder="What's on your mind?..." style="width: 100%; background: rgba(15,23,42,0.9); border: 1px solid var(--glass-border); color: #fff; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.8rem; font-family: inherit; margin-bottom: 0.75rem;"></textarea>
-            
+            <input type="text" id="feedback-name" placeholder="Your Name or Nickname (optional)" style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border); color: #fff; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 0.5rem;" />
+            <textarea id="feedback-msg" rows="4" placeholder="What's on your mind?..." style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border); color: #fff; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.8rem; font-family: inherit; margin-bottom: 0.75rem;"></textarea>
             <div style="display: flex; gap: 0.5rem;">
                 <button class="primary-btn" style="flex: 1;" onclick="submitFeedback()">Send Feedback</button>
-                <button class="primary-btn reset-btn" style="width: auto; padding: 0.5rem 1rem;" onclick="document.getElementById('feedback-modal').style.display = 'none'">Cancel</button>
+                <button class="primary-btn reset-btn" style="width: auto; padding: 0.5rem 1rem;" onclick="document.getElementById('feedback-modal').classList.remove('active')">Cancel</button>
             </div>
             <p id="feedback-status" style="font-size: 0.75rem; text-align: center; margin-top: 0.5rem;"></p>
         </div>
     </div>
 
     <!-- PWA Installation Modal -->
-    <div id="install-modal" onclick="closeInstallModal(event)">
+    <div id="install-modal" class="modal-backdrop" onclick="closeInstallModal(event)">
         <div class="modal-card" onclick="event.stopPropagation()">
             <h3>📲 Add Uncle Dad's to Phone</h3>
             <ol>
@@ -506,6 +755,7 @@ index
         const cooldownRef = db.ref('cooldownUntil');
         const feedbackRef = db.ref('feedback');
 
+        let activeSongKey = 'default_track';
         let activeCooldownTarget = 0;
         let countdownInterval = null;
 
@@ -525,7 +775,7 @@ index
             { day: 12, theme: "Upbeat Funk Friday", title: "Lizzo - About Damn Time", videoId: "IXXxciRUMzE", shoutout: "Day 12: Funk Friday brings modern disco optimism and flute breaks.", q: "What classical wind instrument does Lizzo famously perform during her songs?", opts: ["Clarinet", "Flute", "Saxophone", "Trumpet"], ans: 1 },
             { day: 13, theme: "Electronic Saturday", title: "Daft Punk ft. Pharrell - Get Lucky", videoId: "Rgrt_8mXrK8", shoutout: "Day 13: Saturday groove with the French electronic robots and Nile Rodgers' guitar.", q: "Which Chic guitar pioneer played rhythm guitar on 'Get Lucky'?", opts: ["Nile Rodgers", "Carlos Santana", "The Edge", "Johnny Marr"], ans: 0 },
             { day: 14, theme: "Chill Sunday", title: "Vance Joy - Riptide", videoId: "uJ_1HMAGb4k", shoutout: "Day 14: Sunday Chill acoustic vibes driven by a four-string ukulele.", q: "What instrument carries the primary rhythmic strum throughout 'Riptide'?", opts: ["Ukulele", "Mandolin", "Banjo", "12-String Guitar"], ans: 0 },
-            { day: 15, theme: "Modern Pop Monday", title: "Harry Styles - As It Was", videoId: "H5v3kku4y6Q", shoutout: "Day 15: Pop Monday with practical indie synth riffs and introspective lyrics.", q: "Whose voice memo is heard speaking in the intro of 'As It Was'?", opts: ["His mother", "His goddaughter Ruby", "His sister Gemma", "A radio host"], ans: 1 },
+            { day: 15, theme: "Modern Pop Monday", title: "Harry Styles - As It Was", videoId: "H5v3kku4y6Q", shoutout: "Day 15: Pop Monday with sparkling indie synth riffs and introspective lyrics.", q: "Whose voice memo is heard speaking in the intro of 'As It Was'?", opts: ["His mother", "His goddaughter Ruby", "His sister Gemma", "A radio host"], ans: 1 },
             { day: 16, theme: "Alt / Indie Tuesday", title: "Arctic Monkeys - Do I Wanna Know?", videoId: "bpOSxM0rNPM", shoutout: "Day 16: Alt Tuesday brings desert rock guitar riffs and thumping floor-toms.", q: "What distinct type of guitar did Alex Turner use to write this riff?", opts: ["12-string Vox guitar", "Fender Stratocaster", "Acoustic nylon", "Bass guitar only"], ans: 0 },
             { day: 17, theme: "Viral Wednesday", title: "Childish Gambino - Redbone", videoId: "ZSw7YYYwyuI", shoutout: "Day 17: Viral Wednesday delivers Donald Glover's psychedelic soul tribute.", q: "Donald Glover stated the musical style of 'Redbone' was an homage to which artist?", opts: ["Funkadelic / George Clinton", "Michael Jackson", "Bob Dylan", "Stevie Wonder"], ans: 0 },
             { day: 18, theme: "Throwback Thursday", title: "Outkast - Roses", videoId: "gWju37TZfo0", shoutout: "Day 18: Throwback Thursday with an upbeat piano hook hiding witty lyrics.", q: "Which Outkast double-album contains 'Roses'?", opts: ["Speakerboxxx/The Love Below", "Aquemini", "Stankonia", "ATLiens"], ans: 0 },
@@ -549,8 +799,11 @@ index
         };
 
         window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('track-date-label').textContent = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+            updateLocalPointsDisplay();
             initLiveSync();
             setupAuthListener();
+            loadLeaderboard();
         });
 
         function getTodayIndex() {
@@ -558,21 +811,54 @@ index
             return (day - 1) % TRACK_ROSTER.length;
         }
 
+        function getTodayDateString() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function updateLocalPointsDisplay() {
+            const pts = parseInt(localStorage.getItem('udd_local_points') || '0', 10);
+            const el = document.getElementById('local-pts');
+            if (el) el.textContent = pts;
+        }
+
+        function awardPoints(amount) {
+            const current = parseInt(localStorage.getItem('udd_local_points') || '0', 10);
+            localStorage.setItem('udd_local_points', String(current + amount));
+            updateLocalPointsDisplay();
+
+            if (auth.currentUser) {
+                db.ref('users/' + auth.currentUser.uid).transaction((u) => {
+                    if (!u) {
+                        return {
+                            name: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
+                            streak: 1,
+                            points: amount
+                        };
+                    }
+                    u.points = (u.points || 0) + amount;
+                    return u;
+                });
+            }
+        }
+
         function initLiveSync() {
             const currentIndex = getTodayIndex();
             const scheduledTrack = TRACK_ROSTER[currentIndex];
+            const todayStr = getTodayDateString();
 
             currentSongRef.on('value', (snapshot) => {
                 const data = snapshot.val();
-                if (data && data.id) {
-                    setSongDisplay(data.id, data.title, data.comment);
+                const isFreshOverride = data && data.id && (!data.date || data.date === todayStr);
+
+                if (isFreshOverride) {
+                    setSongDisplay(data.id, data.title, data.comment, data.badge || 'FEATURED DROP');
                     if (data.trivia) {
                         renderTrivia({ ...data.trivia, day: 'winner_' + data.id });
                     } else {
                         renderTrivia(scheduledTrack);
                     }
                 } else {
-                    setSongDisplay(scheduledTrack.videoId, scheduledTrack.title, scheduledTrack.shoutout);
+                    setSongDisplay(scheduledTrack.videoId, scheduledTrack.title, scheduledTrack.shoutout, scheduledTrack.theme);
                     renderTrivia(scheduledTrack);
                 }
                 renderTimeMachine(currentIndex);
@@ -621,16 +907,19 @@ index
             }
         }
 
-        function setSongDisplay(id, title, comment) {
+        function setSongDisplay(id, title, comment, badgeText = "TODAY'S DROP") {
             const errorBanner = document.getElementById('embed-error-banner');
             if (errorBanner) errorBanner.style.display = 'none';
 
             document.getElementById('yt-frame').src = 'https://www.youtube-nocookie.com/embed/' + id + '?enablejsapi=1';
             document.getElementById('display-title').textContent = title;
             document.getElementById('display-shoutout').textContent = comment;
+            document.getElementById('track-badge').textContent = badgeText;
 
             const errorLink = document.getElementById('embed-error-link');
             if (errorLink) errorLink.href = 'https://www.youtube.com/watch?v=' + id;
+
+            setupReactionListener(id);
         }
 
         window.addEventListener('message', (event) => {
@@ -643,23 +932,96 @@ index
             } catch (e) {}
         });
 
-        // --- AUTHENTICATION & ADMIN LOCK ---
+        // --- LIVE VIBE REACTIONS & FLOATING EMOJIS ---
+        function sendReaction(type, emoji) {
+            const ref = db.ref('reactions/' + activeSongKey + '/' + type);
+            ref.transaction((val) => (val || 0) + 1);
+            triggerFloatingEmoji(emoji);
+            trackEvent('vibe_reacted', { type: type, song: activeSongKey });
+        }
+
+        function triggerFloatingEmoji(emoji) {
+            const el = document.createElement('div');
+            el.className = 'floating-emoji';
+            el.textContent = emoji;
+            const xPos = window.innerWidth / 2 + (Math.random() * 140 - 70);
+            el.style.left = xPos + 'px';
+            el.style.bottom = '130px';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1600);
+        }
+
+        function setupReactionListener(songId) {
+            const nextKey = songId || 'default_track';
+            if (activeSongKey) {
+                db.ref('reactions/' + activeSongKey).off();
+            }
+            activeSongKey = nextKey;
+
+            db.ref('reactions/' + activeSongKey).on('value', (snap) => {
+                const val = snap.val() || {};
+                document.getElementById('cnt-fire').textContent = val.fire || 0;
+                document.getElementById('cnt-classic').textContent = val.classic || 0;
+                document.getElementById('cnt-groove').textContent = val.groove || 0;
+                document.getElementById('cnt-skip').textContent = val.skip || 0;
+            });
+        }
+
+        // --- AUTHENTICATION (USER PROFILE & ADMIN PORTAL) ---
         function setupAuthListener() {
             auth.onAuthStateChanged((user) => {
                 const authGate = document.getElementById('admin-auth-gate');
                 const adminControls = document.getElementById('admin-controls');
                 const logoutBtn = document.getElementById('admin-logout-btn');
+                const topAuthBtn = document.getElementById('auth-action-btn');
 
                 if (user) {
+                    const displayName = user.displayName || user.email.split('@')[0];
+                    document.getElementById('user-name').textContent = displayName;
+                    document.getElementById('user-avatar').textContent = displayName[0].toUpperCase();
+                    if (topAuthBtn) topAuthBtn.textContent = 'Sign Out';
+
+                    db.ref('users/' + user.uid).on('value', (snap) => {
+                        const u = snap.val() || { streak: 1, points: parseInt(localStorage.getItem('udd_local_points') || '0', 10) };
+                        document.getElementById('user-stats-text').innerHTML = `🔥 ${u.streak || 1}-Day Streak • <span id="local-pts">${u.points || 0}</span> Pts`;
+                    });
+
                     if (authGate) authGate.style.display = 'none';
                     if (adminControls) adminControls.style.display = 'block';
                     if (logoutBtn) logoutBtn.style.display = 'inline-block';
                 } else {
+                    document.getElementById('user-name').textContent = 'Guest Listener';
+                    document.getElementById('user-avatar').textContent = 'UD';
+                    if (topAuthBtn) topAuthBtn.textContent = 'Sign In';
+                    const pts = parseInt(localStorage.getItem('udd_local_points') || '0', 10);
+                    document.getElementById('user-stats-text').innerHTML = `🔥 1-Day Streak • <span id="local-pts">${pts}</span> Pts`;
+
                     if (authGate) authGate.style.display = 'block';
                     if (adminControls) adminControls.style.display = 'none';
                     if (logoutBtn) logoutBtn.style.display = 'none';
                 }
             });
+        }
+
+        async function toggleUserAuth() {
+            if (auth.currentUser) {
+                await auth.signOut();
+                return;
+            }
+            const email = prompt("Enter your email to sign in or create a listener account:");
+            if (!email) return;
+            const password = prompt("Enter a password (at least 6 characters):");
+            if (!password) return;
+
+            try {
+                await auth.signInWithEmailAndPassword(email.trim(), password);
+            } catch (err) {
+                try {
+                    await auth.createUserWithEmailAndPassword(email.trim(), password);
+                } catch (createErr) {
+                    alert("Sign-in error: " + createErr.message);
+                }
+            }
         }
 
         async function adminSignIn() {
@@ -683,8 +1045,7 @@ index
         }
 
         function saveAdminSong() {
-            const user = auth.currentUser;
-            if (!user) {
+            if (!auth.currentUser) {
                 alert("Access denied: You must be signed in as administrator.");
                 return;
             }
@@ -697,7 +1058,9 @@ index
             currentSongRef.set({
                 id: videoId,
                 title: title,
-                comment: comment
+                comment: comment,
+                badge: "BOB'S PICK",
+                date: getTodayDateString()
             }).then(() => {
                 alert("Song updated successfully across all connected devices!");
                 toggleAdmin();
@@ -708,8 +1071,7 @@ index
         }
 
         function resetToSchedule() {
-            const user = auth.currentUser;
-            if (!user) {
+            if (!auth.currentUser) {
                 alert("Access denied: You must be signed in as administrator.");
                 return;
             }
@@ -735,9 +1097,8 @@ index
                 const div = document.createElement('div');
                 div.className = 'vote-item';
                 div.innerHTML = `
-                    <span><strong>${escapeHtml(item.title)}</strong> (${item.votes || 0} / ${VOTE_THRESHOLD} Votes)</span>
-                    <button class="vote-btn-local" style="${hasVoted ? 'opacity:0.5; cursor:not-allowed;' : ''}" 
-                            onclick="castVote('${key}')" ${hasVoted ? 'disabled' : ''}>
+                    <span><strong>${escapeHtml(item.title)}</strong> <span style="color:var(--text-muted); font-size:0.75rem;">(${item.votes || 0}/${VOTE_THRESHOLD} Votes)</span></span>
+                    <button class="vote-btn-local" onclick="castVote('${key}')" ${hasVoted ? 'disabled' : ''}>
                         ${hasVoted ? '✓ Voted' : '👍 Vote'}
                     </button>
                 `;
@@ -751,6 +1112,7 @@ index
 
             userVotes.push(suggestionKey);
             localStorage.setItem('udd_my_votes', JSON.stringify(userVotes));
+            awardPoints(10);
             trackEvent('cast_vote', { suggestion_id: suggestionKey });
 
             const itemRef = db.ref('suggestions/' + suggestionKey);
@@ -759,6 +1121,21 @@ index
                     item.votes = (item.votes || 0) + 1;
                 }
                 return item;
+            }, (err, committed, snapshot) => {
+                if (committed && snapshot) {
+                    const updated = snapshot.val();
+                    if (updated && updated.votes >= VOTE_THRESHOLD && Date.now() > activeCooldownTarget) {
+                        currentSongRef.set({
+                            id: updated.videoId,
+                            title: updated.title,
+                            comment: `Promoted by community consensus (${updated.votes} votes)!`,
+                            badge: "COMMUNITY WINNER",
+                            date: getTodayDateString()
+                        });
+                        itemRef.remove();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
             });
         }
 
@@ -768,6 +1145,7 @@ index
             if (!title) return;
             const videoId = parseYouTubeId(rawUrl);
 
+            awardPoints(25);
             trackEvent('pitch_submitted', { song_title: title });
             const newRef = suggestionsRef.push({
                 title: title,
@@ -782,18 +1160,21 @@ index
             document.getElementById('pitch-url').value = '';
         }
 
-        // --- TRIVIA & ARCHIVE (2-STRIKE RULE WITH GREEN HIGHLIGHT) ---
+        // --- TRIVIA (2-STRIKE RULE WITH GREEN HIGHLIGHT AFTER 2 WRONG GUESSES) ---
         function renderTrivia(track) {
             document.getElementById('trivia-q').textContent = track.q;
             const container = document.getElementById('trivia-options');
             container.innerHTML = '';
             const res = document.getElementById('trivia-result');
+            const badge = document.getElementById('trivia-tries-badge');
             res.textContent = '';
+            if (badge) badge.textContent = '2 Tries Left';
 
             const storageKey = 'udd_trivia_guesses_day_' + track.day;
+            const ptsKey = 'udd_trivia_pts_day_' + track.day;
             let savedGuesses = JSON.parse(localStorage.getItem(storageKey) || '[]');
 
-            function updateBoardState() {
+            function updateBoardState(justSolved = false) {
                 const allBtns = container.querySelectorAll('.trivia-btn');
                 const hasCorrect = savedGuesses.includes(track.ans);
                 const outOfTries = savedGuesses.length >= 2 && !hasCorrect;
@@ -810,6 +1191,7 @@ index
                         }
                     } else if (isFinished) {
                         b.disabled = true;
+                        // Highlight the correct answer in green after two incorrect guesses
                         if (outOfTries && bIdx === track.ans) {
                             b.classList.add('correct');
                         }
@@ -819,14 +1201,21 @@ index
                 });
 
                 if (hasCorrect) {
+                    if (badge) badge.textContent = 'Solved!';
                     res.style.color = 'var(--success)';
+                    if (justSolved && !localStorage.getItem(ptsKey)) {
+                        localStorage.setItem(ptsKey, '1');
+                        awardPoints(100);
+                    }
                     res.textContent = savedGuesses.length === 1
-                        ? "🎯 Spot on! First try — great ear for music history."
-                        : "🎯 Got it on your second try! Great recovery.";
+                        ? "🎯 Spot on! First try (+100 Pts) — great ear for music history."
+                        : "🎯 Got it on your second try (+100 Pts)! Great recovery.";
                 } else if (outOfTries) {
+                    if (badge) badge.textContent = '0 Tries Left';
                     res.style.color = 'var(--danger)';
                     res.textContent = `❌ Out of tries! The correct answer is highlighted in green: ${track.opts[track.ans]}`;
                 } else if (savedGuesses.length === 1) {
+                    if (badge) badge.textContent = '1 Try Left';
                     res.style.color = 'var(--danger)';
                     res.textContent = "⚠️ Not quite! You have 1 try left.";
                 }
@@ -841,18 +1230,55 @@ index
                     if (savedGuesses.includes(idx) || btn.disabled) return;
                     savedGuesses.push(idx);
                     localStorage.setItem(storageKey, JSON.stringify(savedGuesses));
-                    trackEvent('trivia_answered', { day: track.day, attempt: savedGuesses.length, is_correct: (idx === track.ans) });
-                    updateBoardState();
+                    const isCorrect = (idx === track.ans);
+                    trackEvent('trivia_answered', { day: track.day, attempt: savedGuesses.length, is_correct: isCorrect });
+                    updateBoardState(isCorrect);
                 };
 
                 container.appendChild(btn);
             });
 
             if (savedGuesses.length > 0) {
-                updateBoardState();
+                updateBoardState(false);
             }
         }
 
+        // --- LEADERBOARD ---
+        function loadLeaderboard() {
+            const lb = document.getElementById('leaderboard-list');
+            if (!lb) return;
+
+            db.ref('users').orderByChild('points').limitToLast(10).on('value', (snap) => {
+                const data = snap.val();
+                let entries = [];
+                if (data) {
+                    Object.values(data).forEach((u) => {
+                        entries.push({
+                            name: u.name || 'Music Fan',
+                            streak: u.streak || 1,
+                            points: u.points || 0
+                        });
+                    });
+                }
+                if (entries.length === 0) {
+                    entries = [
+                        { name: 'Uncle Dad', streak: 14, points: 1450 },
+                        { name: 'Sarah', streak: 9, points: 920 },
+                        { name: 'Arduino-Blade', streak: 5, points: 680 }
+                    ];
+                }
+                entries.sort((a, b) => b.points - a.points);
+                lb.innerHTML = '';
+                entries.forEach((f, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'rank-item';
+                    div.innerHTML = `<span><strong>#${idx + 1}</strong> ${escapeHtml(f.name)}</span><span>🔥 ${f.streak}d • <strong>${f.points} pts</strong></span>`;
+                    lb.appendChild(div);
+                });
+            });
+        }
+
+        // --- TIME MACHINE ARCHIVE ---
         function renderTimeMachine(currentIndex, filterTerm = '') {
             const list = document.getElementById('archive-list');
             list.innerHTML = '';
@@ -868,7 +1294,7 @@ index
                 const isToday = (idx === currentIndex);
                 const div = document.createElement('div');
                 div.className = 'time-machine-item';
-                div.style.borderLeft = isToday ? '3px solid var(--accent)' : '1px solid var(--glass-border)';
+                div.style.borderLeft = isToday ? '3px solid var(--accent)' : '1px solid var(--border)';
                 div.innerHTML = `
                     <span>
                         <strong>Day ${item.day}</strong> <span style="color:var(--text-muted);font-size:0.75rem;">(${item.theme})</span>: 
@@ -878,7 +1304,7 @@ index
                     <span style="color: var(--accent); font-size: 0.75rem; white-space:nowrap; margin-left:8px;">▶ Play</span>
                 `;
                 div.onclick = () => {
-                    setSongDisplay(item.videoId, item.title, `[Time Machine - Day ${item.day}] ${item.shoutout}`);
+                    setSongDisplay(item.videoId, item.title, `[Time Machine - Day ${item.day}] ${item.shoutout}`, `DAY ${item.day} ARCHIVE`);
                     renderTrivia(item);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 };
@@ -898,14 +1324,21 @@ index
             document.getElementById('tab-' + tabName + '-btn').classList.add('active');
         }
 
+        function resetLocalLocks() {
+            Object.keys(localStorage).forEach((k) => {
+                if (k.startsWith('udd_trivia_') || k === 'udd_my_votes') {
+                    localStorage.removeItem(k);
+                }
+            });
+            location.reload();
+        }
+
         function toggleAdmin() {
             const ap = document.getElementById('panel-admin');
             const isOpening = ap.style.display === 'none' || ap.style.display === '';
-            
             if (!isOpening && auth.currentUser) {
                 auth.signOut();
             }
-
             ap.style.display = isOpening ? 'block' : 'none';
             if (isOpening) ap.scrollIntoView({ behavior: 'smooth' });
         }
@@ -921,8 +1354,8 @@ index
         async function shareApp(platform) {
             trackEvent('share_clicked', { platform: platform });
             const shareData = {
-                title: "Uncle Dad's Song of the Day",
-                text: "Check out Uncle Dad's Song of the Day! Daily music drop, trivia, and voting:",
+                title: "Uncle Dad's — Song of the Day",
+                text: "Check out Uncle Dad's Song of the Day! Daily music drop, vibe reactions, trivia, and voting:",
                 url: window.location.href
             };
 
@@ -951,12 +1384,12 @@ index
             const modal = document.getElementById('feedback-modal');
             const status = document.getElementById('feedback-status');
             if (status) status.textContent = '';
-            if (modal) modal.style.display = 'flex';
+            if (modal) modal.classList.add('active');
         }
 
         function closeFeedbackModal(e) {
             const modal = document.getElementById('feedback-modal');
-            if (modal) modal.style.display = 'none';
+            if (modal) modal.classList.remove('active');
         }
 
         function submitFeedback() {
@@ -986,7 +1419,7 @@ index
                 status.style.color = 'var(--success)';
                 status.textContent = '✅ Thanks! Your note was sent straight to Bob.';
                 setTimeout(() => {
-                    document.getElementById('feedback-modal').style.display = 'none';
+                    document.getElementById('feedback-modal').classList.remove('active');
                 }, 1500);
             }).catch((err) => {
                 status.style.color = 'var(--danger)';
