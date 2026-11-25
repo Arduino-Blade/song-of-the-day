@@ -1234,27 +1234,13 @@
             awardPoints(10);
             trackEvent('cast_vote', { suggestion_id: suggestionKey });
 
+            // Increment vote count only — the AI Trivia Bridge exclusively promotes winners with custom trivia
             const itemRef = db.ref('suggestions/' + suggestionKey);
             itemRef.transaction((item) => {
                 if (item) {
                     item.votes = (item.votes || 0) + 1;
                 }
                 return item;
-            }, (err, committed, snapshot) => {
-                if (committed && snapshot) {
-                    const updated = snapshot.val();
-                    if (updated && updated.votes >= VOTE_THRESHOLD && Date.now() > activeCooldownTarget) {
-                        currentSongRef.set({
-                            id: updated.videoId,
-                            title: updated.title,
-                            comment: `Promoted by community consensus (${updated.votes} votes)!`,
-                            badge: "COMMUNITY WINNER",
-                            date: getTodayDateString()
-                        });
-                        itemRef.remove();
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                }
             });
         }
 
