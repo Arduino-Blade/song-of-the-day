@@ -637,9 +637,37 @@
             <div class="list-scroll" id="vote-list"></div>
 
             <div class="pitch-inputs">
-                <input type="text" id="pitch-title" placeholder="Pitch song (Title & Artist)..." style="width: 100%;" />
-                <input type="text" id="pitch-url" placeholder="YouTube URL or ID..." style="width: 100%;" />
-                <button class="primary-btn" style="width: 100%;" onclick="addPitch()">Pitch Song (+25 Pts)</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.4rem; margin-bottom:0.15rem;">
+                    <span style="font-size:0.78rem; font-weight:700; color:var(--accent);">🎤 Pitch a Track</span>
+                    <div style="display:flex; gap:0.35rem;">
+                        <button type="button" class="pill-top-btn" style="font-size:0.7rem; padding:0.28rem 0.55rem;" onclick="openYouTubeSearch()">🔍 Find on YouTube</button>
+                        <button type="button" class="pill-top-btn" style="font-size:0.7rem; padding:0.28rem 0.55rem;" onclick="pasteYouTubeLink()">📋 Paste Link</button>
+                    </div>
+                </div>
+
+                <input type="text" id="pitch-url" placeholder="1. Paste YouTube Link or Video ID (auto-fills title)..." style="width: 100%;" oninput="handlePitchUrlInput()" />
+                <input type="text" id="pitch-title" placeholder="2. Song Title & Artist (auto-filled or type here)..." style="width: 100%;" />
+
+                <!-- Instant Thumbnail & Title Preview Card -->
+                <div id="pitch-preview-card" style="display:none; align-items:center; gap:0.65rem; background:var(--surface); border:1px solid var(--accent); border-radius:0.6rem; padding:0.5rem;">
+                    <img id="pitch-preview-thumb" src="" alt="Preview" style="width:68px; height:42px; object-fit:cover; border-radius:0.35rem; flex-shrink:0;" />
+                    <div style="min-width:0; flex:1;">
+                        <div id="pitch-preview-status" style="font-size:0.68rem; color:var(--accent); font-weight:700; text-transform:uppercase;">Ready to Pitch</div>
+                        <div id="pitch-preview-name" style="font-size:0.8rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></div>
+                    </div>
+                </div>
+
+                <button class="primary-btn" id="pitch-submit-btn" style="width: 100%;" onclick="addPitch()">Pitch Song (+25 Pts)</button>
+
+                <!-- 1-Tap Crowd Favorites -->
+                <div style="margin-top:0.35rem;">
+                    <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:0.35rem;">⚡ Or tap a crowd favorite to pitch instantly:</div>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">
+                        <button type="button" class="pill-top-btn" style="font-size:0.7rem; padding:0.28rem 0.55rem;" onclick="quickPitch('Toto - Africa', 'FTQbiNvZqaY')">+ Toto - Africa</button>
+                        <button type="button" class="pill-top-btn" style="font-size:0.7rem; padding:0.28rem 0.55rem;" onclick="quickPitch('Queen - Don't Stop Me Now', 'HgzGwKwLmgM')">+ Queen - Don't Stop Me Now</button>
+                        <button type="button" class="pill-top-btn" style="font-size:0.7rem; padding:0.28rem 0.55rem;" onclick="quickPitch('a-ha - Take On Me', 'djV11Xbc914')">+ a-ha - Take On Me</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1083,7 +1111,7 @@
             });
         }
 
-        // --- REAL-TIME VOTING & SUGGESTIONS ---
+        // --- REAL-TIME VOTING & FRICTIONLESS PITCHING ---
         function renderVotingList(suggestions) {
             const container = document.getElementById('vote-list');
             const userVotes = JSON.parse(localStorage.getItem('udd_my_votes') || '[]');
@@ -1092,16 +1120,109 @@
             Object.keys(suggestions || {}).forEach((key) => {
                 const item = suggestions[key];
                 const hasVoted = userVotes.includes(key);
+                const vid = parseYouTubeId(item.videoId);
+                const thumbUrl = `https://img.youtube.com/vi/${vid}/mqdefault.jpg`;
                 const div = document.createElement('div');
                 div.className = 'vote-item';
                 div.innerHTML = `
-                    <span><strong>${escapeHtml(item.title)}</strong> <span style="color:var(--text-muted); font-size:0.75rem;">(${item.votes || 0}/${VOTE_THRESHOLD} Votes)</span></span>
+                    <div style="display:flex; align-items:center; gap:0.6rem; min-width:0; flex:1;">
+                        <img src="${thumbUrl}" alt="" style="width:54px; height:36px; object-fit:cover; border-radius:0.35rem; flex-shrink:0; background:#000;" />
+                        <div style="min-width:0;">
+                            <div style="font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(item.title)}</div>
+                            <div style="color:var(--text-muted); font-size:0.74rem;">${item.votes || 0} / ${VOTE_THRESHOLD} Votes</div>
+                        </div>
+                    </div>
                     <button class="vote-btn-local" onclick="castVote('${key}')" ${hasVoted ? 'disabled' : ''}>
                         ${hasVoted ? '✓ Voted' : '👍 Vote'}
                     </button>
                 `;
                 container.appendChild(div);
             });
+        }
+
+        function openYouTubeSearch() {
+            const query = document.getElementById('pitch-title').value.trim();
+            const searchUrl = query
+                ? 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query)
+                : 'https://www.youtube.com';
+            window.open(searchUrl, '_blank');
+        }
+
+        async function pasteYouTubeLink() {
+            try {
+                const clipText = await navigator.clipboard.readText();
+                if (clipText) {
+                    document.getElementById('pitch-url').value = clipText.trim();
+                    handlePitchUrlInput();
+                } else {
+                    alert('Clipboard is empty. Copy a YouTube link first, then tap Paste Link!');
+                }
+            } catch (err) {
+                document.getElementById('pitch-url').focus();
+                alert('Tap inside the YouTube Link box and select Paste.');
+            }
+        }
+
+        let pitchLookupTimeout = null;
+        function handlePitchUrlInput() {
+            clearTimeout(pitchLookupTimeout);
+            const rawUrl = document.getElementById('pitch-url').value.trim();
+            const previewCard = document.getElementById('pitch-preview-card');
+            const previewThumb = document.getElementById('pitch-preview-thumb');
+            const previewStatus = document.getElementById('pitch-preview-status');
+            const previewName = document.getElementById('pitch-preview-name');
+            const titleInput = document.getElementById('pitch-title');
+
+            if (!rawUrl) {
+                if (previewCard) previewCard.style.display = 'none';
+                return;
+            }
+
+            const videoId = extractStrictYouTubeId(rawUrl);
+            if (!videoId) {
+                if (previewCard) previewCard.style.display = 'none';
+                return;
+            }
+
+            previewCard.style.display = 'flex';
+            previewThumb.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+            previewStatus.style.color = 'var(--accent)';
+            previewStatus.textContent = 'Fetching song title...';
+            previewName.textContent = titleInput.value.trim() || `Video ID: ${videoId}`;
+
+            pitchLookupTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+                    if (!res.ok) {
+                        previewStatus.style.color = 'var(--danger)';
+                        previewStatus.textContent = '⚠️ Embed restricted by artist — try an Official Audio/Lyric video';
+                        return;
+                    }
+                    const data = await res.json();
+                    const cleanTitle = (data.title || '').replace(/\s*\((Official\s*)?(Music\s*)?(Video|Audio|Lyric\s*Video|HD|4K)\)/gi, '').trim();
+                    if (cleanTitle && !titleInput.value.trim()) {
+                        titleInput.value = cleanTitle;
+                    }
+                    previewStatus.style.color = 'var(--success)';
+                    previewStatus.textContent = '✅ Verified Embeddable';
+                    previewName.textContent = titleInput.value.trim() || cleanTitle;
+                } catch (e) {
+                    previewStatus.style.color = 'var(--accent)';
+                    previewStatus.textContent = 'Ready to Pitch';
+                }
+            }, 300);
+        }
+
+        function quickPitch(title, videoId) {
+            submitPitchEntry(title, videoId);
+        }
+
+        function extractStrictYouTubeId(input) {
+            if (!input) return null;
+            input = input.trim();
+            if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+            const match = input.match(/(?:youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([a-zA-Z0-9_-]{11})/);
+            return match ? match[1] : null;
         }
 
         function castVote(suggestionKey) {
@@ -1137,12 +1258,35 @@
             });
         }
 
-        function addPitch() {
-            const title = document.getElementById('pitch-title').value.trim();
+        async function addPitch() {
             const rawUrl = document.getElementById('pitch-url').value.trim();
-            if (!title) return;
-            const videoId = parseYouTubeId(rawUrl);
+            let title = document.getElementById('pitch-title').value.trim();
+            const videoId = extractStrictYouTubeId(rawUrl);
 
+            if (!videoId && !title) {
+                alert('Paste a YouTube link or tap a crowd favorite below!');
+                return;
+            }
+            if (!videoId) {
+                alert('Please paste a valid YouTube link or 11-character Video ID.');
+                return;
+            }
+
+            if (!title) {
+                try {
+                    const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        title = (data.title || '').replace(/\s*\((Official\s*)?(Music\s*)?(Video|Audio|Lyric\s*Video|HD|4K)\)/gi, '').trim();
+                    }
+                } catch (e) {}
+            }
+            if (!title) title = `YouTube Track (${videoId})`;
+
+            submitPitchEntry(title, videoId);
+        }
+
+        function submitPitchEntry(title, videoId) {
             awardPoints(25);
             trackEvent('pitch_submitted', { song_title: title });
             const newRef = suggestionsRef.push({
@@ -1156,6 +1300,8 @@
 
             document.getElementById('pitch-title').value = '';
             document.getElementById('pitch-url').value = '';
+            const previewCard = document.getElementById('pitch-preview-card');
+            if (previewCard) previewCard.style.display = 'none';
         }
 
         // --- TRIVIA (2-STRIKE RULE WITH GREEN HIGHLIGHT AFTER 2 WRONG GUESSES) ---
